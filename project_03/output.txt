@@ -1,0 +1,36 @@
+Individuals
++-----+----------------+--------+------------+-----+-------+------------+--------+--------------+
+|  ID |      Name      | Gender |  Birthday  | Age | Alive |   Death    | Child  |    Spouse    |
++-----+----------------+--------+------------+-----+-------+------------+--------+--------------+
+|  I1 | Jiashu /Wang/  |   M    |  1997-4-9  |  23 |  True |     NA     | ['F1'] |      NA      |
+|  I2 |   Wei /Wang/   |   M    | 1969-7-15  |  51 |  True |     NA     | ['F2'] |    ['F1']    |
+|  I3 |  Hong /Huan/   |   F    | 1968-9-17  |  52 |  True |     NA     | ['F3'] |    ['F1']    |
+|  I4 | Ziqing /Huan/  |   M    | 1937-3-23  |  83 | False | 2019-12-22 |   NA   |    ['F3']    |
+|  I5 |  JinXia /Zhu/  |   F    | 1939-11-11 |  80 | False | 2016-12-24 |   NA   |    ['F3']    |
+|  I6 |   Qi /Huan/    |   F    | 1970-11-18 |  49 |  True |     NA     | ['F3'] |    ['F6']    |
+|  I7 |   Tao /Wang/   |   M    | 1943-10-9  |  76 | False | 2007-12-12 |   NA   |    ['F2']    |
+|  I8 |  Jiyu /Jiang/  |   F    |  1943-3-9  |  77 |  True |     NA     |   NA   |    ['F2']    |
+|  I9 |   Yan /Wang/   |   M    |  1974-1-2  |  46 |  True |     NA     | ['F2'] |    ['F7']    |
+| I10 |  Lie /Minami/  |   F    |  1996-4-2  |  24 |  True |     NA     | ['F6'] | ['F4', 'F5'] |
+| I11 |   Xu /Wang/    |   M    | 1969-3-30  |  51 |  True |     NA     |   NA   |    ['F6']    |
+| I12 |  Siyu /Wang/   |   F    |  2002-4-9  |  18 |  True |     NA     | ['F7'] |      NA      |
+| I13 |   Lin /Zhou/   |   F    | 1973-2-18  |  47 |  True |     NA     |   NA   |    ['F7']    |
+| I14 | Yuki /Minami/  |   M    | 1994-6-13  |  26 | False | 2019-6-23  |   NA   |    ['F5']    |
+| I15 | Yuenyi /Wang/  |   F    | 2000-12-19 |  19 |  True |     NA     | ['F1'] |      NA      |
+| I16 | Liyang /Zhen/  |   M    | 1995-10-15 |  24 |  True |     NA     | ['F7'] |      NA      |
+| I17 | Huanwen /Chen/ |   M    |  1997-2-2  |  23 |  True |     NA     |   NA   | ['F4', 'F8'] |
++-----+----------------+--------+------------+-----+-------+------------+--------+--------------+
+Families
++----+---------------+------------+------------+----------------+---------+--------------+----------------+
+| ID |    Merried    |  Divorced  | Husband ID |  Husband Name  | Wife ID |  Wife Name   |    Children    |
++----+---------------+------------+------------+----------------+---------+--------------+----------------+
+| F1 | No date given |     NA     |     I2     |   Wei /Wang/   |    I3   | Hong /Huan/  | ['I1', 'I15']  |
+| F2 | No date given |     NA     |     I7     |   Tao /Wang/   |    I8   | Jiyu /Jiang/ |  ['I2', 'I9']  |
+| F3 | No date given |     NA     |     I4     | Ziqing /Huan/  |    I5   | JinXia /Zhu/ |  ['I3', 'I6']  |
+| F4 | No date given |     NA     |    I17     | Huanwen /Chen/ |   I10   | Lie /Minami/ |       NA       |
+| F5 |   2014-10-15  | 2018-11-26 |    I14     | Yuki /Minami/  |   I10   | Lie /Minami/ |       NA       |
+| F6 | No date given |     NA     |    I11     |   Xu /Wang/    |    I6   |  Qi /Huan/   |    ['I10']     |
+| F7 | No date given |     NA     |     I9     |   Yan /Wang/   |   I13   |  Lin /Zhou/  | ['I12', 'I16'] |
++----+---------------+------------+------------+----------------+---------+--------------+----------------+
+
+Process finished with exit code 0

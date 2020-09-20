@@ -20,7 +20,7 @@ def get_age(month_list, now_time, str_input):
     return Age
 
 ##read file
-ged_file = open('../testing_files/Jiashu_Wang.ged', "r")
+ged_file = open('Jiashu_Wang.ged', "r")
 ##get now date
 now_time = datetime.datetime.now()
 
