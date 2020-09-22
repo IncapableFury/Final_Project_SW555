@@ -1,4 +1,4 @@
-##from person import person
+##from individual import individual
 
 class Family:
     def __init__(self, id, husband, wife, married = None, divorced = None, children_list = []):
@@ -9,10 +9,10 @@ class Family:
         self._wife = wife
         self._children = children_list
 
-    def get_husband(self) -> person:
-        return self._husband## if self._husband else "NA"
+    def get_husband(self) -> individual:
+        return self._husband
 
-    def get_wife(self) -> person:
+    def get_wife(self) -> individual:
         return self._wife
 
     def get_marriedDate(self) -> str:
@@ -25,11 +25,11 @@ class Family:
         return self._children
 
     def set_husband(self, husband):
-        if not isinstance(husband, person): raise TypeError("input has to be a person type")
+        if not isinstance(husband, type(individual)): raise TypeError("input has to be a individual type")
         self._husband = husband
     
     def set_wife(self, wife):
-        if not isinstance(wife, person): raise TypeError("input has to be a person type")
+        if not isinstance(wife, type(individual)): raise TypeError("input has to be a individual type")
         self._wife = wife
     
     def set_marriedDate(self, married_date):
@@ -45,5 +45,5 @@ class Family:
         self._children = children_list
 
     def add_children(self, child):
-        if not isinstance(child, person) raise TypeError("input has to be a person type")
+        if not isinstance(child, individual) raise TypeError("input has to be a individual type")
         self._children.append(child)
