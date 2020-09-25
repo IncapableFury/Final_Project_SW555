@@ -19,7 +19,10 @@ class Main:
         except KeyError:
             print("File not found.")
         else:
-            print("Something wrong.")
+            print("File read successfully.")
+        return
+
+
 
 
 if __name__ == "__main__":
@@ -29,6 +32,3 @@ if __name__ == "__main__":
     project.peek_file("g1")
     # project3.pretty_print()
     # --------------------testing--------------------
-    i1 = Individual("@I1@")
-    i1.set_name("test")
-    print(i1.get_name())
