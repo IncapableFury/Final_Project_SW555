@@ -1,5 +1,4 @@
 import datetime
-
 class Individual:
     '''
     This is the class for individual. 
@@ -8,16 +7,16 @@ class Individual:
     
     all date value are passed in as str, and saved as tuple with formate (year, month, day)
     '''
-    def __init__(self, id: str, name: str = None, gender: str = None, birth_date: str = None, death_date: str = None, children: list = [], spouse: list = []):
-        self.id = id
-        self._name = name
-        self._gender = gender
-        if birth_date is not None: self._birthDate = self.change_date_formate(birth_date)
-        else: self._birthDate = birth_date
-        if death_date is not None: self._deathDate = self.change_date_formate(death_date)
-        else: self._deathDate = death_date
-        self._children = children
-        self._spouse = spouse
+
+    def __init__(self, id: str, name: str = None, gender: str = None, birth_date: str = None, death_date: str = None, family = [], parent_family = None):
+        from Family import Family
+        self.set_id(id)
+        self.set_name(name)
+        self.set_gender(gender)
+        self.set_birthDate(birth_date)
+        self.set_deathDate(death_date)
+        self.set_familyList(family) 
+        self.set_parentFamily(parent_family)
         self._monthList = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
 
 
@@ -49,43 +48,51 @@ class Individual:
     def get_deathDate(self) -> tuple:
         return self._deathDate
 
-    def get_children(self) -> list:
-        return self._children
+    def get_familyList(self) -> list:
+        return self._familyList
 
-    def get_spouse(self) -> list:
-        return self._spouse
+    def get_parent_family(self):
+        return self._parentFamily
 
+    def set_id(self, id) -> str:
+        ##if not isinstance(id, str): raise TypeError("input has to be a str type")
+        self.id = id
 
     def set_name(self, name: str) -> None:
-        if not isinstance(name, str): raise TypeError("input has to be a str type")
+        if name is None: 
+            self._name = None
+            return
+        ##if not isinstance(name, str): raise TypeError("input has to be a str type")
         self._name = name
 
     def set_gender(self, gender: str) -> None:
-        if not isinstance(gender, str): raise TypeError("input has to be a str type")
+        if gender is None: 
+            self._gender = None
+            return
+        ##if not isinstance(gender, str): raise TypeError("input has to be a str type")
         self._gender = gender
 
     def set_birthDate(self, birth_date: str) -> None:
-        if not isinstance(birth_date, str): raise TypeError("input has to be a str type")
+        if birth_date is None: 
+            self._birthDate = None
+            return
+        ##if not isinstance(birth_date, str): raise TypeError("input has to be a str type")
         self._birthDate = self.change_date_formate(birth_date)
 
     def set_deathDate(self, death_date: str) -> None:
-        if not isinstance(death_date, str): raise TypeError("input has to be a str type")
+        if death_date is None:
+            self._deathDate = None
+            return
+        ##if not isinstance(death_date, str): raise TypeError("input has to be a str type")
         self._deathDate = self.change_date_formate(death_date)
 
-    def set_children(self, children: list) -> None:
-        if not isinstance(children, list): raise TypeError("input has to be a list type")
-        self._children = children
+    def set_familyList(self, family) -> None:
+        ##if not isinstance(family, list): raise TypeError("input has to be a list type")
+        self._familyList = family
 
-    def add_child(self, child: str) -> None:
-        '''
-        this function would add one kid into the children list
-        '''
-        if not isinstance(child, str): raise TypeError("input has to be a list type")
-        self._children.append(child)
-
-    def set_spouse(self, spouse: list) -> None:
-        if not isinstance(spouse, list): raise TypeError("input has to be a list type")
-        self._spouse = spouse
+    def set_parentFamily(self, parent_family) -> None:
+        ##if not isinstance(parent_family, family): raise TypeError("input has to be a family type")
+        self._parentFamily = parent_family
 
     def change_date_formate(self, str_input_date: str) -> tuple:
         '''
@@ -100,20 +107,45 @@ class Individual:
         return tuple_out
 
 
+    def dates_before_current_date(self):
+        pass
+
+    def birth_before_marriage(self):
+        pass
+
+    def birth_before_death(self):
+        pass
+
+    def less_then_150_years_old(self):
+        pass
+
+    def no_bigamy(self):
+        pass
+
+    def siblings_spacing(self):
+        pass
+
+    def parents_not_too_old(self):
+        pass
+
+# ---------------------shit testing below---------------------
+
+
 if __name__ == "__main__":
     # name = None, gender = None, birth_date = None, death_date = None, children = [], spouse = []
     '''
     test run the class
     '''
-    test_list = ["01", "Jason", "M", "09 APR 1997", "25 DEC 2078", ["02", "03"], ["10, 13"]]
+    from Family import Family
+    fam_test = Family ("1")
+    test_list = ["01", "Jason", "M", "09 APR 1997", "25 DEC 2078", [fam_test], fam_test]
     test = Individual(test_list[0])
     test.set_name(test_list[1])
     test.set_gender(test_list[2])
     test.set_birthDate(test_list[3])
     test.set_deathDate(test_list[4])
-    test.set_children(test_list[5])
-    test.add_child("51")
-    test.set_spouse(test_list[6])
+    test.set_familyList(test_list[5])
+    test.set_parentFamily(test_list[6])
 
     print("id:", test.get_id())
     print("Name:", test.get_name())
@@ -121,5 +153,5 @@ if __name__ == "__main__":
     print("birthday:", test.get_birthDate())
     print("age:", test.get_age())
     print("deathdate:", test.get_deathDate())
-    print("children:", test.get_children())
-    print("spouse:", test.get_spouse())
+    print("family:", test.get_familyList())
+    print("parent family:", test.get_parent_family())
