@@ -8,16 +8,14 @@ class Individual:
     all date value are passed in as str, and saved as tuple with formate (year, month, day)
     '''
 
-    def __init__(self, id: str, name: str = None, gender: str = None, birth_date: str = None, death_date: str = None, family = [], parent_family = None):
-        from Family import Family
-        self.set_id(id)
-        self.set_name(name)
-        self.set_gender(gender)
-        self.set_birthDate(birth_date)
-        self.set_deathDate(death_date)
-        self.set_familyList(family) 
-        self.set_parentFamily(parent_family)
-        self._monthList = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
+    def __init__(self, id: str):
+        self.id = id
+        self._name = None
+        self._gender = None
+        self._birthDate = None
+        self._deathDate = None
+        self._familyList = []
+        self._parentFamily = None
 
 
     def get_id(self) -> str:
@@ -38,12 +36,10 @@ class Individual:
 
         require datetime module
         '''
-        if self._birthDate is None: return None
-        now_time = datetime.datetime.now()
-        Age = now_time.year - int(self._birthDate[0])
-        if(now_time.month - int(self._birthDate[1]) < 0): Age -= 1
-        if(now_time.month - int(self._birthDate[1]) == 0 and now_time.day - int(self._birthDate[2]) < 0): Age -= 1
-        return Age
+        if not self._birthDate: return -1
+        today = datetime.datetime.now()
+        return today.year - self._birthDate[0] - ((today.month, today.day) < (self._birthDate[1], self._birthDate[2]))
+        
 
     def get_deathDate(self) -> tuple:
         return self._deathDate
@@ -54,35 +50,20 @@ class Individual:
     def get_parent_family(self):
         return self._parentFamily
 
-    def set_id(self, id) -> str:
-        ##if not isinstance(id, str): raise TypeError("input has to be a str type")
-        self.id = id
 
     def set_name(self, name: str) -> None:
-        if name is None: 
-            self._name = None
-            return
         ##if not isinstance(name, str): raise TypeError("input has to be a str type")
         self._name = name
 
     def set_gender(self, gender: str) -> None:
-        if gender is None: 
-            self._gender = None
-            return
         ##if not isinstance(gender, str): raise TypeError("input has to be a str type")
         self._gender = gender
 
     def set_birthDate(self, birth_date: str) -> None:
-        if birth_date is None: 
-            self._birthDate = None
-            return
         ##if not isinstance(birth_date, str): raise TypeError("input has to be a str type")
         self._birthDate = self.change_date_formate(birth_date)
 
     def set_deathDate(self, death_date: str) -> None:
-        if death_date is None:
-            self._deathDate = None
-            return
         ##if not isinstance(death_date, str): raise TypeError("input has to be a str type")
         self._deathDate = self.change_date_formate(death_date)
 
@@ -98,14 +79,14 @@ class Individual:
         '''
         Would take the string input and convert it into a int tuple:(year, month, day)
         '''
+        monthList = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6, "JUL": 7, "AUG": 8, "SEP": 9, "OCT": 10, "NOV": 11, "DEC": 12}
         date_list = str_input_date.split(" ")
-        date_list[1] = str(self._monthList.index(date_list[1])+1)
-        temp = date_list[0]
-        date_list[0] = date_list[2]
+        date_list[1] = monthList[date_list[1]]
+        temp = int(date_list[0])
+        date_list[0] = int(date_list[2])
         date_list[2] = temp
         tuple_out = tuple(date_list)
         return tuple_out
-
 
     def dates_before_current_date(self):
         pass
@@ -127,31 +108,3 @@ class Individual:
 
     def parents_not_too_old(self):
         pass
-
-# ---------------------shit testing below---------------------
-
-
-if __name__ == "__main__":
-    # name = None, gender = None, birth_date = None, death_date = None, children = [], spouse = []
-    '''
-    test run the class
-    '''
-    from Family import Family
-    fam_test = Family ("1")
-    test_list = ["01", "Jason", "M", "09 APR 1997", "25 DEC 2078", [fam_test], fam_test]
-    test = Individual(test_list[0])
-    test.set_name(test_list[1])
-    test.set_gender(test_list[2])
-    test.set_birthDate(test_list[3])
-    test.set_deathDate(test_list[4])
-    test.set_familyList(test_list[5])
-    test.set_parentFamily(test_list[6])
-
-    print("id:", test.get_id())
-    print("Name:", test.get_name())
-    print("gender:", test.get_gender())
-    print("birthday:", test.get_birthDate())
-    print("age:", test.get_age())
-    print("deathdate:", test.get_deathDate())
-    print("family:", test.get_familyList())
-    print("parent family:", test.get_parent_family())
