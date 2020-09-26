@@ -67,7 +67,7 @@
 1 FAMC F02
 
 
-0 P09 INDI
+0 P09 INDI                            //mistake
 1 NAME MINGXXXXX_ /XIAO/
 1 SEX M
 1 BIRT
@@ -75,7 +75,7 @@
 1 FAMC F01
 
 
-0 P10 INDI
+0 P10 INDI                           //mistake
 1 NAME MINGXXXX /XIAO/
 1 SEX M
 1 BIRT
@@ -83,7 +83,7 @@
 1 FAMC F01
 
 
-0 P11 INDI
+0 P11 INDI                           //mistake
 1 NAME MINGXXX /XIAO/
 1 SEX M
 1 BIRT
@@ -91,7 +91,7 @@
 1 FAMC F01
 
 
-0 P12 INDI
+0 P12 INDI                           //mistake
 1 NAME MINGXX /XIAO/
 1 SEX M
 1 BIRT
@@ -99,7 +99,7 @@
 1 FAMC F01
 
 
-0 P13 INDI
+0 P13 INDI                          //mistake
 1 NAME MINGX /XIAO/
 1 SEX M
 1 BIRT
@@ -107,7 +107,7 @@
 1 FAMC F01
 
 
-0 F01 FAM
+0 F01 FAM                          
 1 MARR
 2 DATE 26 MAY 1991
 1 DIV

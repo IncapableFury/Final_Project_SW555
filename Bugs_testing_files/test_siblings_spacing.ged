@@ -67,7 +67,7 @@
 1 FAMC F02
 
 
-0 P09 INDI
+0 P09 INDI                   //siblings
 1 NAME MINGX /XIAO/
 1 SEX M
 1 BIRT
