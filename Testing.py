@@ -8,7 +8,6 @@ from models import Individual
 from models import Family
 from models import Gedcom
 
-
 class TestTriangles(unittest.TestCase):
 
     def testInputValidation(self):
