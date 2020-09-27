@@ -40,7 +40,6 @@ class Individual:
         today = datetime.datetime.now()
         return today.year - self._birthDate[0] - ((today.month, today.day) < (self._birthDate[1], self._birthDate[2]))
         
-
     def get_deathDate(self) -> tuple:
         return self._deathDate
 
@@ -49,7 +48,6 @@ class Individual:
 
     def get_parent_family(self):
         return self._parentFamily
-
 
     def set_name(self, name: str) -> None:
         ##if not isinstance(name, str): raise TypeError("input has to be a str type")
