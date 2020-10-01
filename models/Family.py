@@ -19,15 +19,15 @@ class Family:
         return self.id
 
     def get_husband(self):
-        return self._husband.get_id()
+        return self._husband
 
     def get_wife(self):
-        return self._wife.get_id()
+        return self._wife
 
     def get_marriedDate(self) -> tuple:
         return self._marriedDate
     
-    def get_divorced(self) -> tuple:
+    def get_divorcedDate(self) -> tuple:
         return self._divorced
 
     def get_children(self) -> list:
@@ -42,12 +42,12 @@ class Family:
         ##if not isinstance(wife, Individual): raise TypeError("input has to be a Individual type")
         self._wife = wife
     
-    def set_marriedDate(self, married_date: str) -> None:
+    def set_marriedDate(self, married_date: tuple) -> None:
         
         ##if not isinstance(married_date, str): raise TypeError("input has to be a str type")
         self._marriedDate = married_date
     
-    def set_divorced(self, divorced_date: str) -> None:
+    def set_divorcedDate(self, divorced_date: tuple) -> None:
         
         ##if not isinstance(divorced_date, str): raise TypeError("input has to be a str type")
         self._divorced = divorced_date
@@ -63,18 +63,16 @@ class Family:
         ##if not isinstance(child, Individual): raise TypeError("input has to be a Individual type")
         self._children.append(child)
 
-    def change_date_formate(self, str_input_date: str) -> tuple:
+    def change_date_formate(self, date: list) -> tuple:
         '''
         Would take the string input and convert it into a int tuple:(year, month, day)
         '''
-        monthList = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6, "JUL": 7, "AUG": 8, "SEP": 9, "OCT": 10, "NOV": 11, "DEC": 12}
-        date_list = str_input_date.split(" ")
-        date_list[1] = monthList[date_list[1]]
-        temp = int(date_list[0])
-        date_list[0] = int(date_list[2])
-        date_list[2] = temp
-        tuple_out = tuple(date_list)
-        return tuple_out
+        '''
+        Would take the string input and convert it into a int tuple:(year, month, day)
+        '''
+        monthList = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6, "JUL": 7, "AUG": 8, "SEP": 9,
+                     "OCT": 10, "NOV": 11, "DEC": 12}
+        return int(date[2]), monthList[date[1]], int(date[0])
     
 
 
