@@ -44,7 +44,7 @@ class TestTriangles(unittest.TestCase):
 def marriage_before_divorce(Family):
     from datetime import date
     marriage= Family.get_marriedDate()
-    divorce= Family.get_divorced()
+    divorce= Family.get_divorcedDate()
     timediff = date(*marriage)-date(*divorce)
     if timediff.days <0:
         return True
@@ -55,17 +55,17 @@ def marriage_before_divorce(Family):
 if __name__ == '__main__':
     # -----------------------------------------------
     fam1=Family("F01")
-    fam1.set_divorced((2009,4,5))
-    fam1.set_marriedDate((2000,8,9))
+    fam1.set_divorcedDate(['8', 'SEP', '2009'])
+    fam1.set_marriedDate(['8', 'SEP', '2000'])
     fam2=Family("F02")
     male1=Individual("P01")
     per1=Individual("P01")
     per2=Individual("P02")
-    per1.set_deathDate("12 APR 2010")
-    per2.set_deathDate("15 MAY 2011")
+    per1.set_deathDate(['8', 'SEP', '2010'])
+    per2.set_deathDate(['8', 'SEP', '2011'])
     fam2.set_husband(per1)
     fam2.set_wife(per2)
-    fam2.set_marriedDate((2001,9,12))
+    fam2.set_marriedDate(['8', 'SEP', '2001'])
     #-------------------------------------------------
     print('Running unit tests')
     unittest.main()

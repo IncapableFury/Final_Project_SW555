@@ -45,12 +45,12 @@ class Family:
     def set_marriedDate(self, married_date: tuple) -> None:
         
         ##if not isinstance(married_date, str): raise TypeError("input has to be a str type")
-        self._marriedDate = married_date
+        self._marriedDate = self.change_date_formate(married_date)
     
     def set_divorcedDate(self, divorced_date: tuple) -> None:
         
         ##if not isinstance(divorced_date, str): raise TypeError("input has to be a str type")
-        self._divorced = divorced_date
+        self._divorced = self.change_date_formate(divorced_date)
 
     def set_children(self, children_list: list) -> None:
         ##if not isinstance(children_list, list): raise TypeError("input has to be a list type")
