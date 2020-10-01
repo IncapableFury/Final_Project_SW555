@@ -45,12 +45,12 @@ class Family:
     def set_marriedDate(self, married_date: str) -> None:
         
         ##if not isinstance(married_date, str): raise TypeError("input has to be a str type")
-        self._marriedDate = self.change_date_formate(married_date)
+        self._marriedDate = married_date
     
     def set_divorced(self, divorced_date: str) -> None:
         
         ##if not isinstance(divorced_date, str): raise TypeError("input has to be a str type")
-        self._divorced = self.change_date_formate(divorced_date)
+        self._divorced = divorced_date
 
     def set_children(self, children_list: list) -> None:
         ##if not isinstance(children_list, list): raise TypeError("input has to be a list type")
@@ -82,7 +82,14 @@ class Family:
         pass
 
     def marriage_before_divorce(self):
-        pass
+        from datetime import date
+        marriage= self.get_marriedDate()
+        divorce= self.get_divorced()
+        timedelta = date(*marriage)-date(*divorce)
+        if timedelta.days <0:
+            return True
+        print("Error marriage before divorce: Marriage date of "+Family.get_id+" happened after the divorce date.")
+        return False
 
     def dates_before_current_date(self):
         pass
@@ -91,7 +98,19 @@ class Family:
         pass
 
     def marriage_before_death(self):
-        pass
+        from datetime import date
+        from models.Individual import Individual
+        marriage=self.get_marriedDate()
+        if self._husband.get_deathDate() > self._wife.get_deathDate():
+            death= self._wife.get_deathDate()
+        else:
+            death= self._husband.get_deathDate()
+        timedelta=date(*marriage)-date(*death)
+        if timedelta.days<0:
+            return  True
+        print("Error marriage before death: Marriage date of "+Family.get_id+" happened after they died.")
+        return False
+        
 
     def divorce_before_death(self):
         pass
