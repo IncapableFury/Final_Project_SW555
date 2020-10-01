@@ -5,8 +5,8 @@ Van comment for second time
 
 import unittest
 
-from models.individual import Individual
-from models.family import Family
+from models.Individual import Individual
+from models.Family import Family
 from models import Gedcom
 
 

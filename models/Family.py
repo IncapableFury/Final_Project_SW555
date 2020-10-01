@@ -7,7 +7,7 @@ class Family:
     all date value are passed in as str, and saved as tuple with formate (year, month, day)
     '''
     def __init__(self, id: str):
-        from .individual import Individual
+        #from Individual import Individual
         self.id = id
         self._husband = None
         self._wife = None
@@ -94,6 +94,7 @@ class Family:
         pass
 
     def divorce_before_death(self) -> bool:
+        from Individual import Individual
         if not self._husband or not self._wife: raise ValueError("No husband || wife")
         if not self._divorced: return True
         return (self._husband.get_deathDate()>self._divorced and self._wife.get_deathDate()>self._divorced)
