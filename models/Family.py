@@ -80,7 +80,14 @@ class Family:
         pass
 
     def marriage_before_divorce(self):
-        pass
+        from datetime import date
+        marriage= self.get_marriedDate()
+        divorce= self.get_divorced()
+        timedelta = date(*marriage)-date(*divorce)
+        if timedelta.days <0:
+            return True
+        print("Error marriage before divorce: Marriage date of "+Family.get_id+" happened after the divorce date.")
+        return False
 
     def dates_before_current_date(self):
         pass
@@ -89,7 +96,19 @@ class Family:
         pass
 
     def marriage_before_death(self):
-        pass
+        from datetime import date
+        from models.Individual import Individual
+        marriage=self.get_marriedDate()
+        if self._husband.get_deathDate() > self._wife.get_deathDate():
+            death= self._wife.get_deathDate()
+        else:
+            death= self._husband.get_deathDate()
+        timedelta=date(*marriage)-date(*death)
+        if timedelta.days<0:
+            return  True
+        print("Error marriage before death: Marriage date of "+Family.get_id+" happened after they died.")
+        return False
+        
 
     def divorce_before_death(self):
         pass
