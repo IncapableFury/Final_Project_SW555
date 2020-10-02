@@ -27,7 +27,7 @@ class Family:
     def get_marriedDate(self) -> tuple:
         return self._marriedDate
     
-    def get_divorced(self) -> tuple:
+    def get_divorcedDate(self) -> tuple:
         return self._divorced
 
     def get_children(self) -> list:
@@ -42,12 +42,12 @@ class Family:
         ##if not isinstance(wife, Individual): raise TypeError("input has to be a Individual type")
         self._wife = wife
     
-    def set_marriedDate(self, married_date: str) -> None:
+    def set_marriedDate(self, married_date: tuple) -> None:
         
         ##if not isinstance(married_date, str): raise TypeError("input has to be a str type")
         self._marriedDate = self.change_date_formate(married_date)
     
-    def set_divorced(self, divorced_date: str) -> None:
+    def set_divorcedDate(self, divorced_date: tuple) -> None:
         
         ##if not isinstance(divorced_date, str): raise TypeError("input has to be a str type")
         self._divorced = self.change_date_formate(divorced_date)
@@ -63,18 +63,16 @@ class Family:
         ##if not isinstance(child, Individual): raise TypeError("input has to be a Individual type")
         self._children.append(child)
 
-    def change_date_formate(self, str_input_date: str) -> tuple:
+    def change_date_formate(self, date: list) -> tuple:
         '''
         Would take the string input and convert it into a int tuple:(year, month, day)
         '''
-        monthList = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6, "JUL": 7, "AUG": 8, "SEP": 9, "OCT": 10, "NOV": 11, "DEC": 12}
-        date_list = str_input_date.split(" ")
-        date_list[1] = monthList[date_list[1]]
-        temp = int(date_list[0])
-        date_list[0] = int(date_list[2])
-        date_list[2] = temp
-        tuple_out = tuple(date_list)
-        return tuple_out
+        '''
+        Would take the string input and convert it into a int tuple:(year, month, day)
+        '''
+        monthList = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6, "JUL": 7, "AUG": 8, "SEP": 9,
+                     "OCT": 10, "NOV": 11, "DEC": 12}
+        return int(date[2]), monthList[date[1]], int(date[0])
     
 
 
@@ -82,7 +80,14 @@ class Family:
         pass
 
     def marriage_before_divorce(self):
-        pass
+        from datetime import date
+        marriage= self.get_marriedDate()
+        divorce= self.get_divorced()
+        timedelta = date(*marriage)-date(*divorce)
+        if timedelta.days <0:
+            return True
+        print("Error marriage before divorce: Marriage date of "+Family.get_id+" happened after the divorce date.")
+        return False
 
     def dates_before_current_date(self):
         pass
@@ -92,10 +97,23 @@ class Family:
         if not self._husband.get_birthDate() or not self._wife.get_birthDate(): raise ValueError("No birth Date for husband || wife")
         husbandMarryAge = self._marriedDate[0] - self._husband.get_birthDate()[0] - ((self._marriedDate[1], self._marriedDate[2]) < (self._husband.get_birthDate()[1], self._husband.get_birthDate()[2]))
         wifeMarryAge = self._marriedDate[0] - self._wife.get_birthDate()[0] - ((self._marriedDate[1], self._marriedDate[2]) < (self._wife.get_birthDate()[1], self._wife.get_birthDate()[2]))
+        #print(self._husband.get_birthDate(), self._wife.get_birthDate())
         return husbandMarryAge > 14 and wifeMarryAge > 14
 
     def marriage_before_death(self):
-        pass
+        from datetime import date
+        from models.Individual import Individual
+        marriage=self.get_marriedDate()
+        if self._husband.get_deathDate() > self._wife.get_deathDate():
+            death= self._wife.get_deathDate()
+        else:
+            death= self._husband.get_deathDate()
+        timedelta=date(*marriage)-date(*death)
+        if timedelta.days<0:
+            return  True
+        print("Error marriage before death: Marriage date of "+Family.get_id+" happened after they died.")
+        return False
+        
 
     def divorce_before_death(self):
         pass
