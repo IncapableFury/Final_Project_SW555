@@ -82,7 +82,7 @@ class Family:
     def marriage_before_divorce(self):
         from datetime import date
         marriage= self.get_marriedDate()
-        divorce= self.get_divorced()
+        divorce= self.get_divorcedDate()
         timedelta = date(*marriage)-date(*divorce)
         if timedelta.days <0:
             return True

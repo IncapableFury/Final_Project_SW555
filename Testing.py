@@ -56,7 +56,7 @@ class TestDivorseBeforeDeath(unittest.TestCase):
         female1.set_deathDate("9 APR 2002")
         family1.set_husband(male1)
         family1.set_wife(female1)
-        family1.set_divorced("1 JAN 1999")
+        family1.set_divorcedDate("1 JAN 1999")
         self.assertTrue(family1.divorce_before_death())
 
     def test2(self):
@@ -67,7 +67,7 @@ class TestDivorseBeforeDeath(unittest.TestCase):
         female1.set_deathDate("9 APR 2002")
         family1.set_husband(male1)
         family1.set_wife(female1)
-        family1.set_divorced("1 JAN 2001")
+        family1.set_divorcedDate("1 JAN 2001")
         self.assertFalse(family1.divorce_before_death())
     
     def test3(self):
@@ -78,7 +78,7 @@ class TestDivorseBeforeDeath(unittest.TestCase):
         female1.set_deathDate("9 APR 2002")
         family1.set_husband(male1)
         family1.set_wife(female1)
-        family1.set_divorced("1 JAN 2003")
+        family1.set_divorcedDate("1 JAN 2003")
         self.assertFalse(family1.divorce_before_death())
     
     def test4(self):
@@ -89,7 +89,7 @@ class TestDivorseBeforeDeath(unittest.TestCase):
         female1.set_deathDate("9 APR 2002")
         family1.set_husband(male1)
         family1.set_wife(female1)
-        family1.set_divorced("1 JAN 2000")
+        family1.set_divorcedDate("1 JAN 2000")
         self.assertTrue(family1.divorce_before_death())
     
     def test5(self):
@@ -100,7 +100,7 @@ class TestDivorseBeforeDeath(unittest.TestCase):
         female1.set_deathDate("9 APR 2002")
         family1.set_husband(male1)
         family1.set_wife(female1)
-        family1.set_divorced("1 JAN 2002")
+        family1.set_divorcedDate("1 JAN 2002")
         self.assertFalse(family1.divorce_before_death())
 class TestBirthBeforeDeathofParent(unittest.TestCase):
     def test1(self):
