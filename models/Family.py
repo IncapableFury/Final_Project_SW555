@@ -7,7 +7,7 @@ class Family:
     all date value are passed in as str, and saved as tuple with formate (year, month, day)
     '''
     def __init__(self, id: str):
-        #from Individual import Individual
+        from models.Individual import Individual
         self.id = id
         self._husband = None
         self._wife = None
@@ -110,12 +110,28 @@ class Family:
         return False
         
 
-    def divorce_before_death(self):
-        pass
+    def divorce_before_death(self) -> bool:
+        if not self._husband or not self._wife: raise ValueError("No husband || wife")
+        if not self._divorced: return True
+        return (self._husband.get_deathDate()>self._divorced and self._wife.get_deathDate()>self._divorced)
+
 
     def birth_before_marriage_of_parents(self):
         pass
 
     def birth_before_death_of_parents(self):
-        pass
+        if not self._husband or not self._wife: raise ValueError("No husband || wife")
+        if len(self._children)==0:
+            return False
+        death=self._wife.get_deathDate()
+        hDeath=self._husband.get_deathDate()+(0,9,0)
+        if hDeath[1]>12:
+            hDeath[1]=hDeath[1]%12
+            hDeath[0]=hDeath[0]+1
+        if hDeath<death:
+            death=hDeath
+        for c in self._children:
+            if c.get_birthDate() > death:
+                raise ValueError("Child "+c.get_id()+" born after death of parent.")
+        return True
 
