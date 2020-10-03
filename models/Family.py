@@ -102,8 +102,13 @@ class Family:
     def dates_before_current_date(self):
         pass
         
-    def marriage_after_14(self):
-        pass
+    def marriage_after_14(self) -> bool:
+        if not self._husband or not self._wife or not self._marriedDate: raise ValueError("No husband || wife || marry date")
+        if not self._husband.get_birthDate() or not self._wife.get_birthDate(): raise ValueError("No birth Date for husband || wife")
+        husbandMarryAge = self._marriedDate[0] - self._husband.get_birthDate()[0] - ((self._marriedDate[1], self._marriedDate[2]) < (self._husband.get_birthDate()[1], self._husband.get_birthDate()[2]))
+        wifeMarryAge = self._marriedDate[0] - self._wife.get_birthDate()[0] - ((self._marriedDate[1], self._marriedDate[2]) < (self._wife.get_birthDate()[1], self._wife.get_birthDate()[2]))
+        #print(self._husband.get_birthDate(), self._wife.get_birthDate())
+        return husbandMarryAge > 14 and wifeMarryAge > 14
 
     def marriage_before_death(self):
         from datetime import date

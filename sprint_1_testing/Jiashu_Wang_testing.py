@@ -4,6 +4,8 @@ Van comment for second time
 """
 
 import unittest
+import sys  
+sys.path.append('../')
 
 from models import Individual
 from models import Family
