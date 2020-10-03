@@ -60,6 +60,9 @@ class Individual:
 
     def set_birthDate(self, birth_date: list) -> None:
         # if not isinstance(birth_date, str): raise TypeError("input has to be a str type")
+        if all(isinstance(v, int) for v in birth_date):
+            self._birthDate = birth_date
+            return
         self._birthDate = self.change_date_formate(birth_date)
 
     def set_deathDate(self, death_date: list) -> None:
@@ -73,7 +76,6 @@ class Individual:
     def set_parentFamily(self, parent_family) -> None:
         # if not isinstance(parent_family, family): raise TypeError("input has to be a family type")
         self._parentFamily = parent_family
-
 
     def change_date_formate(self, date: list) -> tuple:
         '''
@@ -96,9 +98,6 @@ class Individual:
         pass
 
     def no_bigamy(self):
-        pass
-
-    def siblings_spacing(self):
         pass
 
     def parents_not_too_old(self):

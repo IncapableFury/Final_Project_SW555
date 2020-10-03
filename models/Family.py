@@ -73,11 +73,21 @@ class Family:
         monthList = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6, "JUL": 7, "AUG": 8, "SEP": 9,
                      "OCT": 10, "NOV": 11, "DEC": 12}
         return int(date[2]), monthList[date[1]], int(date[0])
-    
 
-
-    def multiple_births_lessOrEqual_than_5(self):
-        pass
+    def multiple_births_lessOrEqual_than_5(Family):
+        from datetime import date
+        births = [x.get_birthDate() for x in Family.get_children()]
+        if len(births) <= 5:
+            return True
+        multi = 0
+        today = date.today()
+        average = abs((date(*births[0]) - today).days)
+        for birth in births:
+            daysConvert = abs((date(*birth) - today).days)
+            if abs(daysConvert - average) <= 1:
+                multi += 1
+                average = abs(average + daysConvert) // 2
+        return multi <= 5
 
     def marriage_before_divorce(self):
         from datetime import date
@@ -119,3 +129,15 @@ class Family:
     def birth_before_death_of_parents(self):
         pass
 
+    def siblings_spacing(Family):
+        from datetime import date
+        threshold = [1, 240]  # 8 month is ambiguous, let's just assume 8*30=240 days
+        n = len(Family.get_children())
+        if n < 2:
+            return True
+        sumOfDifference = 0
+        for i in range(n - 1):
+            timedelta = date(*Family.get_children()[i].get_birthDate()) - date(
+                *Family.get_children()[i + 1].get_birthDate())
+            sumOfDifference += abs(timedelta.days)
+        return not (threshold[0] < sumOfDifference // (n - 1) < threshold[1])
