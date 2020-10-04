@@ -79,7 +79,7 @@ class Individual:
         '''
         Would take the string input and convert it into a int tuple:(year, month, day)
         '''
-        monthList = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6, "JUL": 7, "AUG": 8, "SEP": 9,
+       monthList = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6, "JUL": 7, "AUG": 8, "SEP": 9,
                      "OCT": 10, "NOV": 11, "DEC": 12}
         return int(date[2]), monthList[date[1]], int(date[0])
 

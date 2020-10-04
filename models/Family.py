@@ -67,9 +67,6 @@ class Family:
         '''
         Would take the string input and convert it into a int tuple:(year, month, day)
         '''
-        '''
-        Would take the string input and convert it into a int tuple:(year, month, day)
-        '''
         monthList = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6, "JUL": 7, "AUG": 8, "SEP": 9,
                      "OCT": 10, "NOV": 11, "DEC": 12}
         return int(date[2]), monthList[date[1]], int(date[0])
@@ -83,8 +80,7 @@ class Family:
         from datetime import date
         marriage= self.get_marriedDate()
         divorce= self.get_divorcedDate()
-        timedelta = date(*marriage)-date(*divorce)
-        if timedelta.days <0:
+        if divorce>marriage:
             return True
         print("Error marriage before divorce: Marriage date of "+Family.get_id+" happened after the divorce date.")
         return False
@@ -97,16 +93,14 @@ class Family:
 
     def marriage_before_death(self):
         from datetime import date
-        from models.Individual import Individual
         marriage=self.get_marriedDate()
         if self._husband.get_deathDate() > self._wife.get_deathDate():
             death= self._wife.get_deathDate()
         else:
             death= self._husband.get_deathDate()
-        timedelta=date(*marriage)-date(*death)
-        if timedelta.days<0:
+        if marriage<death:
             return  True
-        print("Error marriage before death: Marriage date of "+Family.get_id+" happened after they died.")
+        print("Error marriage before death: Marriage date of "+self.id+" happened after they died.")
         return False
         
 
