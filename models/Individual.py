@@ -90,10 +90,21 @@ class Individual:
         pass
 
     def birth_before_marriage(self):
-        pass
+        import datetime
+        birthday = datetime.datetime(*self._birthDate())
+        marriageDate = datetime.datetime(*self._parentFamily.get_marriedDate())
+        # if(not isinstance(birthday, datetime.date) or not isinstance(marriageDate, datetime.date) ):
+        # raise ValueError("Input date not in datetime format!")
+        return birthday < marriageDate
+
 
     def birth_before_death(self):
-        pass
+        import datetime
+        birthday = datetime.datetime(*self.get_birthDate())
+        deathDate = datetime.datetime(*self.get_deathDate())
+        return birthday < deathDate
+
+
 
     def less_then_150_years_old(self):
         pass
