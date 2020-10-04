@@ -146,7 +146,7 @@ class Family:
     def birth_before_death_of_parents(self):
         if not self._husband or not self._wife: raise ValueError("No husband || wife")
         if len(self._children)==0:
-            return False
+            return True
         death=self._wife.get_deathDate()
         hDeath=self._husband.get_deathDate()+(0,9,0)
         if hDeath[1]>12:
