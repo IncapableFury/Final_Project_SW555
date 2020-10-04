@@ -89,11 +89,25 @@ class Individual:
     def dates_before_current_date(self):
         pass
 
-    def birth_before_marriage(self):
-        pass
+    def birth_before_marriage(self, family):
+        from datetime import date
+        birthday = date(self._birthDate())
+        marriageDate = date(self._parentFamily.get_marriedDate())
+        if(birthday < marriageDate):
+            return True
+        else:
+            return False
+
 
     def birth_before_death(self):
-        pass
+        from datetime import date
+        birthday = date(self.get_birthDate())
+        deathDate = date(self.get_deathDate())
+        if(birthday < deathDate):
+            return True
+        else:
+            return False
+
 
     def less_then_150_years_old(self):
         pass
