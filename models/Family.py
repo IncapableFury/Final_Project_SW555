@@ -46,11 +46,17 @@ class Family:
     def set_marriedDate(self, married_date: tuple) -> None:
 
         ##if not isinstance(married_date, str): raise TypeError("input has to be a str type")
+        if all(isinstance(v, int) for v in married_date):
+            self._birthDate = married_date
+            return
         self._marriedDate = self.change_date_formate(married_date)
 
     def set_divorcedDate(self, divorced_date: tuple) -> None:
 
         ##if not isinstance(divorced_date, str): raise TypeError("input has to be a str type")
+        if all(isinstance(v, int) for v in divorced_date):
+            self._birthDate = divorced_date
+            return
         self._divorced = self.change_date_formate(divorced_date)
 
     def set_children(self, children_list: list) -> None:
