@@ -49,12 +49,12 @@ class TestSprint1(unittest.TestCase):
         t6.add_child(p3)
         t6.add_child(p6)
         # --------------------------------------------------
-        assert Family.siblings_spacing(t1) == True
-        assert Family.siblings_spacing(t2) == True
-        assert Family.siblings_spacing(t3) == True
-        assert Family.siblings_spacing(t4) == False
-        assert Family.siblings_spacing(t5) == False
-        assert Family.siblings_spacing(t6) == False
+        assert t1.siblings_spacing() == True
+        assert t2.siblings_spacing() == True
+        assert t3.siblings_spacing() == True
+        assert t4.siblings_spacing() == False
+        assert t5.siblings_spacing() == False
+        assert t6.siblings_spacing() == False
 
     def test_multiple_births_lessOrEqual_than_5(self):
         t1 = Family("t1")
@@ -91,8 +91,8 @@ class TestSprint1(unittest.TestCase):
         t2.add_child(p5)
         t2.add_child(p6)
         # ---------------------------------
-        assert Family.multiple_births_lessOrEqual_than_5(t1) == False
-        assert Family.multiple_births_lessOrEqual_than_5(t2) == True
+        assert t1.multiple_births_lessOrEqual_than_5() == False
+        assert t2.multiple_births_lessOrEqual_than_5() == True
 
 
 if __name__ == '__main__':

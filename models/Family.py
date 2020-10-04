@@ -74,9 +74,9 @@ class Family:
                      "OCT": 10, "NOV": 11, "DEC": 12}
         return int(date[2]), monthList[date[1]], int(date[0])
 
-    def multiple_births_lessOrEqual_than_5(Family):
+    def multiple_births_lessOrEqual_than_5(self): # cannot catch multi multiples; not sure if need to
         from datetime import date
-        births = [x.get_birthDate() for x in Family.get_children()]
+        births = [x.get_birthDate() for x in self.get_children()]
         if len(births) <= 5:
             return True
         multi = 0
@@ -134,15 +134,15 @@ class Family:
     def birth_before_death_of_parents(self):
         pass
 
-    def siblings_spacing(Family):
+    def siblings_spacing(self):
         from datetime import date
         threshold = [1, 240]  # 8 month is ambiguous, let's just assume 8*30=240 days
-        n = len(Family.get_children())
+        n = len(self.get_children())
         if n < 2:
             return True
         sumOfDifference = 0
         for i in range(n - 1):
-            timedelta = date(*Family.get_children()[i].get_birthDate()) - date(
-                *Family.get_children()[i + 1].get_birthDate())
+            timedelta = date(*self.get_children()[i].get_birthDate()) - date(
+                *self.get_children()[i + 1].get_birthDate())
             sumOfDifference += abs(timedelta.days)
         return not (threshold[0] < sumOfDifference // (n - 1) < threshold[1])
