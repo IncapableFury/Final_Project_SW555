@@ -1,4 +1,4 @@
-import datetime
+
 
 
 class Individual:
@@ -37,10 +37,11 @@ class Individual:
 
         require datetime module
         '''
+        import datetime
         if not self._birthDate: return -1
         today = datetime.datetime.now()
         return today.year - self._birthDate[0] - ((today.month, today.day) < (self._birthDate[1], self._birthDate[2]))
-
+        
     def get_deathDate(self) -> tuple:
         return self._deathDate
 
@@ -60,6 +61,9 @@ class Individual:
 
     def set_birthDate(self, birth_date: list) -> None:
         # if not isinstance(birth_date, str): raise TypeError("input has to be a str type")
+        if all(isinstance(v, int) for v in birth_date):
+            self._birthDate = birth_date
+            return
         self._birthDate = self.change_date_formate(birth_date)
 
     def set_deathDate(self, death_date: list) -> None:
@@ -67,13 +71,12 @@ class Individual:
         self._deathDate = self.change_date_formate(death_date)
 
     def add_to_family(self, family) -> None:
-        # if not isinstance(family, list): raise TypeError("input has to be a list type")
+        # if not isinstance(family, Family): raise TypeError("input has to be a Family type")
         self._family.append(family)
 
     def set_parentFamily(self, parent_family) -> None:
         # if not isinstance(parent_family, family): raise TypeError("input has to be a family type")
         self._parentFamily = parent_family
-
 
     def change_date_formate(self, date: list) -> tuple:
         '''
@@ -95,11 +98,28 @@ class Individual:
     def less_then_150_years_old(self):
         pass
 
-    def no_bigamy(self):
-        pass
+    def no_bigamy(self) -> bool:
+        if(len(self._family) <= 1): return True
+        marrageAgeList = []
+        birthDate = self._birthDate
+        for each_marrage in self._family:
+            marrageAge = each_marrage.get_marriedDate()[0] - birthDate[0] + (each_marrage.get_marriedDate()[1] - birthDate[1])/12 + (each_marrage.get_marriedDate()[2] - birthDate[2])/365
+            devorceAge = None
+            if(each_marrage.get_divorcedDate() is not None): devorceAge = each_marrage.get_divorcedDate()[0] - birthDate[0] + (each_marrage.get_divorcedDate()[1] - birthDate[1])/12 + (each_marrage.get_divorcedDate()[2] - birthDate[2])/365
+            for Age_range in marrageAgeList:
+                if(Age_range[1] == devorceAge and devorceAge == None): return False
+                elif((not Age_range[1] == devorceAge) and devorceAge == None):
+                    if(not (Age_range[0] < marrageAge and Age_range[1] < marrageAge)):
+                        return False
+                elif((not Age_range[1] == devorceAge) and Age_range[1] == None):
+                    if(not (marrageAge < Age_range[0] and devorceAge < Age_range[0])): return False
+                else:
+                    if(marrageAge > Age_range[0] and marrageAge < Age_range[1]): return False
+                    elif(devorceAge > Age_range[0] and devorceAge < Age_range[1]): return False
 
-    def siblings_spacing(self):
-        pass
+            marrageAgeList.append((marrageAge, devorceAge))
+        return True
+        
 
     def parents_not_too_old(self):
         pass
