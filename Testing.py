@@ -4,11 +4,9 @@ Van comment for second time
 """
 
 import unittest
-
 from models import Individual
 from models import Family
 from models import Gedcom
-
 
 class TestTriangles(unittest.TestCase):
 
@@ -63,13 +61,6 @@ class TestTriangles(unittest.TestCase):
         self.assertFalse(self.ind_1.no_bigamy())
         self.fam_2.set_divorcedDate(("01", "JAN", "2017"))
         self.assertTrue(self.ind_1.no_bigamy())
-        
-        
-
-        
-
-
-
 
     def testInputValidation(self):
         pass

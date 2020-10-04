@@ -8,7 +8,7 @@ class Family:
     '''
 
     def __init__(self, id: str):
-        # from Individual import Individual
+        #from Individual import Individual
         self.id = id
         self._husband = None
         self._wife = None
@@ -68,9 +68,6 @@ class Family:
         '''
         Would take the string input and convert it into a int tuple:(year, month, day)
         '''
-        '''
-        Would take the string input and convert it into a int tuple:(year, month, day)
-        '''
         monthList = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6, "JUL": 7, "AUG": 8, "SEP": 9,
                      "OCT": 10, "NOV": 11, "DEC": 12}
         return int(date[2]), monthList[date[1]], int(date[0])
@@ -99,7 +96,7 @@ class Family:
     def marriage_before_divorce(self):
         from datetime import date
         marriage = self.get_marriedDate()
-        divorce = self.get_divorced()
+        divorce = self.get_divorcedDate()
         timedelta = date(*marriage) - date(*divorce)
         if timedelta.days < 0:
             return True
@@ -137,14 +134,30 @@ class Family:
         print("Error marriage before death: Marriage date of " + Family.get_id + " happened after they died.")
         return False
 
-    def divorce_before_death(self):
-        pass
+    def divorce_before_death(self) -> bool:
+        if not self._husband or not self._wife: raise ValueError("No husband || wife")
+        if not self._divorced: return True
+        return (self._husband.get_deathDate()>self._divorced and self._wife.get_deathDate()>self._divorced)
+
 
     def birth_before_marriage_of_parents(self):
         pass
 
     def birth_before_death_of_parents(self):
-        pass
+        if not self._husband or not self._wife: raise ValueError("No husband || wife")
+        if len(self._children)==0:
+            return True
+        death=self._wife.get_deathDate()
+        hDeath=self._husband.get_deathDate()+(0,9,0)
+        if hDeath[1]>12:
+            hDeath[1]=hDeath[1]%12
+            hDeath[0]=hDeath[0]+1
+        if hDeath<death:
+            death=hDeath
+        for c in self._children:
+            if c.get_birthDate() > death:
+                raise ValueError("Child "+c.get_id()+" born after death of parent.")
+        return True
 
     def siblings_spacing(self):
         from datetime import date
