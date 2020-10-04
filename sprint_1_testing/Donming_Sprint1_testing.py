@@ -59,6 +59,7 @@ class TestSprint1(unittest.TestCase):
     def test_multiple_births_lessOrEqual_than_5(self):
         t1 = Family("t1")
         t2 = Family("t2")
+        t3 = Family("t3")
         p1 = Individual("p1")
         p1.set_birthDate((1990, 1, 1))
         p2 = Individual("p2")
@@ -75,6 +76,16 @@ class TestSprint1(unittest.TestCase):
         p7.set_birthDate((1990, 1, 2))
         p8 = Individual("p8")
         p8.set_birthDate((1990, 1, 2))
+        p9 = Individual("p9")
+        p9.set_birthDate((1990, 9, 2))
+        p10 = Individual("p10")
+        p10.set_birthDate((1990, 9, 2))
+        p11 = Individual("p11")
+        p11.set_birthDate((1990, 9, 3))
+        p12 = Individual("p12")
+        p12.set_birthDate((1990, 9, 3))
+        p13 = Individual("p13")
+        p13.set_birthDate((1990, 9, 3))
         # -------------------------------
         t1.add_child(p1)
         t1.add_child(p2)
@@ -90,10 +101,23 @@ class TestSprint1(unittest.TestCase):
         t2.add_child(p4)
         t2.add_child(p5)
         t2.add_child(p6)
+        t3.add_child(p3)
+        t3.add_child(p4)
+        t3.add_child(p5)
+        t3.add_child(p6)
+        t3.add_child(p7)
+        t3.add_child(p8)
+        t3.add_child(p9)
+        t3.add_child(p10)
+        t3.add_child(p11)
+        t3.add_child(p12)
+        t3.add_child(p13)
         # ---------------------------------
         assert t1.multiple_births_lessOrEqual_than_5() == False
         assert t2.multiple_births_lessOrEqual_than_5() == True
+        assert t3.multiple_births_lessOrEqual_than_5() == False
 
 
 if __name__ == '__main__':
     unittest.main()
+    pass
