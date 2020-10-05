@@ -103,7 +103,7 @@ class Individual:
 
     def less_then_150_years_old(self):
         if self.get_age() > 150:
-            raise ValueError("No birthDate")
+            raise ValueError("People"+self.get_id() +"is too old")
         return self.get_age() < 150
 
     def no_bigamy(self) -> bool:
