@@ -89,16 +89,23 @@ class Individual:
 
     def birth_before_marriage(self):
         import datetime
-        birthday = datetime.datetime(*self._birthDate())
+        if not self._birthDate or not self._parentFamily.get_marriedDate():
+            return True
+        if not isinstance(self._birthDate, tuple) or not isinstance(self._parentFamily.get_marriedDate(), tuple):
+            raise ValueError("birthday or marriedDate not in tuple format!") 
+        birthday = datetime.datetime(*self._birthDate)
         marriageDate = datetime.datetime(*self._parentFamily.get_marriedDate())
-        # if(not isinstance(birthday, datetime.date) or not isinstance(marriageDate, datetime.date) ):
-        # raise ValueError("Input date not in datetime format!")
         return birthday < marriageDate
 
     def birth_before_death(self):
         import datetime
-        birthday = datetime.datetime(*self.get_birthDate())
-        deathDate = datetime.datetime(*self.get_deathDate())
+        if not self._birthDate or not self._deathDate:
+            return True
+        if not isinstance(self._birthDate, tuple) or not isinstance(self._deathDate, tuple):
+            raise ValueError("birthday or deathDate not in tuple format!")
+        
+        birthday = datetime.datetime(*self._birthDate)
+        deathDate = datetime.datetime(*self._deathDate)
         return birthday < deathDate
 
     def less_then_150_years_old(self):
