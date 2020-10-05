@@ -89,10 +89,8 @@ class Individual:
 
     def birth_before_marriage(self):
         import datetime
-        if not self._birthDate or not self._parentFamily.get_marriedDate():
+        if not self._birthDate or not self._parentFamily or not self._parentFamily.get_marriedDate():
             return True
-        if not isinstance(self._birthDate, tuple) or not isinstance(self._parentFamily.get_marriedDate(), tuple):
-            raise ValueError("birthday or marriedDate not in tuple format!") 
         birthday = datetime.datetime(*self._birthDate)
         marriageDate = datetime.datetime(*self._parentFamily.get_marriedDate())
         return birthday < marriageDate
