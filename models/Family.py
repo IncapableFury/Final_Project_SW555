@@ -8,7 +8,7 @@ class Family:
     '''
 
     def __init__(self, id: str):
-        #from Individual import Individual
+        # from Individual import Individual
         self.id = id
         self._husband = None
         self._wife = None
@@ -126,7 +126,7 @@ class Family:
     def marriage_before_death(self):
         from datetime import date
         marriage = self.get_marriedDate()
-        #TODO:None check; return true
+        # TODO:None check; return true
         if not self._husband.get_deathDate() or not self._wife.get_deathDate() or not marriage:
             return True
         if self._husband.get_deathDate() > self._wife.get_deathDate():
@@ -135,7 +135,7 @@ class Family:
             death = self._husband.get_deathDate()
         timedelta = date(*marriage) - date(*death)
         if timedelta.days < 0:
-            raise("Error marriage before death: Marriage date of " + Family.get_id + " happened after they died.")
+            raise ("Error marriage before death: Marriage date of " + Family.get_id + " happened after they died.")
             return True
         return False
 
@@ -143,37 +143,34 @@ class Family:
         if not self._husband or not self._wife: raise ValueError("No husband || wife")
         if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
         if not self._divorced: return True
-        return ((self._husband.get_deathDate()>self._divorced or not self._husband.get_deathDate()) and (self._wife.get_deathDate()>self._divorced or not self._wife.get_deathDate()))
-
+        return ((self._husband.get_deathDate() > self._divorced or not self._husband.get_deathDate()) and (
+                    self._wife.get_deathDate() > self._divorced or not self._wife.get_deathDate()))
 
     def birth_before_marriage_of_parents(self):
         if not self._husband or not self._wife: raise ValueError("No husband || wife")
-        marriage=self._wife.get_marriedDate()
+        marriage = self._wife.get_marriedDate()
         for c in self._children:
             if c.get_birthDate() > marriage:
-                raise ValueError("Child "+c.get_id()+" born after marriage of parent.")
+                raise ValueError("Child " + c.get_id() + " born after marriage of parent.")
         return True
-        
-
-
 
     def birth_before_death_of_parents(self):
-        if not self._husband or not self._wife: raise ValueError("No husband || wife")
+        if not self._husband or not self._wife: return True
         if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
-        if len(self._children)==0:
+        if len(self._children) == 0:
             return True
-        death=self._wife.get_deathDate()
-        hDeath=self._husband.get_deathDate()
+        death = self._wife.get_deathDate()
+        hDeath = self._husband.get_deathDate()
         if hDeath:
-            hDeath=hDeath+(0,9,0)
-            if hDeath[1]>12:
-                hDeath[1]=hDeath[1]%12
-                hDeath[0]=hDeath[0]+1
-        if hDeath<death or death is None:
-            death=hDeath
+            hDeath = hDeath + (0, 9, 0)
+            if hDeath[1] > 12:
+                hDeath[1] = hDeath[1] % 12
+                hDeath[0] = hDeath[0] + 1
+        if hDeath < death or death is None:
+            death = hDeath
         for c in self._children:
             if c.get_birthDate() > death:
-                raise ValueError("Child "+c.get_id()+" born after death of parent.")
+                raise ValueError("Child " + c.get_id() + " born after death of parent.")
         return True
 
     def siblings_spacing(self):
@@ -188,4 +185,3 @@ class Family:
                 *self.get_children()[i + 1].get_birthDate())
             sumOfDifference += abs(timedelta.days)
         return not (threshold[0] < sumOfDifference // (n - 1) < threshold[1])
-
