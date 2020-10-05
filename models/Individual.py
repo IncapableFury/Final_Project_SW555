@@ -1,9 +1,9 @@
 class Individual:
     '''
-    This is the class for individual. 
+    This is the class for individual.
     id is the only variable that is required. If other variable does not exist, it would return None
     If children/spouse does not exist, it would return an empty list
-    
+
     all date value are passed in as str, and saved as tuple with formate (year, month, day)
     '''
 
@@ -106,7 +106,7 @@ def birth_before_death(self):
 
 
 def less_then_150_years_old(self):
-    pass
+    return self.get_age() <150
 
 
 def no_bigamy(self) -> bool:

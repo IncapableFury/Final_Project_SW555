@@ -1,9 +1,9 @@
 class Family:
     '''
-    This is the class for Family. 
+    This is the class for Family.
     id is the only variable that is required. If other variable does not exist, it would return None
     If children does not exist, it would return an empty list
-    
+
     all date value are passed in as str, and saved as tuple with formate (year, month, day)
     '''
 
@@ -147,7 +147,11 @@ class Family:
 
 
     def birth_before_marriage_of_parents(self):
-        pass
+        marryDate = self.get_parent_family().get_marriedDate()
+        birthDate = self.get_birthDate()
+        return marryDate<birthDate
+
+
 
     def birth_before_death_of_parents(self):
         if not self._husband or not self._wife: raise ValueError("No husband || wife")
