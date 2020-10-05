@@ -146,7 +146,14 @@ class Family:
 
 
     def birth_before_marriage_of_parents(self):
-        pass
+        if not self._husband or not self._wife: raise ValueError("No husband || wife")
+        
+        marriage=self._wife.get_marriedDate()
+        for c in self._children:
+            if c.get_birthDate() > marriage:
+                raise ValueError("Child "+c.get_id()+" born after marriage of parent.")
+        return True
+        
 
 
 
