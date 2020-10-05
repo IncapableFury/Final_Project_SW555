@@ -103,6 +103,7 @@ class Family:
         from datetime import date
         marriage = self.get_marriedDate()
         divorce = self.get_divorcedDate()
+        if not marriage or not divorce: return True
         timedelta = date(*marriage) - date(*divorce)
         if timedelta.days < 0:
             return True
@@ -110,10 +111,8 @@ class Family:
         return False
 
     def marriage_after_14(self) -> bool:
-        if not self._husband or not self._wife or not self._marriedDate: raise ValueError(
-            "No husband || wife || marry date")
-        if not self._husband.get_birthDate() or not self._wife.get_birthDate(): raise ValueError(
-            "No birth Date for husband || wife")
+        if not self._husband or not self._wife or not self._marriedDate: return True
+        if not self._husband.get_birthDate() or not self._wife.get_birthDate(): return True
         husbandMarryAge = self._marriedDate[0] - self._husband.get_birthDate()[0] - (
                 (self._marriedDate[1], self._marriedDate[2]) < (
             self._husband.get_birthDate()[1], self._husband.get_birthDate()[2]))
@@ -140,16 +139,20 @@ class Family:
         return False
 
     def divorce_before_death(self) -> bool:
-        if not self._husband or not self._wife: raise ValueError("No husband || wife")
-        if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
+        if not self._husband or not self._wife: return True
+        if not self._husband.get_deathDate() or not self._wife.get_deathDate(): return True
         if not self._divorced: return True
         return ((self._husband.get_deathDate() > self._divorced or not self._husband.get_deathDate()) and (
-                    self._wife.get_deathDate() > self._divorced or not self._wife.get_deathDate()))
+                self._wife.get_deathDate() > self._divorced or not self._wife.get_deathDate()))
 
     def birth_before_marriage_of_parents(self):
-        if not self._husband or not self._wife: raise ValueError("No husband || wife")
-        marriage = self._wife.get_marriedDate()
+        if not self._husband or not self._wife: return True
+        marriage = self.get_marriedDate()
+        if not marriage:
+            return True
         for c in self._children:
+            if not c.get_birthDate():
+                continue
             if c.get_birthDate() > marriage:
                 raise ValueError("Child " + c.get_id() + " born after marriage of parent.")
         return True
@@ -161,6 +164,8 @@ class Family:
             return True
         death = self._wife.get_deathDate()
         hDeath = self._husband.get_deathDate()
+        if not death or not hDeath:
+            return True
         if hDeath:
             hDeath = hDeath + (0, 9, 0)
             if hDeath[1] > 12:
