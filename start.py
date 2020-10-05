@@ -27,7 +27,7 @@ class Main:
 
     def validate(self, gedcom): # just a demo
         errors = []  # str
-        tests = [Family.siblings_spacing, Family.multiple_births_lessOrEqual_than_5] #, Family.marriage_before_divorce
+        tests = [Family.siblings_spacing, Family.multiple_births_lessOrEqual_than_5, Family.marriage_before_death] #, Family.marriage_before_divorce
         for fam_id in gedcom.get_families():
             fam = gedcom.get_families()[fam_id]
             for test in tests:

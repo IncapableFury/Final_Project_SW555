@@ -129,6 +129,9 @@ class Family:
     def marriage_before_death(self):
         from datetime import date
         marriage = self.get_marriedDate()
+        #TODO:None check; return true
+        if not self._husband.get_deathDate() or not self._wife.get_deathDate() or not marriage:
+            return True
         if self._husband.get_deathDate() > self._wife.get_deathDate():
             death = self._wife.get_deathDate()
         else:
@@ -136,7 +139,8 @@ class Family:
         timedelta = date(*marriage) - date(*death)
         if timedelta.days < 0:
             return True
-        print("Error marriage before death: Marriage date of " + Family.get_id + " happened after they died.")
+            raise("Error marriage before death: Marriage date of " + Family.get_id + " happened after they died.")
+        # print("Error marriage before death: Marriage date of " + Family.get_id + " happened after they died.")
         return False
 
     def divorce_before_death(self) -> bool:
