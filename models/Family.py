@@ -164,7 +164,7 @@ class Family:
             return True
         death=self._wife.get_deathDate()
         hDeath=self._husband.get_deathDate()
-        if hDeath
+        if hDeath:
             hDeath=hDeath+(0,9,0)
             if hDeath[1]>12:
                 hDeath[1]=hDeath[1]%12
