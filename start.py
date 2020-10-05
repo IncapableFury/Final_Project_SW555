@@ -1,6 +1,7 @@
 from models.Individual import Individual
 from models.Family import Family
 from models.Gedcom import Gedcom
+from sprint1_final import pretty_print
 
 SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
                 "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
@@ -72,9 +73,9 @@ if __name__ == "__main__":
     project.add_file_to_cache("g1", g1)
     # project.peek_file("g1")
     project.parse(g1)
-    project.pretty_print(g1.get_individuals(),"indi")
-    project.pretty_print(g1.get_families(),"fam")
     errors = project.validate(g1)
-    project.pretty_print(errors,"error")
+    #project.pretty_print(g1.get_individuals(), g1.get_families(), errors)
+    pretty_print(g1.get_individuals(), g1.get_families(), errors)
+
     print(errors)
     # --------------------testing--------------------
