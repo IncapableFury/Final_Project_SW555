@@ -62,6 +62,29 @@ class TestTriangles(unittest.TestCase):
         self.fam_2.set_divorcedDate(("01", "JAN", "2017"))
         self.assertTrue(self.ind_1.no_bigamy())
 
+    def testMarriageBeforeDivorce(self):
+        self.ind_1.add_to_family(self.fam_1)
+        self.ind_2.add_to_family(self.fam_1)
+        self.fam_1.set_marriedDate(["08", "JUN", "2000"])
+        self.fam_1.set_divorcedDate(['8', 'SEP', '2009'])
+        self.assertTrue(fam_1.marriage_before_divorce())
+        self.assertEqual(fam_1.marriage_before_divorce(), True)
+        self.assertNotEqual(fam_1.marriage_before_divorce(), False)
+        self.assertIsNot(fam_1.marriage_before_divorce(), " ")
+        self.assertIsNotNone(fam_1.marriage_before_divorce())
+
+    def testMarriageBeforeDeath(self):
+        self.ind_1.add_to_family(self.fam_2)
+        self.ind_2.add_to_family(self.fam_2)
+        self.ind_1.set_deathDate(['8', 'SEP', '2010'])
+        self.ind_2.set_deathDate(['8', 'SEP', '2011'])
+        self.fam_2.set_husband(ind_1)
+        self.fam_2.set_wife(ind_2)
+        self.fam_2.set_marriedDate(["08", "JUN", "2000"])
+        self.assertTrue(fam_2.marriage_before_death())
+        self.assertEqual(fam_2.marriage_before_death(), True)
+        self.assertNotEqual(fam_2.marriage_before_death(), False)
+
     def testInputValidation(self):
         pass
 

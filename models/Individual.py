@@ -84,60 +84,58 @@ class Individual:
                      "OCT": 10, "NOV": 11, "DEC": 12}
         return int(date[2]), monthList[date[1]], int(date[0])
 
+    def dates_before_current_date(self):
+        pass
 
-def dates_before_current_date(self):
-    pass
+    def birth_before_marriage(self):
+        import datetime
+        birthday = datetime.datetime(*self._birthDate())
+        marriageDate = datetime.datetime(*self._parentFamily.get_marriedDate())
+        # if(not isinstance(birthday, datetime.date) or not isinstance(marriageDate, datetime.date) ):
+        # raise ValueError("Input date not in datetime format!")
+        return birthday < marriageDate
 
+    def birth_before_death(self):
+        import datetime
+        birthday = datetime.datetime(*self.get_birthDate())
+        deathDate = datetime.datetime(*self.get_deathDate())
+        return birthday < deathDate
 
-def birth_before_marriage(self):
-    import datetime
-    birthday = datetime.datetime(*self._birthDate())
-    marriageDate = datetime.datetime(*self._parentFamily.get_marriedDate())
-    # if(not isinstance(birthday, datetime.date) or not isinstance(marriageDate, datetime.date) ):
-    # raise ValueError("Input date not in datetime format!")
-    return birthday < marriageDate
+    def less_then_150_years_old(self):
+        return self.get_age() < 150
 
-
-def birth_before_death(self):
-    import datetime
-    birthday = datetime.datetime(*self.get_birthDate())
-    deathDate = datetime.datetime(*self.get_deathDate())
-    return birthday < deathDate
-
-
-def less_then_150_years_old(self):
-    return self.get_age() <150
-
-
-def no_bigamy(self) -> bool:
-    if (len(self._family) <= 1): return True
-    marrageAgeList = []
-    birthDate = self._birthDate
-    for each_marrage in self._family:
-        marrageAge = each_marrage.get_marriedDate()[0] - birthDate[0] + (
-                each_marrage.get_marriedDate()[1] - birthDate[1]) / 12 + (
-                             each_marrage.get_marriedDate()[2] - birthDate[2]) / 365
-        devorceAge = None
-        if (each_marrage.get_divorcedDate() is not None): devorceAge = each_marrage.get_divorcedDate()[0] - birthDate[
-            0] + (each_marrage.get_divorcedDate()[1] - birthDate[1]) / 12 + (each_marrage.get_divorcedDate()[2] -
-                                                                             birthDate[2]) / 365
-        for Age_range in marrageAgeList:
-            if (Age_range[1] == devorceAge and devorceAge == None):
-                return False
-            elif ((not Age_range[1] == devorceAge) and devorceAge == None):
-                if (not (Age_range[0] < marrageAge and Age_range[1] < marrageAge)):
+    def no_bigamy(self) -> bool:
+        if (len(self._family) <= 1): return True
+        marrageAgeList = []
+        birthDate = self._birthDate
+        for each_marrage in self._family:
+            marrageAge = each_marrage.get_marriedDate()[0] - birthDate[0] + (
+                    each_marrage.get_marriedDate()[1] - birthDate[1]) / 12 + (
+                                 each_marrage.get_marriedDate()[2] - birthDate[2]) / 365
+            devorceAge = None
+            if (each_marrage.get_divorcedDate() is not None): devorceAge = each_marrage.get_divorcedDate()[0] - \
+                                                                           birthDate[
+                                                                               0] + (each_marrage.get_divorcedDate()[
+                                                                                         1] - birthDate[1]) / 12 + (
+                                                                                       each_marrage.get_divorcedDate()[
+                                                                                           2] -
+                                                                                       birthDate[2]) / 365
+            for Age_range in marrageAgeList:
+                if (Age_range[1] == devorceAge and devorceAge == None):
                     return False
-            elif ((not Age_range[1] == devorceAge) and Age_range[1] == None):
-                if (not (marrageAge < Age_range[0] and devorceAge < Age_range[0])): return False
-            else:
-                if (marrageAge > Age_range[0] and marrageAge < Age_range[1]):
-                    return False
-                elif (devorceAge > Age_range[0] and devorceAge < Age_range[1]):
-                    return False
+                elif ((not Age_range[1] == devorceAge) and devorceAge == None):
+                    if (not (Age_range[0] < marrageAge and Age_range[1] < marrageAge)):
+                        return False
+                elif ((not Age_range[1] == devorceAge) and Age_range[1] == None):
+                    if (not (marrageAge < Age_range[0] and devorceAge < Age_range[0])): return False
+                else:
+                    if (marrageAge > Age_range[0] and marrageAge < Age_range[1]):
+                        return False
+                    elif (devorceAge > Age_range[0] and devorceAge < Age_range[1]):
+                        return False
 
-        marrageAgeList.append((marrageAge, devorceAge))
-    return True
+            marrageAgeList.append((marrageAge, devorceAge))
+        return True
 
-
-def parents_not_too_old(self):
-    pass
+    def parents_not_too_old(self):
+        pass
