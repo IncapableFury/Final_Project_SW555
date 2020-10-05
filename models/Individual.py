@@ -110,7 +110,10 @@ class Individual:
         if (len(self._family) <= 1): return True
         marrageAgeList = []
         birthDate = self._birthDate
+        if not self._family:
+                return True
         for each_marrage in self._family:
+            if not each_marrage.get_marriedDate(): continue
             marrageAge = each_marrage.get_marriedDate()[0] - birthDate[0] + (
                     each_marrage.get_marriedDate()[1] - birthDate[1]) / 12 + (
                                  each_marrage.get_marriedDate()[2] - birthDate[2]) / 365
