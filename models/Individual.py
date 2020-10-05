@@ -117,9 +117,9 @@ class Individual:
                                                                            birthDate[
                                                                                0] + (each_marrage.get_divorcedDate()[
                                                                                          1] - birthDate[1]) / 12 + (
-                                                                                       each_marrage.get_divorcedDate()[
-                                                                                           2] -
-                                                                                       birthDate[2]) / 365
+                                                                                   each_marrage.get_divorcedDate()[
+                                                                                       2] -
+                                                                                   birthDate[2]) / 365
             for Age_range in marrageAgeList:
                 if (Age_range[1] == devorceAge and devorceAge == None):
                     return False
