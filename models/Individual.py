@@ -102,6 +102,8 @@ class Individual:
         return birthday < deathDate
 
     def less_then_150_years_old(self):
+        if self.get_age() = -1:
+            raise ValueError("No birthDate")
         return self.get_age() < 150
 
     def no_bigamy(self) -> bool:
