@@ -146,9 +146,7 @@ class Family:
 
 
     def birth_before_marriage_of_parents(self):
-        marryDate = self.get_parent_family().get_marriedDate()
-        birthDate = self.get_birthDate()
-        return marryDate<birthDate
+        pass
 
 
 
