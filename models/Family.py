@@ -185,3 +185,4 @@ class Family:
                 *self.get_children()[i + 1].get_birthDate())
             sumOfDifference += abs(timedelta.days)
         return not (threshold[0] < sumOfDifference // (n - 1) < threshold[1])
+

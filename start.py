@@ -22,8 +22,21 @@ class Main:
             print("File read successfully.")
         return
 
-    def parse(self,gedcom):
+    def parse(self, gedcom):
         gedcom.parse()
+
+    def validate(self, gedcom): # just a demo
+        errors = []  # str
+        tests = [Family.siblings_spacing, Family.multiple_births_lessOrEqual_than_5] #, Family.marriage_before_divorce
+        for fam_id in gedcom.get_families():
+            fam = gedcom.get_families()[fam_id]
+            for test in tests:
+                try:
+                    test(fam)
+                except Exception as e:
+                    errors.append(e)
+        return errors
+
 
 if __name__ == "__main__":
     project = Main()
@@ -31,6 +44,9 @@ if __name__ == "__main__":
     project.add_file_to_cache("g1", g1)
     # project.peek_file("g1")
     project.parse(g1)
-    print(g1.get_families())
-    print(g1.get_individuals())
+    # print here
+    errors = project.validate(g1)
+    print(errors)
+    # print(g1.get_families())
+    # print(g1.get_individuals())
     # --------------------testing--------------------
