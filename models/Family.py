@@ -47,7 +47,7 @@ class Family:
 
         ##if not isinstance(married_date, str): raise TypeError("input has to be a str type")
         if all(isinstance(v, int) for v in married_date):
-            self._birthDate = married_date
+            self._marriedDate = married_date
             return
         self._marriedDate = self.change_date_formate(married_date)
 
@@ -55,7 +55,7 @@ class Family:
 
         ##if not isinstance(divorced_date, str): raise TypeError("input has to be a str type")
         if all(isinstance(v, int) for v in divorced_date):
-            self._birthDate = divorced_date
+            self._divorcedDate = divorced_date
             return
         self._divorced = self.change_date_formate(divorced_date)
 
@@ -128,7 +128,6 @@ class Family:
 
     def marriage_before_death(self):
         from datetime import date
-        from models.Individual import Individual
         marriage = self.get_marriedDate()
         if self._husband.get_deathDate() > self._wife.get_deathDate():
             death = self._wife.get_deathDate()
