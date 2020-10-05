@@ -37,13 +37,12 @@ class Main:
             Family.divorce_before_death,
             Family.birth_before_marriage_of_parents
         ]
-        # tests_for_individuals = [
-        # Individual.dates_before_current_date,
-        #                          Individual.birth_before_marriage,
-        #                          Individual.birth_before_death,
-        #                          Individual.less_then_150_years_old,
-        #                          Individual.no_bigamy,
-        #                          Individual.parents_not_too_old]
+        tests_for_individuals = [Individual.dates_before_current_date,  # 0
+                                 Individual.birth_before_marriage,  # 18
+                                 Individual.birth_before_death,  # 14
+                                 Individual.less_then_150_years_old,  # 0
+                                 Individual.no_bigamy,  # 0
+                                 Individual.parents_not_too_old]  # 0
         for fam_id in gedcom.get_families():
             fam = gedcom.get_families()[fam_id]
             for test in tests_for_family:
@@ -51,13 +50,14 @@ class Main:
                     test(fam)
                 except Exception as e:
                     errors.append(e)
-        # for indi_id in gedcom.get_individuals():
-        #     indi = gedcom.get_individuals()[indi_id]
-        #     for test in tests_for_individuals:
-        #         try:
-        #             test(indi)
-        #         except Exception as e:
-        #             errors.append(e)
+
+        for indi_id in gedcom.get_individuals():
+            indi = gedcom.get_individuals()[indi_id]
+            for test in tests_for_individuals:
+                try:
+                    test(indi)
+                except Exception as e:
+                    errors.append((e, "indi"))
         print(len(errors))
         return errors
 
