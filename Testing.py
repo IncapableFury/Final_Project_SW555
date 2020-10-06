@@ -28,17 +28,21 @@ class TestTriangles(unittest.TestCase):
 
 
     def test_marriage_after_14(self):
-        with self.assertRaises(ValueError, msg = "No husband || wife || marry date"):
-            self.fam_1.marriage_after_14()
+        #with self.assertRaises(ValueError, msg = "No husband || wife || marry date"):
+        #    self.fam_1.marriage_after_14()
+        self.assertTrue(self.fam_1.marriage_after_14())
         self.fam_1.set_husband(self.ind_1)
-        with self.assertRaises(ValueError, msg = "No husband || wife || marry date"):
-            self.fam_1.marriage_after_14()
+        #with self.assertRaises(ValueError, msg = "No husband || wife || marry date"):
+        #    self.fam_1.marriage_after_14()
+        self.assertTrue(self.fam_1.marriage_after_14())
         self.fam_1.set_wife(self.ind_2)
-        with self.assertRaises(ValueError, msg = "No husband || wife || marry date"):
-            self.fam_1.marriage_after_14()
+        #with self.assertRaises(ValueError, msg = "No husband || wife || marry date"):
+        #    self.fam_1.marriage_after_14()
+        self.assertTrue(self.fam_1.marriage_after_14())
         self.fam_1.set_marriedDate(["01", "JUN", "2017"])
-        with self.assertRaises(ValueError, msg = "No birth Date for husband || wife"):
-            self.fam_1.marriage_after_14()
+        #with self.assertRaises(ValueError, msg = "No birth Date for husband || wife"):
+        #    self.fam_1.marriage_after_14()
+        self.assertTrue(self.fam_1.marriage_after_14())
         self.ind_1.set_birthDate(["09", "APR", "1997"])
         self.ind_2.set_birthDate(["19", "DEC", "1997"])
         self.assertTrue(self.fam_1.marriage_after_14())

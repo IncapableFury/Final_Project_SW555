@@ -134,7 +134,8 @@ class Family:
             death = self._husband.get_deathDate()
         timedelta = date(*marriage) - date(*death)
         if timedelta.days < 0:
-            raise ("Error marriage before death: Marriage date of " + Family.get_id + " happened after they died.")
+            #raise ValueError("Error marriage before death: Marriage date of " + self.get_id() + " happened after they died.")
+            print("Error marriage before death: Marriage date of " + self.get_id() + " happened after they died.")
             return True
         return False
 
