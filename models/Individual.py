@@ -149,3 +149,14 @@ class Individual:
 
     def parents_not_too_old(self):
         pass
+
+
+    def aunts_and_uncles(self):
+        pass
+
+    def first_cousins_should_not_marry(self):
+        pass #did not understand the question, move to the place you like
+
+
+
+

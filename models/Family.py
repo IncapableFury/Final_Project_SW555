@@ -190,3 +190,21 @@ class Family:
                 *self.get_children()[i + 1].get_birthDate())
             sumOfDifference += abs(timedelta.days)
         return not (threshold[0] < sumOfDifference // (n - 1) < threshold[1])
+
+    def fewer_than_15_siblings(self):
+        pass
+    
+    def correct_gender_for_role(self):
+        pass
+
+    def male_last_names(self):
+        pass
+        
+    def no_marriages_to_descendants(self):
+        pass
+
+    def siblings_should_not_marry(self):
+        pass
+
+    def order_siblings_by_age(self):
+        pass

@@ -116,6 +116,27 @@ class Gedcom:
                     except:
                         continue
 
+
+    def Unique_IDs(self):
+        pass 
+
+    def unique_name_and_birth_date(self):
+        pass
+
+    def unique_families_by_spouses(self):
+        pass
+
+    def unique_first_names_in_families(self):
+        pass
+
+    def include_individual_ages(self):
+        pass
+
+    def corresponding_entries(self):
+        pass
+
+
+
 # if __name__ == "__main__":
     # SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
     #                 "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
