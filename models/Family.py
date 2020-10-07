@@ -134,7 +134,8 @@ class Family:
             death = self._husband.get_deathDate()
         timedelta = date(*marriage) - date(*death)
         if timedelta.days < 0:
-            raise ("Error marriage before death: Marriage date of " + Family.get_id + " happened after they died.")
+            #raise ValueError("Error marriage before death: Marriage date of " + self.get_id() + " happened after they died.")
+            print("Error marriage before death: Marriage date of " + self.get_id() + " happened after they died.")
             return True
         return False
 
@@ -190,3 +191,21 @@ class Family:
                 *self.get_children()[i + 1].get_birthDate())
             sumOfDifference += abs(timedelta.days)
         return not (threshold[0] < sumOfDifference // (n - 1) < threshold[1])
+
+    def fewer_than_15_siblings(self):
+        pass
+    
+    def correct_gender_for_role(self):
+        pass
+
+    def male_last_names(self):
+        pass
+        
+    def no_marriages_to_descendants(self):
+        pass
+
+    def siblings_should_not_marry(self):
+        pass
+
+    def order_siblings_by_age(self):
+        pass
