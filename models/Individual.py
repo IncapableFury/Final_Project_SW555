@@ -28,16 +28,17 @@ class Individual:
     def get_birthDate(self) -> tuple:
         return self._birthDate
 
-    def get_age(self) -> int:
-        '''
-        calculate age base on the birthdate. If birthdate is None, this would return None
+    def get_age(self, days=False) -> int:
+        """
+        :param days: a flag indicates whether you want the years or the days
+        :return: Return age in base of years or days. Would return -1 if no birthday info
 
-        require datetime module
-        '''
+        """
         import datetime
         if not self._birthDate: return -1
-        today = datetime.datetime.now()
-        return today.year - self._birthDate[0] - ((today.month, today.day) < (self._birthDate[1], self._birthDate[2]))
+        today = datetime.date.today()
+        lived_days = (today - datetime.date(*self._birthDate)).days
+        return lived_days // 365 if not days else lived_days
 
     def get_deathDate(self) -> tuple:
         return self._deathDate
@@ -101,14 +102,14 @@ class Individual:
             return True
         if not isinstance(self._birthDate, tuple) or not isinstance(self._deathDate, tuple):
             raise ValueError("birthday or deathDate not in tuple format!")
-        
+
         birthday = datetime.datetime(*self._birthDate)
         deathDate = datetime.datetime(*self._deathDate)
         return birthday < deathDate
 
     def less_then_150_years_old(self):
         if self.get_age() > 150:
-            raise ValueError("People"+self.get_id() +"is too old")
+            raise ValueError("People" + self.get_id() + "is too old")
         return self.get_age() < 150
 
     def no_bigamy(self) -> bool:
@@ -116,7 +117,7 @@ class Individual:
         marrageAgeList = []
         birthDate = self._birthDate
         if not self._family:
-                return True
+            return True
         for each_marrage in self._family:
             if not each_marrage.get_marriedDate(): continue
             marrageAge = each_marrage.get_marriedDate()[0] - birthDate[0] + (
@@ -150,13 +151,8 @@ class Individual:
     def parents_not_too_old(self):
         pass
 
-
     def aunts_and_uncles(self):
         pass
 
     def first_cousins_should_not_marry(self):
-        pass #did not understand the question, move to the place you like
-
-
-
-
+        pass  # did not understand the question, move to the place you like

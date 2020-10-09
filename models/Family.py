@@ -134,10 +134,10 @@ class Family:
             death = self._husband.get_deathDate()
         timedelta = date(*marriage) - date(*death)
         if timedelta.days < 0:
-            #raise ValueError("Error marriage before death: Marriage date of " + self.get_id() + " happened after they died.")
+            # raise ValueError("Error marriage before death: Marriage date of " + self.get_id() + " happened after they died.")
             return True
             print("Error marriage before death: Marriage date of " + self.get_id() + " happened after they died.")
-            
+
         return False
 
     def divorce_before_death(self) -> bool:
@@ -195,13 +195,13 @@ class Family:
 
     def fewer_than_15_siblings(self):
         pass
-    
+
     def correct_gender_for_role(self):
         pass
 
     def male_last_names(self):
         pass
-        
+
     def no_marriages_to_descendants(self):
         pass
 
@@ -209,4 +209,14 @@ class Family:
         pass
 
     def order_siblings_by_age(self):
-        pass
+        """
+        Need one extra step which filters out the Nones. Not sure if necessary.
+        :return: list of references in the order of descending age
+        """
+        res = sorted(self.get_children(), key=lambda x: x.get_age(days=True), reverse=True)
+        return list(filter(lambda x: x.get_birthDate() != None, res))
+
+
+if __name__ == "__main__":
+    from models.Individual import Individual
+    # ---------------------------testing cases below---------------------------
