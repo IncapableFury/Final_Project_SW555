@@ -153,6 +153,3 @@ class Individual:
 
     def aunts_and_uncles(self):
         pass
-
-    def first_cousins_should_not_marry(self):
-        pass  # did not understand the question, move to the place you like

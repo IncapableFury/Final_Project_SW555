@@ -2,7 +2,7 @@ import unittest
 
 from models.Individual import Individual
 from models.Family import Family
-
+"""
 class TestDivorseBeforeDeath(unittest.TestCase):
     def test1(self):
         male1=Individual("P01")
@@ -90,7 +90,84 @@ class TestBirthBeforeDeathofParent(unittest.TestCase):
         family1.set_husband(male1)
         family1.set_wife(female1)
         self.assertTrue(family1.birth_before_death_of_parents())
-
+"""
+class TestFirstCousinsShouldNotMarry(unittest.TestCase):
+    def setUp(self):
+        self.male1=Individual("P01")
+        self.female1=Individual("P02")
+        self.family1=Family("F01")
+        self.family1.set_husband(self.male1)
+        self.family1.set_wife(self.female1)
+        self.male2=Individual("P03")
+        self.female2=Individual("P04")
+        self.family2=Family("F02")
+        self.family2.set_husband(self.male2)
+        self.family2.set_wife(self.female2)
+        self.male3=Individual("P05")
+        self.female3=Individual("P06")
+        self.family3=Family("F03")
+        self.family3.set_husband(self.male3)
+        self.family3.set_wife(self.female3)
+        self.male4=Individual("P07")
+        self.female4=Individual("P08")
+        self.family4=Family("F04")
+        self.family4.set_husband(self.male4)
+        self.family4.set_wife(self.female4)
+        self.male5=Individual("P09")
+        self.female5=Individual("P10")
+        self.family5=Family("F05")
+        self.family5.set_husband(self.male5)
+        self.family5.set_wife(self.female5)
+        self.male6=Individual("P11")
+        self.female6=Individual("P12")
+        self.family6=Family("F06")
+        self.family6.set_husband(self.male6)
+        self.family6.set_wife(self.female6)
+        self.male7=Individual("P13")
+        self.female7=Individual("P14")
+        self.family7=Family("F07")
+        self.family7.set_husband(self.male7)
+        self.family7.set_wife(self.female7)
+    def test1(self):
+        self.male7.set_parentFamily(self.family6)
+        self.female7.set_parentFamily(self.family5)
+        self.male6.set_parentFamily(self.family4)
+        self.female6.set_parentFamily(self.family3)
+        self.male5.set_parentFamily(self.family2)
+        self.female5.set_parentFamily(self.family1)
+        self.assertTrue(self.family7.first_cousins_should_not_marry())
+    def test2(self):
+        self.male7.set_parentFamily(self.family6)
+        self.female7.set_parentFamily(self.family5)
+        self.male6.set_parentFamily(self.family4)
+        self.female6.set_parentFamily(self.family3)
+        self.male5.set_parentFamily(self.family4)
+        self.female5.set_parentFamily(self.family1)
+        self.assertFalse(self.family7.first_cousins_should_not_marry())
+    def test3(self):
+        self.male7.set_parentFamily(self.family6)
+        self.female7.set_parentFamily(self.family5)
+        self.male6.set_parentFamily(self.family4)
+        self.female6.set_parentFamily(self.family3)
+        self.male5.set_parentFamily(self.family2)
+        self.female5.set_parentFamily(self.family4)
+        self.assertFalse(self.family7.first_cousins_should_not_marry())
+    def test4(self):
+        self.male7.set_parentFamily(self.family6)
+        self.female7.set_parentFamily(self.family5)
+        self.male6.set_parentFamily(self.family4)
+        self.female6.set_parentFamily(self.family3)
+        self.male5.set_parentFamily(self.family4)
+        self.female5.set_parentFamily(self.family4)
+        self.assertFalse(self.family7.first_cousins_should_not_marry())
+    def test5(self):
+        self.male7.set_parentFamily(self.family6)
+        self.female7.set_parentFamily(self.family5)
+        self.male6.set_parentFamily(self.family4)
+        self.female6.set_parentFamily(self.family3)
+        self.male5.set_parentFamily(self.family4)
+        self.female5.set_parentFamily(self.family3)
+        self.assertFalse(self.family7.first_cousins_should_not_marry())
 if __name__ == '__main__':
     print('Running unit tests')
     unittest.main()
