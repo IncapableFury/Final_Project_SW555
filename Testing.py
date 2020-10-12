@@ -1,98 +1,101 @@
-"""
-Test cases go in here
-Van comment for second time
-"""
-
 import unittest
-from models import Individual
-from models import Family
-from models import Gedcom
 
-class TestTriangles(unittest.TestCase):
+from models.Individual import Individual
+from models.Family import Family
 
-    def setUp(self):
-        self.ind_1 = Individual.Individual("01")
-        self.ind_2 = Individual.Individual("02")
-        self.ind_3 = Individual.Individual("03")
+class TestDivorseBeforeDeath(unittest.TestCase):
+    def test1(self):
+        male1=Individual("P01")
+        female1=Individual("P02")
+        family1=Family("F01")
+        male1.set_deathDate(["5", "MAR", "2000"])
+        female1.set_deathDate(["9", "APR", "2002"])
+        family1.set_husband(male1)
+        family1.set_wife(female1)
+        family1.set_divorcedDate(["1", "JAN", "1999"])
+        self.assertTrue(family1.divorce_before_death())
 
-        self.fam_1 = Family.Family("01")
-        self.fam_2 = Family.Family("02")
+    def test2(self):
+        male1=Individual("P01")
+        female1=Individual("P02")
+        family1=Family("F01")
+        male1.set_deathDate(["5", "MAR", "2000"])
+        female1.set_deathDate(["9", "APR", "2002"])
+        family1.set_husband(male1)
+        family1.set_wife(female1)
+        family1.set_divorcedDate(["1", "JAN", "2001"])
+        self.assertFalse(family1.divorce_before_death())
 
-    def tearDown(self):
-        self.ind_1 = Individual.Individual("01")
-        self.ind_2 = Individual.Individual("02")
-        self.ind_3 = Individual.Individual("03")
+    def test3(self):
+        male1=Individual("P01")
+        female1=Individual("P02")
+        family1=Family("F01")
+        male1.set_deathDate(["5", "MAR", "2000"])
+        female1.set_deathDate(["9", "APR", "2002"])
+        family1.set_husband(male1)
+        family1.set_wife(female1)
+        family1.set_divorcedDate(["1", "JAN", "2003"])
+        self.assertFalse(family1.divorce_before_death())
 
-        self.fam_1 = Family.Family("01")
-        self.fam_2 = Family.Family("02") 
+    def test4(self):
+        male1=Individual("P01")
+        female1=Individual("P02")
+        family1=Family("F01")
+        male1.set_deathDate(["5", "MAR", "2000"])
+        female1.set_deathDate(["9", "APR", "2002"])
+        family1.set_husband(male1)
+        family1.set_wife(female1)
+        family1.set_divorcedDate(["1", "JAN", "2000"])
+        self.assertTrue(family1.divorce_before_death())
 
+    def test5(self):
+        male1=Individual("P01")
+        female1=Individual("P02")
+        family1=Family("F01")
+        male1.set_deathDate(["5", "MAR", "2000"])
+        female1.set_deathDate(["9", "APR", "2002"])
+        family1.set_husband(male1)
+        family1.set_wife(female1)
+        family1.set_divorcedDate(["1", "JAN", "2002"])
+        self.assertFalse(family1.divorce_before_death())
 
-    def test_marriage_after_14(self):
-        #with self.assertRaises(ValueError, msg = "No husband || wife || marry date"):
-        #    self.fam_1.marriage_after_14()
-        self.assertTrue(self.fam_1.marriage_after_14())
-        self.fam_1.set_husband(self.ind_1)
-        #with self.assertRaises(ValueError, msg = "No husband || wife || marry date"):
-        #    self.fam_1.marriage_after_14()
-        self.assertTrue(self.fam_1.marriage_after_14())
-        self.fam_1.set_wife(self.ind_2)
-        #with self.assertRaises(ValueError, msg = "No husband || wife || marry date"):
-        #    self.fam_1.marriage_after_14()
-        self.assertTrue(self.fam_1.marriage_after_14())
-        self.fam_1.set_marriedDate(["01", "JUN", "2017"])
-        #with self.assertRaises(ValueError, msg = "No birth Date for husband || wife"):
-        #    self.fam_1.marriage_after_14()
-        self.assertTrue(self.fam_1.marriage_after_14())
-        self.ind_1.set_birthDate(["09", "APR", "1997"])
-        self.ind_2.set_birthDate(["19", "DEC", "1997"])
-        self.assertTrue(self.fam_1.marriage_after_14())
-        self.fam_1.set_marriedDate(["01", "JUN", "2007"])
-        self.assertFalse(self.fam_1.marriage_after_14())
-
-    def test_no_bigamy(self):
-        self.ind_1.set_birthDate(["09", "APR", "1997"])
-        self.ind_2.set_birthDate(["19", "DEC", "1997"])
-        self.ind_1.add_to_family(self.fam_1)
-        self.fam_1.set_marriedDate(["01", "JUN", "2017"])
-        self.assertTrue(self.ind_1.no_bigamy())
-        self.fam_2.set_marriedDate(["05", "JUN", "2016"])
-        self.ind_1.add_to_family(self.fam_2)
-        self.assertFalse(self.ind_1.no_bigamy())
-        self.fam_2.set_divorcedDate(("01", "JAN", "2017"))
-        self.assertTrue(self.ind_1.no_bigamy())
-        self.fam_2.set_divorcedDate(("01", "AUG", "2017"))
-        self.assertFalse(self.ind_1.no_bigamy())
-        self.fam_1.set_divorcedDate(("01", "DEC", "2018"))
-        self.assertFalse(self.ind_1.no_bigamy())
-        self.fam_2.set_divorcedDate(("01", "JAN", "2017"))
-        self.assertTrue(self.ind_1.no_bigamy())
-
-    def testMarriageBeforeDivorce(self):
-        self.ind_1.add_to_family(self.fam_1)
-        self.ind_2.add_to_family(self.fam_1)
-        self.fam_1.set_marriedDate(["08", "JUN", "2000"])
-        self.fam_1.set_divorcedDate(['8', 'SEP', '2009'])
-        self.assertTrue(self.fam_1.marriage_before_divorce())
-        self.assertEqual(self.fam_1.marriage_before_divorce(), True)
-        self.assertNotEqual(self.fam_1.marriage_before_divorce(), False)
-        self.assertIsNot(self.fam_1.marriage_before_divorce(), " ")
-        self.assertIsNotNone(self.fam_1.marriage_before_divorce())
-
-    def testMarriageBeforeDeath(self):
-        self.ind_1.add_to_family(self.fam_2)
-        self.ind_2.add_to_family(self.fam_2)
-        self.ind_1.set_deathDate(['8', 'SEP', '2010'])
-        self.ind_2.set_deathDate(['8', 'SEP', '2011'])
-        self.fam_2.set_husband(self.ind_1)
-        self.fam_2.set_wife(self.ind_2)
-        self.fam_2.set_marriedDate(["08", "JUN", "2000"])
-        self.assertTrue(self.fam_2.marriage_before_death())
-        self.assertEqual(self.fam_2.marriage_before_death(), True)
-        self.assertNotEqual(self.fam_2.marriage_before_death(), False)
-
-    def testInputValidation(self):
-        pass
-
+class TestBirthBeforeDeathofParent(unittest.TestCase):
+    def test1(self):
+        male1=Individual("P01")
+        female1=Individual("P02")
+        child1=Individual("P03")
+        family1=Family("F01")
+        family1.add_child(child1)
+        male1.set_deathDate(["5", "MAR", "2000"])
+        female1.set_deathDate(["9", "APR", "2002"])
+        child1.set_birthDate(["6", "JAN", "1998"])
+        family1.set_husband(male1)
+        family1.set_wife(female1)
+        self.assertTrue(family1.birth_before_death_of_parents())
+    def test2(self):
+        male1=Individual("P01")
+        female1=Individual("P02")
+        child1=Individual("P03")
+        family1=Family("F01")
+        family1.add_child(child1)
+        male1.set_deathDate(["5", "MAR", "2000"])
+        female1.set_deathDate(["9", "APR", "2002"])
+        child1.set_birthDate(["6", "JAN", "2001"])
+        family1.set_husband(male1)
+        family1.set_wife(female1)
+        self.assertRaises(ValueError,family1.birth_before_death_of_parents())
+    def test3(self):
+        male1=Individual("P01")
+        female1=Individual("P02")
+        child1=Individual("P03")
+        family1=Family("F01")
+        family1.add_child(child1)
+        male1.set_deathDate(["5", "MAR", "2000"])
+        female1.set_deathDate(["9", "APR", "2002"])
+        child1.set_birthDate(["6", "MAR", "2000"])
+        family1.set_husband(male1)
+        family1.set_wife(female1)
+        self.assertTrue(family1.birth_before_death_of_parents())
 
 if __name__ == '__main__':
     print('Running unit tests')

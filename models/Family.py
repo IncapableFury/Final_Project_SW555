@@ -142,10 +142,10 @@ class Family:
 
     def divorce_before_death(self) -> bool:
         if not self._husband or not self._wife: return True
-        if not self._husband.get_deathDate() or not self._wife.get_deathDate(): return True
+        if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
         if not self._divorced: return True
-        return ((self._husband.get_deathDate() > self._divorced or not self._husband.get_deathDate()) and (
-                self._wife.get_deathDate() > self._divorced or not self._wife.get_deathDate()))
+        return ((self._husband.get_deathDate() > self._divorced or not self._husband.get_deathDate()) and 
+        (self._wife.get_deathDate() > self._divorced or not self._wife.get_deathDate()))
 
     def birth_before_marriage_of_parents(self):
         if not self._husband or not self._wife: return True
@@ -169,7 +169,7 @@ class Family:
         if not death or not hDeath:
             return True
         if hDeath:
-            hDeath = hDeath + (0, 9, 0)
+            hDeath = tuple(map(sum, zip(hDeath, (0,9,0))))
             if hDeath[1] > 12:
                 hDeath[1] = hDeath[1] % 12
                 hDeath[0] = hDeath[0] + 1
