@@ -166,7 +166,7 @@ class Family:
             return True
         death = self._wife.get_deathDate()
         hDeath = self._husband.get_deathDate()
-        if not death or not hDeath:
+        if not death and not hDeath:
             return True
         if hDeath:
             hDeath = tuple(map(sum, zip(hDeath, (0,9,0))))

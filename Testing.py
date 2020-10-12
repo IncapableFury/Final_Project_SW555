@@ -83,7 +83,8 @@ class TestBirthBeforeDeathofParent(unittest.TestCase):
         child1.set_birthDate(["6", "JAN", "2001"])
         family1.set_husband(male1)
         family1.set_wife(female1)
-        self.assertRaises(ValueError,family1.birth_before_death_of_parents())
+        with self.assertRaises(ValueError):
+            family1.birth_before_death_of_parents()
     def test3(self):
         male1=Individual("P01")
         female1=Individual("P02")
