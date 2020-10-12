@@ -227,6 +227,35 @@ class Family:
         res = sorted(self.get_children(), key=lambda x: x.get_age(days=True), reverse=True)
         return list(filter(lambda x: x.get_birthDate() != None, res))
 
+    def unique_first_names_in_families(self):
+        """user story 25 No more than one child with the same name and birth date should appear in a family"""
+        childName=[]
+        childBirthday=[]
+        for cId in family.get_children:
+            for x in Individual:
+                if cId==Individual.get_id:
+                    childName.append(Individual.get_children)
+                    childBirthday.append(Individual.get_birthDate)
+        for x in range(0, len(childName)):
+            for y in range(x+1, len(childName)):
+                if(childName[x]==childName[y]):
+                    return False
+                    raise ValueError("Error unique first names in families: No more than one child with the same name in family "+self.get_id)
+        for x in range(0, len(childBirthday)):
+            for y in range(x+1, childBirthday):
+                if(childBirthday[x]==childBirthday[y]):
+                    return False
+                    raise ValueError("Error unique first names in families: No more than one child with the same birthday in family "+self.get_id)
+        return True
+
+    def unique_families_by_spouses(self):
+        """user story 24 No more than one family with the same spouses by name and the same marriage date should appear in a GEDCOM file """
+        for anotherFam in Family:
+            if(self.get_husband == anotherFam.get_husband and self.get_wife == anotherFam.get_wife and self.get_marriedDate == anotherFam.get_marriedDate and self.get_id != anotherFam.get_id):
+                return False
+                raise ValueError("Error unique families by spouses: Marriage date of " + self.get_id() + " have the same marriage date as other family and same spouces." +self.get_husband+ self.get_wife)
+        return True
+
 
 if __name__ == "__main__":
     from models.Individual import Individual
