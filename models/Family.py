@@ -194,10 +194,21 @@ class Family:
         return not (threshold[0] < sumOfDifference // (n - 1) < threshold[1])
 
     def fewer_than_15_siblings(self):
-        pass
+        """
+        if self._children is empty, it is a empty list which the length is 0
+        :return: boolean if the length of self._children is less then 15
+        """
+        return len(self._children) < 15
 
     def correct_gender_for_role(self):
-        pass
+        """
+        throw error when missing husband/wife or missing gender of husband/wife
+        :return: boolean from compare the string of husband and wife gender
+        """
+        if(not self._husband or not self._wife): raise AttributeError("missing husband or wife")
+        if(not self._husband.get_gender() or not self._wife.get_gender()): raise AttributeError("missing gender of husband or wife")
+        return self._husband.get_gender() == "M" and self._wife.get_gender() == "F"
+
 
     def male_last_names(self):
         pass
