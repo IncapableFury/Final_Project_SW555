@@ -211,7 +211,17 @@ class Family:
 
 
     def male_last_names(self):
-        pass
+
+        if not self._husband or not self._children:
+            return True
+        lastName = self._husband._lastName
+        for child in self._children:
+            if child.get_gender() == "female":
+                pass
+            childLastName = child._lastName
+            if not lastName == childLastName:
+                return False
+        return True
 
     def no_marriages_to_descendants(self):
         pass

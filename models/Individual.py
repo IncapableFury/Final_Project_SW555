@@ -10,6 +10,8 @@ class Individual:
     def __init__(self, id: str):
         self.id = id
         self._name = None
+        self._firstName = None
+        self._lastName = None
         self._gender = None
         self._birthDate = None
         self._deathDate = None
@@ -49,8 +51,10 @@ class Individual:
     def get_parent_family(self):
         return self._parentFamily
 
-    def set_name(self, name: str) -> None:
+    def set_name(self, name: list) -> None:
         # if not isinstance(name, str): raise TypeError("input has to be a str type")
+        self._firstName = name[0]
+        self._lastName = name[1]
         self._name = name
 
     def set_gender(self, gender: str) -> None:
