@@ -224,7 +224,14 @@ class Family:
         return True
 
     def no_marriages_to_descendants(self):
-        pass
+        if not self._marriedDate:
+            return True
+        for child in self._children:
+            if child == self._wife or child == self._husband:
+                return False
+        return True
+    # todo write test cases for no marriages to descendants
+    # todo make sure all the edge cases in male last names are considered
 
     def siblings_should_not_marry(self):
         pass
