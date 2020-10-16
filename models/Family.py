@@ -231,7 +231,9 @@ class Family:
         """user story 25 No more than one child with the same name and birth date should appear in a family"""
         childName=[]
         childBirthday=[]
-        for cId in family.get_children:
+        if not self.get_children: return True
+        if not self.get_children.get_birthDate: return True
+        for cId in Family.get_children:
             for x in Individual:
                 if cId==Individual.get_id:
                     childName.append(Individual.get_children)
@@ -250,6 +252,8 @@ class Family:
 
     def unique_families_by_spouses(self):
         """user story 24 No more than one family with the same spouses by name and the same marriage date should appear in a GEDCOM file """
+        if not self._husband or not self._wife: return True
+        if not self._husband.get_marriedDate and not self._wife.get_marriedDate: return True
         for anotherFam in Family:
             if(self.get_husband == anotherFam.get_husband and self.get_wife == anotherFam.get_wife and self.get_marriedDate == anotherFam.get_marriedDate and self.get_id != anotherFam.get_id):
                 return False
