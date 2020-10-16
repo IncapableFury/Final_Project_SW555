@@ -2,7 +2,7 @@ import unittest
 
 from models.Individual import Individual
 from models.Family import Family
-"""
+
 class TestDivorseBeforeDeath(unittest.TestCase):
     def test1(self):
         male1=Individual("P01")
@@ -90,7 +90,30 @@ class TestBirthBeforeDeathofParent(unittest.TestCase):
         family1.set_husband(male1)
         family1.set_wife(female1)
         self.assertTrue(family1.birth_before_death_of_parents())
-"""
+
+class TestSiblingsShouldNotMarry(unittest.TestCase):
+    def setUp(self):
+        self.male1=Individual("P01")
+        self.female1=Individual("P02")
+        self.family1=Family("F01")
+        self.family2=Family("F02")
+    def test1(self):
+        self.male1.set_parentFamily(self.family1)
+        self.female1.set_parentFamily(self.family2)
+        self.assertTrue(self.family1.siblings_should_not_marry())
+    def test2(self):
+        self.male1.set_parentFamily(self.family1)
+        self.female1.set_parentFamily(self.family1)
+        self.assertTrue(self.family1.siblings_should_not_marry())
+    def test3(self):
+        self.male1.set_parentFamily(self.family2)
+        self.female1.set_parentFamily(self.family1)
+        self.assertTrue(self.family1.siblings_should_not_marry())
+    def test4(self):
+        self.male1.set_parentFamily(self.family2)
+        self.female1.set_parentFamily(self.family2)
+        self.assertTrue(self.family1.siblings_should_not_marry())
+
 class TestFirstCousinsShouldNotMarry(unittest.TestCase):
     def setUp(self):
         self.male1=Individual("P01")
