@@ -49,13 +49,20 @@ class Gedcom:
     def parse(self):
         from models.Individual import Individual
         from models.Family import Family
+        iddic = set()
+        offset = 0
         for i in range(len(self._data[1]) - 1):  # enumerate individuals
             start_index = self._data[1][i]
             end_index = self._data[1][i + 1]
             # print(self._data[0][start_index:end_index])
+            #TODO: check deplicated ids
             id = self._data[0][start_index][2]
             new_indi = Individual(id)
-            self._individuals[id] = new_indi
+            if id not in iddic:
+                iddic.add(id)
+            else :
+                offset+=1
+            self._individuals["@I"+str(int(id[2:-1])+offset)+"@"] = new_indi
             # print(start_index, end_index)
             for j in range(start_index + 1, end_index):
                 level, tag, arguments = self._data[0][j]
@@ -81,15 +88,18 @@ class Gedcom:
                         new_fam = Family(arguments[0])
                         self._families[arguments[0]] = new_fam
                     new_indi.set_parentFamily(self._families[arguments[0]])
+        offset2 = 0
         for i in range(len(self._data[2]) - 1):
             start_index = self._data[2][i]
             end_index = self._data[2][i + 1]
             # print(self._data[0][start_index:end_index])
             id = self._data[0][start_index][2]
             if id not in self._families:
-                new_fam = Individual(id)
-                self._families[id] = new_fam
-            fam = self._families[id]
+                new_fam = Family("@F"+str(int(id[2:-1])+offset2)+"@")
+                self._families["@F"+str(int(id[2:-1])+offset2)+"@"] = new_fam
+            else:
+                offset2+=1
+            fam = self._families["@F"+str(int(id[2:-1])+offset2)+"@"]
             for j in range(start_index + 1, end_index):
                 level, tag, arguments = self._data[0][j]
                 # print(level, tag, arguments)
@@ -118,10 +128,20 @@ class Gedcom:
 
 
     def Unique_IDs(self):
-        pass 
+        pass
+
 
     def unique_name_and_birth_date(self):
-        pass
+        dic = set()
+        for indi in self._individuals.values():
+            if indi.get_birthDate():
+                key = indi.get_name().replace("/","")+"a".join(list(map(str,indi.get_birthDate())))
+                #print(key)
+                if key not in dic:
+                    dic.add(indi)
+                else:
+                    return False
+        return True
 
     def unique_families_by_spouses(self):
         pass
@@ -136,15 +156,19 @@ class Gedcom:
         pass
 
 
-
 # if __name__ == "__main__":
-    # SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
-    #                 "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
-    # g1 = Gedcom("../testing_files/Jiashu_Wang.ged", SUPPORT_TAGS)
-    # for i in range(len(g1.get_data()[0])):
-    #     print(i,g1.get_data()[0][i])
-    # for i in range(len(g1.get_data()[1])):
-    #     print(g1.get_data()[1][i])
-    # print(g1.get_data(),sep='/n')
-    # g1.parse()
-    # print(len(g1.get_individuals()),g1.get_individuals()["@I2@"].get_birthDate())
+#     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
+#                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
+#     #     print(i,g1.get_data()[0][i])
+#     # for i in range(len(g1.get_data()[1])):
+#     #     print(g1.get_data()[1][i])
+#     # print(g1.get_data(),sep='/n')
+#     g1.parse()
+#     # print(g1.get_individuals(),g1.get_families())
+#     # print(len(g1.get_individuals()),g1.get_individuals()["@I2@"].get_birthDate())
+#     g1.unique_name_and_birth_date()
+#     # print("what")
+#     offset = 11
+#     id = "@I123@"
+#     print("@I"+str(int(id[2:-1])+offset)+"@")
+#     print(g1.get_families().values())
