@@ -159,6 +159,8 @@ class Gedcom:
 # if __name__ == "__main__":
 #     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
 #                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
+#     g1 = Gedcom("../testing_files/Jiashu_Wang.ged", SUPPORT_TAGS)#testing_files/Jiashu_Wang.ged
+#     # for i in range(len(g1.get_data()[0])):
 #     #     print(i,g1.get_data()[0][i])
 #     # for i in range(len(g1.get_data()[1])):
 #     #     print(g1.get_data()[1][i])
