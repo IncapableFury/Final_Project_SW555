@@ -215,18 +215,36 @@ class Family:
         pass
 
     def siblings_should_not_marry(self):
-        if not self._husband or not self._wife: return True
-        if not self._husband.get_parent_family() and not self._wife.get_parent_family(): return True
+        if not self._husband or not self._wife: raise AttributeError("Missing husband or wife")
+        if not self._husband.get_parent_family() and not self._wife.get_parent_family(): raise AttributeError("Missing husband and wife parent")
         return self._husband.get_parent_family()!=self._wife.get_parent_family()
     
     def first_cousins_should_not_marry(self):
-        if not self._husband or not self._wife: return True
-        if not self._husband.get_parent_family() and not self._wife.get_parent_family(): return True
+        if not self._husband or not self._wife: raise AttributeError("Missing husband or wife")
+        if not self._husband.get_parent_family() and not self._wife.get_parent_family(): raise AttributeError("Missing husband and wife parent")
         families=[]
-        families.append(self._husband.get_parent_family().get_husband().get_parent_family())
-        families.append(self._husband.get_parent_family().get_wife().get_parent_family())
-        families.append(self._wife.get_parent_family().get_husband().get_parent_family())
-        families.append(self._wife.get_parent_family().get_wife().get_parent_family())
+        if self._husband.get_parent_family():
+            if self._husband.get_parent_family().get_husband():
+                families.append(self._husband.get_parent_family().get_husband().get_parent_family())
+            else:
+                raise AttributeError("Missing husband's father parent")
+            if self._husband.get_parent_family().get_wife():
+                families.append(self._husband.get_parent_family().get_wife().get_parent_family())
+            else:
+                raise AttributeError("Missing husband's mother parent")
+        else:
+            raise AttributeError("Missing husband parent")
+        if self._wife.get_parent_family():
+            if self._wife.get_parent_family().get_husband():
+                families.append(self._wife.get_parent_family().get_husband().get_parent_family())
+            else:
+                raise AttributeError("Missing wife's father parent")
+            if self._wife.get_parent_family().get_wife():
+                families.append(self._wife.get_parent_family().get_wife().get_parent_family())
+            else:
+                raise AttributeError("Missing wife's mother parent")
+        else:
+            raise AttributeError("Missing wife parent")
         return len(families)==len(set(families))
 
     def order_siblings_by_age(self):
