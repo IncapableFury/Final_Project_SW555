@@ -228,6 +228,10 @@ class Family:
         return list(filter(lambda x: x.get_birthDate() != None, res))
 
 
+
+
+
+
 if __name__ == "__main__":
     from models.Individual import Individual
     # ---------------------------testing cases below---------------------------

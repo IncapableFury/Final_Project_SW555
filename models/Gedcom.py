@@ -123,11 +123,32 @@ class Gedcom:
     def unique_name_and_birth_date(self):
         pass
 
+    
     def unique_families_by_spouses(self):
-        pass
+        """user story 24 No more than one family with the same spouses by name and the same marriage date should appear in a GEDCOM file """
+        if not self._husband or not self._wife: raise AttributeError("no husband or wife")
+        if not self._husband.get_marriedDate and not self._wife.get_marriedDate: raise AttributeError("no marriage date")
+        for anotherFam in self.get_families():
+            if(self.get_husband == anotherFam.get_husband and self.get_wife == anotherFam.get_wife and self.get_marriedDate == anotherFam.get_marriedDate and self.get_id != anotherFam.get_id):
+                return False
+                raise ValueError("Error unique families by spouses: Marriage date of " + self.get_id() + " have the same marriage date as other family and same spouces." +self.get_husband+ self.get_wife)
+        return True
 
     def unique_first_names_in_families(self):
-        pass
+        """user story 25 No more than one child with the same name and birth date should appear in a family"""
+        childName=[]
+        childBirthday=[]
+        if not self.get_children: raise AttributeError("no chlidren") 
+        if not self.get_children.get_birthDate:  raise AttributeError("no chlidren birthday")
+        for child in self.get_families().get_children():
+            childName.append(child.get_name().split(" ")[0])
+            childBirthday.append(child.get_birthDate())
+        for x in range(0, len(childName)):
+            for y in range(x+1, len(childName)):
+                if(childName[x]==childName[y] and childBirthday[x]==childBirthday[y]):
+                    return False
+                    raise ValueError("Error unique first names in families: No more than one child with the same name in family "+self.get_id)
+        return True
 
     def include_individual_ages(self):
         pass

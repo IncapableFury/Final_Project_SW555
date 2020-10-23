@@ -90,6 +90,12 @@ class TestTriangles(unittest.TestCase):
         self.assertEqual(self.fam_2.marriage_before_death(), True)
         self.assertNotEqual(self.fam_2.marriage_before_death(), False)
 
+    def testUniqueFamiliesBySpouses(self):
+        pass
+
+    def testUniqueFirstNamesInFamilies(self):
+        pass 
+
     def testInputValidation(self):
         pass
 
