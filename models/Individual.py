@@ -155,4 +155,50 @@ class Individual:
         pass
 
     def first_cousins_should_not_marry(self):
-        pass  # did not understand the question, move to the place you like
+        if self.get_parent_family() and self.get_parent_family().get_husband() and \
+                self.get_parent_family().get_husband().get_parent_family():
+            daddy = self.get_parent_family().get_husband()
+            daddy_siblings = self.get_parent_family().get_husband().get_parent_family().get_children()[:]
+            daddy_siblings.remove(daddy)  # if singleton, this loop does nothing
+            for daddy_sibling in daddy_siblings:
+                daddy_sibling_families = daddy_sibling.get_family()  # consider past families
+                for child_fam in daddy_sibling_families:
+                    for first_cousin in child_fam.get_children():
+                        if first_cousin == self: return False
+        if self.get_parent_family() and self.get_parent_family().get_wife() and \
+                self.get_parent_family().get_wife().get_parent_family():
+            mummy = self.get_parent_family().get_wife()
+            mummy_siblings = self.get_parent_family().get_wife().get_parent_family().get_children()[:]
+            mummy_siblings.remove(mummy)  # if singleton, this loop does nothing
+            for mummy_sibling in mummy_siblings:
+                mummy_sibling_families = mummy_sibling.get_family()  # consider past families
+                for mummy_sibling_fam in mummy_sibling_families:
+                    for first_cousin in mummy_sibling_fam.get_children():
+                        if first_cousin == self: return False
+        return True
+
+    def no_marriages_to_descendants(self):  # dfs in dfs
+        if not self.get_family():
+            return True
+        spouse = []
+        if self.get_gender() == "M":
+            for past_family in self.get_family():
+                spouse.append(past_family.get_wife())
+        else:
+            for past_family in self.get_family():
+                spouse.append(past_family.get_husband())
+        print(list(map(lambda x: x.get_id(), spouse)))
+
+        def dfs(next_member):
+            print(next_member.get_id())
+            if not next_member.get_family():
+                return True
+            result = True
+            for family in next_member.get_family():
+                for child in family.get_children():
+                    if child in spouse:
+                        return False
+                    result = dfs(child) and result
+            return result
+
+        return dfs(self)
