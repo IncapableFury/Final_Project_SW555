@@ -102,6 +102,21 @@ class Family:
                 return False
         return True
 
+    def parents_not_too_old(self):
+        if not self._husband or not self._wife: raise AttributeError("Error: missing husband or wife")
+        if not self._husband.get_age() or not self._wife.get_age(): raise AttributeError("Error: missing age for husband or wife")
+        wife_age = self._wife.get_age()
+        husband_age = self._husband.get_age()
+        for child in self._children:
+            if not child.get_age(): raise AttributeError("Error: missing child age")
+            wife_diff = wife_age - child.get_age()
+            husband_diff = husband_age - child.get_age()
+            if wife_diff >= 60 or husband_diff >= 80: return False
+            
+        return True
+
+
+
     def marriage_before_divorce(self):
         from datetime import date
         marriage = self.get_marriedDate()

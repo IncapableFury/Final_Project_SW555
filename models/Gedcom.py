@@ -117,6 +117,28 @@ class Gedcom:
                         continue
 
 
+    '''
+    Move this function from individual.py to gedcom.py
+    '''
+    def dates_before_current_date(self):
+        from datetime import date
+        today = date.today()
+        for _, indi in self._individuals:
+            if not indi.get_birthDate(): raise AttributeError("Error: missing birthdate for individual")
+            if not (today - date(indi.get_birthDate())).days < 0: return False
+            if not indi.get_deathDate() == None: 
+                if not (today - date(indi.get_deathDate())).days < 0: return False
+
+        for _, fam in self._families:
+            if not fam.get_marriedDate(): raise AttributeError("Error: missing marriedDate for family")
+            if not (today - date(fam.get_marriedDate())).days < 0: return False
+            if not fam.get_divorcedDate() == None:
+                if not (today - date(fam.get_divorcedDate())).days < 0: return False
+        
+        return True
+
+
+
     def Unique_IDs(self):
         pass 
 

@@ -35,7 +35,7 @@ class Individual:
 
         """
         import datetime
-        if not self._birthDate: return -1
+        if not self._birthDate: raise AttributeError("Error: missing birthdate for age")
         today = datetime.date.today()
         lived_days = (today - datetime.date(*self._birthDate)).days
         return lived_days // 365 if not days else lived_days
@@ -85,41 +85,35 @@ class Individual:
                      "OCT": 10, "NOV": 11, "DEC": 12}
         return int(date[2]), monthList[date[1]], int(date[0])
 
-    def dates_before_current_date(self):
-        pass
+
+
 
     def birth_before_marriage(self):
-        import datetime
-        if not self._birthDate or not self._parentFamily or not self._parentFamily.get_marriedDate():
-            return True
-        birthday = datetime.datetime(*self._birthDate)
-        marriageDate = datetime.datetime(*self._parentFamily.get_marriedDate())
-        return birthday < marriageDate
+        from datetime import date
+        if not self._birthDate or not self._family: raise AttributeError("Error: Missing attribute")
+        #if not self._parentFamily.get_marriedDate(): raise AttributeError("Error: Missing attribute")
+        for family in self.get_family():
+            if not family.get_marriedDate(): raise AttributeError("Error: Missing attribute")
+            timedelta = date(*family.get_marriedDate()) - date(*self._birthDate)
+            if(timedelta.days <= 0): return False
+        return True
 
     def birth_before_death(self):
-        import datetime
-        if not self._birthDate or not self._deathDate:
-            return True
-        if not isinstance(self._birthDate, tuple) or not isinstance(self._deathDate, tuple):
-            raise ValueError("birthday or deathDate not in tuple format!")
+        from datetime import date
+        if not self._birthDate or not self._deathDate: raise AttributeError("Error: Missing attribute")
 
-        birthday = datetime.datetime(*self._birthDate)
-        deathDate = datetime.datetime(*self._deathDate)
-        return birthday < deathDate
+        return (date(*self._deathDate) - date(*self._birthDate)).days > 0
 
     def less_then_150_years_old(self):
-        if self.get_age() > 150:
-            raise ValueError("People" + self.get_id() + "is too old")
         return self.get_age() < 150
 
     def no_bigamy(self) -> bool:
         if (len(self._family) <= 1): return True
         marrageAgeList = []
         birthDate = self._birthDate
-        if not self._family:
-            return True
+        if not self._family: raise AttributeError("Erro: Missing attribute")
         for each_marrage in self._family:
-            if not each_marrage.get_marriedDate(): continue
+            if not each_marrage.get_marriedDate(): raise AttributeError("Erro: Missing attribute")
             marrageAge = each_marrage.get_marriedDate()[0] - birthDate[0] + (
                     each_marrage.get_marriedDate()[1] - birthDate[1]) / 12 + (
                                  each_marrage.get_marriedDate()[2] - birthDate[2]) / 365
@@ -148,8 +142,7 @@ class Individual:
             marrageAgeList.append((marrageAge, devorceAge))
         return True
 
-    def parents_not_too_old(self):
-        pass
+
 
     def aunts_and_uncles(self):
         pass
