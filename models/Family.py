@@ -205,33 +205,88 @@ class Family:
         throw error when missing husband/wife or missing gender of husband/wife
         :return: boolean from compare the string of husband and wife gender
         """
-        if(not self._husband or not self._wife): raise AttributeError("missing husband or wife")
-        if(not self._husband.get_gender() or not self._wife.get_gender()): raise AttributeError("missing gender of husband or wife")
+        if (not self._husband or not self._wife): raise AttributeError("missing husband or wife")
+        if (not self._husband.get_gender() or not self._wife.get_gender()): raise AttributeError(
+            "missing gender of husband or wife")
         return self._husband.get_gender() == "M" and self._wife.get_gender() == "F"
 
+    def dfs_male_lastnames_hus(self, visited):
+        if self not in visited:
+            visited.add(self)
+            if not self._husband or not self._children:
+                return True
+            fatherLastname = self._husband.get_name().split(' ')[1]
+            for child in self.get_children():
+                if child.get_gender() == 'F' or child.get_gender() == "female" or child.get_gender() == None:
+                    continue
+                maleChildLastname = child.get_name().split(' ')[1]
+                if maleChildLastname != fatherLastname:
+                    return False
+        if self._husband.get_parent_family():
+            return self._husband.get_parent_family().dfs_male_lastnames_hus(visited)
+        else:
+            return True
+
+    def dfs_male_lastnames_wife(self, visited):
+        if self not in visited:
+            visited.add(self)
+            if not self._husband or not self._children:
+                return True
+            fatherLastname = self._husband.get_name().split(' ')[1]
+            for child in self.get_children():
+                if child.get_gender() == 'F' or child.get_gender() == "female" or child.get_gender() == "none":
+                    continue
+                maleChildLastname = child.get_name().split(' ')[1]
+                if maleChildLastname != fatherLastname:
+                    return False
+        if self._wife.get_parent_family():
+            return self._wife.get_parent_family().dfs_male_lastnames_wife(visited)
+        else:
+            return True
+
+    #todo check for cases of names with three words
+    # with one word, with no words
 
     def male_last_names(self):
+        visited = set()
+        return self.dfs_male_lastnames_hus(visited) and self.dfs_male_lastnames_wife(visited)
 
-        if not self._husband or not self._children:
+        # lastName = self._husband._lastName
+        # for child in self._children:
+        #     if child.get_gender() == None or child.get_gender() == "female":
+        #         continue
+        #     childLastName = child._lastName
+        #     if not lastName == childLastName:
+        #         return False
+        # return True
+
+
+    def dfs_hus(self, visited):
+        if self not in visited:
+            visited.add(self)
+            for child in self.get_children():
+                if child == self._husband or child == self._wife:
+                    return False
+        if self._husband.get_parent_family():
+            return self._husband.get_parent_family().dfs_hus(visited)
+        else:
             return True
-        lastName = self._husband._lastName
-        for child in self._children:
-            if child.get_gender() == "female":
-                pass
-            childLastName = child._lastName
-            if not lastName == childLastName:
-                return False
-        return True
 
+    def dfs_wife(self, visited):
+        if self not in visited:
+            visited.add(self)
+            for child in self.get_children():
+                if child == self._husband or child == self._wife:
+                    return False
+        if self._wife.get_parent_family():
+            return self._wife.get_parent_family().dfs_wife(visited)
+        else:
+            return True
+
+    # makes sure no husband or wife is married to their children in the family, and in its parent families
     def no_marriages_to_descendants(self):
-        if not self._marriedDate:
-            return True
-        for child in self._children:
-            if child == self._wife or child == self._husband:
-                return False
-        return True
-    # todo write test cases for no marriages to descendants
-    # todo make sure all the edge cases in male last names are considered
+        visited = set()
+        return self.dfs_hus(visited) and self.dfs_wife(visited)
 
     def siblings_should_not_marry(self):
         pass
