@@ -222,8 +222,6 @@ class Family:
     def male_last_names(self):
         pass
 
-    def no_marriages_to_descendants(self):
-        pass
 
     def siblings_should_not_marry(self):
         pass
