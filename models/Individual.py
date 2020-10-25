@@ -15,6 +15,7 @@ class Individual:
         self._gender = None
         self._birthDate = None
         self._deathDate = None
+        #change made here
         self._family = []
         self._parentFamily = None
 
@@ -45,7 +46,7 @@ class Individual:
     def get_deathDate(self) -> tuple:
         return self._deathDate
 
-    def get_family(self):
+    def get_family(self) ->[]:
         return self._family
 
     def get_parent_family(self):
@@ -72,9 +73,13 @@ class Individual:
         # if not isinstance(death_date, str): raise TypeError("input has to be a str type")
         self._deathDate = self.change_date_formate(death_date)
 
-    def add_to_family(self, family) -> None:
-        # if not isinstance(family, Family): raise TypeError("input has to be a Family type")
-        self._family.append(family)
+    def add_to_family(self, familylist) -> None:
+        # makes sure child can not set his/her family as his/her parent family
+        # if family.get_children():
+        #     for child in family.get_children():
+        #         if child == self:
+        #             raise ValueError("Can not set parent family as one's family")
+        self._family.append(familylist)
 
     def set_parentFamily(self, parent_family) -> None:
         # if not isinstance(parent_family, family): raise TypeError("input has to be a family type")

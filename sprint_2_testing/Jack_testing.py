@@ -1,6 +1,6 @@
 import unittest
 import sys
-sys.path.append('../')
+# sys.path.append('../')
 
 from models.Individual import Individual
 from models.Family import Family
@@ -139,67 +139,75 @@ class sprint2Test(unittest.TestCase):
         # Child 3
         ind10 = Individual("10")
 
+        # ind8.set_families(fam2)
+        # ind9.set_families(fam2)
+        # ind10.set_families(fam2)
+
         fam2.set_wife(ind7)
         fam2.set_husband(ind8)
         fam2.set_marriedDate((1989, 7, 25))
         fam2.set_children([ind8,ind9,ind10])
         self.assertFalse(fam2.no_marriages_to_descendants())
 
-        #husband with parent family
-        #fam3
-        fam3 = Family("3")
-        # Husband
-        ind11 = Individual("11")
-        # Wife
-        ind12 = Individual("12")
-        # Child 1
-        ind13 = Individual("13")
-        # Child 2
-        ind14 = Individual("14")
-        fam3.set_wife(ind12)
-        fam3.set_husband(ind11)
-        fam3.set_children([ind13,ind14])
-
-        #husband of family1's parent family is fam3
-        ind1.set_parentFamily(fam3)
-        self.assertTrue(fam1.no_marriages_to_descendants())
-
-        #2 generations of parent family, husband side
-        # fam3
-        fam4 = Family("4")
-        # Husband
-        ind15 = Individual("15")
-        # Wife
-        ind16 = Individual("16")
-        # Child 1
-        ind17 = Individual("17")
-        # Child 2
-        ind18 = Individual("18")
-        fam4.set_wife(ind16)
-        fam4.set_husband(ind15)
-        fam4.set_children([ind17, ind18])
-        # husband of family3's parent family is fam4
-        ind11.set_parentFamily(fam4)
-        self.assertTrue(fam1.no_marriages_to_descendants())
-
-        # Adding parent family to fam1 wife's side
-
-        fam5 = Family("5")
-        # Husband
-        ind19 = Individual("19")
-        # Wife
-        ind20 = Individual("20")
-        # Child 1
-        ind21 = Individual("21")
-        # Child 2
-        ind22 = Individual("22")
-        fam5.set_wife(ind20)
-        fam5.set_husband(ind19)
-        fam5.set_children([ind19, ind22])
-        # wife of family1's parent family is fam5
-        ind2.set_parentFamily(fam5)
-        print(ind2._parentFamily)
-        self.assertFalse(fam1.no_marriages_to_descendants())
+        # #husband with parent family
+        # #fam3
+        # fam3 = Family("3")
+        # # Husband
+        # ind11 = Individual("11")
+        # # Wife
+        # ind12 = Individual("12")
+        # # Child 1
+        # ind13 = Individual("13")
+        # # Child 2
+        # ind14 = Individual("14")
+        #
+        # ind13.set_families(fam3)
+        # ind14.set_families(fam3)
+        #
+        # fam3.set_wife(ind12)
+        # fam3.set_husband(ind11)
+        # fam3.set_children([ind13,ind14])
+        #
+        # #husband of family1's parent family is fam3
+        # ind1.set_parentFamily(fam3)
+        # self.assertTrue(fam1.no_marriages_to_descendants())
+        #
+        # #2 generations of parent family, husband side
+        # # fam3
+        # fam4 = Family("4")
+        # # Husband
+        # ind15 = Individual("15")
+        # # Wife
+        # ind16 = Individual("16")
+        # # Child 1
+        # ind17 = Individual("17")
+        # # Child 2
+        # ind18 = Individual("18")
+        # fam4.set_wife(ind16)
+        # fam4.set_husband(ind15)
+        # fam4.set_children([ind17, ind18])
+        # # husband of family3's parent family is fam4
+        # ind11.set_parentFamily(fam4)
+        # self.assertTrue(fam1.no_marriages_to_descendants())
+        #
+        # # Adding parent family to fam1 wife's side
+        #
+        # fam5 = Family("5")
+        # # Husband
+        # ind19 = Individual("19")
+        # # Wife
+        # ind20 = Individual("20")
+        # # Child 1
+        # ind21 = Individual("21")
+        # # Child 2
+        # ind22 = Individual("22")
+        # fam5.set_wife(ind20)
+        # fam5.set_husband(ind19)
+        # fam5.set_children([ind19, ind22])
+        # # wife of family1's parent family is fam5
+        # ind2.set_parentFamily(fam5)
+        # print(ind2._parentFamily)
+        # self.assertFalse(fam1.no_marriages_to_descendants())
 
 if __name__ == '__main__':
     unittest.main()

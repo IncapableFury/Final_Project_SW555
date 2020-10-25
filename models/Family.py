@@ -251,42 +251,60 @@ class Family:
         visited = set()
         return self.dfs_male_lastnames_hus(visited) and self.dfs_male_lastnames_wife(visited)
 
-        # lastName = self._husband._lastName
-        # for child in self._children:
-        #     if child.get_gender() == None or child.get_gender() == "female":
-        #         continue
-        #     childLastName = child._lastName
-        #     if not lastName == childLastName:
-        #         return False
-        # return True
+    # def dfs_hus(self, visited):
+    #     if self not in visited:
+    #         visited.add(self)
+    #         for child in self.get_children():
+    #             if child == self._husband or child == self._wife:
+    #                 return False
+    #     if self._husband.get_parent_family():
+    #         return self._husband.get_parent_family().dfs_hus(visited)
+    #     else:
+    #         return True
 
+    # parents shouldn't marry their child or child's child (3 levels) n^2 complexity
 
-    def dfs_hus(self, visited):
-        if self not in visited:
-            visited.add(self)
-            for child in self.get_children():
-                if child == self._husband or child == self._wife:
-                    return False
+    def dfs_hus_up(self, visited):
         if self._husband.get_parent_family():
-            return self._husband.get_parent_family().dfs_hus(visited)
+            return self._husband.get_parent_family().dfs_hus_up()
         else:
-            return True
+            return self.dfs_down(visited)
 
-    def dfs_wife(self, visited):
+    def dfs_wife_up(self, visited):
+        if self._wife.get_parent_family():
+            return self._wife.get_parent_family().dfs_wife_up()
+        else:
+            self.dfs_down(visited)
+
+    def dfs_down(self, visited):
         if self not in visited:
             visited.add(self)
-            for child in self.get_children():
-                if child == self._husband or child == self._wife:
-                    return False
-        if self._wife.get_parent_family():
-            return self._wife.get_parent_family().dfs_wife(visited)
+            if self.get_children():
+                for child in self._children:
+                    if child == self._husband or child == self._wife:
+                        return False
+                    # if child.get_family()[0] and child.get_family()[0].get_children():
+                    #     for grandChild in child._children:
+                    #         if grandChild == self._husband or grandChild == self._wife:
+                    #             return False
+                    # else:
+                    #     return True
+            else:
+                return True
+
+        if self.get_children():
+            for child in self._children:
+                if (len(child.get_family()) > 0):
+                    for fam in child.get_family():
+                        return fam.dfs_down(visited)
+                else: continue
         else:
             return True
 
     # makes sure no husband or wife is married to their children in the family, and in its parent families
     def no_marriages_to_descendants(self):
         visited = set()
-        return self.dfs_hus(visited) and self.dfs_wife(visited)
+        return self.dfs_hus_up(visited) and self.dfs_wife_up(visited)
 
     def siblings_should_not_marry(self):
         pass
@@ -300,6 +318,7 @@ class Family:
         return list(filter(lambda x: x.get_birthDate() != None, res))
 
 
-if __name__ == "__main__":
-    from models.Individual import Individual
     # ---------------------------testing cases below---------------------------
+
+if __name__ == "__main__":
+    pass
