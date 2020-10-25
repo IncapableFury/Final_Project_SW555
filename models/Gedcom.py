@@ -181,7 +181,7 @@ class Gedcom:
         """user story 25 No more than one child with the same name and birth date should appear in a family"""
         childName=[]
         childBirthday=[]
-        if not self.get_children: raise AttributeError("no chlidren") 
+        if not self.get_children: raise AttributeError("no children") 
         if not self.get_children.get_birthDate:  raise AttributeError("no chlidren birthday")
         for child in self.get_families().get_children():
             childName.append(child.get_name().split(" ")[0])
@@ -197,7 +197,16 @@ class Gedcom:
         pass
 
     def corresponding_entries(self):
-        pass
+        """ user story 26 the information in the individual and family records should be consistent."""
+        if not self.get_children: raise AttributeError("no children")
+        if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
+        if self._individuals().get_id()==self._families().get_husband().get_id() or self._individuals().get_id()==self._families().get_wife().get_id():
+            return True 
+        for child in self._families.get_children():
+            if self._individuals().get_id()==self._families().get_id() and self._individuals.get_id()==child:
+                return True
+        return False
+        raise ValueError("Error corresponding entries: All family roles (spouse, child) specified in an individual record should have corresponding entries in the corresponding family, the information in the individual and family records should be consistent.")
 
 
 # if __name__ == "__main__":
