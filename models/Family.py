@@ -81,8 +81,11 @@ class Family:
     def multiple_births_lessOrEqual_than_5(self):  # cannot catch multi multiples; not sure if need to
         from datetime import date
         today = date.today()
-        births = sorted(
-            list(map(lambda i: abs((date(*i) - today).days), [x.get_birthDate() for x in self.get_children()])))
+        try:
+            births = sorted(
+                list(map(lambda i: abs((date(*i) - today).days), [x.get_birthDate() for x in self.get_children()])))
+        except AttributeError:
+            raise AttributeError("Missing birthdate for children")
         if len(births) <= 5:
             return True
         multi, sameDay, pre = 0, 0, births[0]
@@ -99,93 +102,119 @@ class Family:
                 return False
         return True
 
+    def parents_not_too_old(self):
+        if not self._husband or not self._wife: raise AttributeError("Error: missing husband or wife")
+        if not self._husband.get_age() or not self._wife.get_age(): raise AttributeError(
+            "Error: missing age for husband or wife")
+        wife_age = self._wife.get_age()
+        husband_age = self._husband.get_age()
+        for child in self._children:
+            if not child.get_age(): raise AttributeError("Error: missing child age")
+            wife_diff = wife_age - child.get_age()
+            husband_diff = husband_age - child.get_age()
+            if wife_diff >= 60 or husband_diff >= 80: return False
+
+        return True
+
     def marriage_before_divorce(self):
         from datetime import date
         marriage = self.get_marriedDate()
         divorce = self.get_divorcedDate()
-        if not marriage or not divorce: return True
+        if not marriage: raise AttributeError("Missing marriage date")
+        if not divorce: return True
         timedelta = date(*marriage) - date(*divorce)
-        if timedelta.days < 0:
-            return True
-        print("Error marriage before divorce: Marriage date of " + Family.get_id + " happened after the divorce date.")
-        return False
+        return timedelta.days < 0
 
     def marriage_after_14(self) -> bool:
-        if not self._husband or not self._wife or not self._marriedDate: return True
-        if not self._husband.get_birthDate() or not self._wife.get_birthDate(): return True
-        husbandMarryAge = self._marriedDate[0] - self._husband.get_birthDate()[0] - (
-                (self._marriedDate[1], self._marriedDate[2]) < (
-            self._husband.get_birthDate()[1], self._husband.get_birthDate()[2]))
-        wifeMarryAge = self._marriedDate[0] - self._wife.get_birthDate()[0] - (
-                (self._marriedDate[1], self._marriedDate[2]) < (
-            self._wife.get_birthDate()[1], self._wife.get_birthDate()[2]))
-        # print(self._husband.get_birthDate(), self._wife.get_birthDate())
+        from datetime import date
+        if not self._husband or not self._wife or not self._marriedDate: raise AttributeError(
+            "Missing husband/wife/marriedDate")
+        if not self._husband.get_birthDate() or not self._wife.get_birthDate(): raise AttributeError(
+            "Missing birthdate for husband/wife")
+        husbandMarryAge = (date(self._marriedDate) - date(self._husband.get_birthDate())).days // 365
+        wifeMarryAge = (date(self._marriedDate) - date(self._wife.get_birthDate())).days // 365
         return husbandMarryAge > 14 and wifeMarryAge > 14
 
     def marriage_before_death(self):
         from datetime import date
-        marriage = self.get_marriedDate()
-        # TODO:None check; return true
-        if not self._husband.get_deathDate() or not self._wife.get_deathDate() or not marriage:
-            return True
-        if self._husband.get_deathDate() > self._wife.get_deathDate():
-            death = self._wife.get_deathDate()
-        else:
-            death = self._husband.get_deathDate()
-        timedelta = date(*marriage) - date(*death)
-        if timedelta.days < 0:
-            # raise ValueError("Error marriage before death: Marriage date of " + self.get_id() + " happened after they died.")
-            return True
-            print("Error marriage before death: Marriage date of " + self.get_id() + " happened after they died.")
+        if not self._husband or not self._wife or not self.get_marriedDate(): raise AttributeError(
+            "Missing husband/wife/marriedDate")
+        if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
 
-        return False
+        death = None
+        if not self._husband.get_deathDate():
+            death = self._wife.get_deathDate()
+        elif not self._wife.get_deathDate():
+            death = self._husband.get_deathDate()
+        else:
+            if self._husband.get_deathDate() > self._wife.get_deathDate():
+                death = self._wife.get_deathDate()
+            else:
+                death = self._husband.get_deathDate()
+
+        timedelta = date(*marriage) - date(*death)
+        return timedelta.days < 0
 
     def divorce_before_death(self) -> bool:
-        if not self._husband or not self._wife: return True
-        if not self._husband.get_deathDate() or not self._wife.get_deathDate(): return True
+        from datetime import date
+        if not self._husband or not self._wife: raise AttributeError("Missing husband/wife")
+        if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
         if not self._divorced: return True
-        return ((self._husband.get_deathDate() > self._divorced or not self._husband.get_deathDate()) and (
-                self._wife.get_deathDate() > self._divorced or not self._wife.get_deathDate()))
+
+        deathdays = None
+        if not self._husband.get_deathDate():
+            deathdays = (date(self._divorced) - date(self._husband.get_deathDate())).days
+        elif not self._wife.get_deathDate():
+            deathdays = (date(self._divorced) - date(self._wife.get_deathDate())).days
+        else:
+            deathdays = (date(self._divorced) - date(self._husband.get_deathDate())).days
+            if deathdays > (date(self._divorced) - date(self._wife.get_deathDate())).days:
+                deathdays = (date(self._divorced) - date(self._wife.get_deathDate())).days
+
+        return deathdays > 0
 
     def birth_before_marriage_of_parents(self):
-        if not self._husband or not self._wife: return True
-        marriage = self.get_marriedDate()
-        if not marriage:
-            return True
+        if not self._husband or not self._wife: raise AttributeError("Missing husband/wife")
+        if not self.get_marriedDate(): raise AttributeError("Missing marrageDate")
+
         for c in self._children:
-            if not c.get_birthDate():
-                continue
-            if c.get_birthDate() > marriage:
-                raise ValueError("Child " + c.get_id() + " born after marriage of parent.")
+            if not c.get_birthDate(): raise AttributeError("Missing child birthDate")
+            if c.get_birthDate() > self.get_marriedDate(): return False
         return True
 
     def birth_before_death_of_parents(self):
-        if not self._husband or not self._wife: return True
+        if not self._husband or not self._wife: raise AttributeError("Missing husband/wife")
         if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
-        if len(self._children) == 0:
-            return True
+        if len(self._children) == 0: return True
         death = self._wife.get_deathDate()
         hDeath = self._husband.get_deathDate()
-        if not death or not hDeath:
+
+        if not hDeath:
+            for c in self._children:
+                if c.get_birthDate() > death: return False
             return True
-        if hDeath:
-            hDeath = hDeath + (0, 9, 0)
-            if hDeath[1] > 12:
-                hDeath[1] = hDeath[1] % 12
-                hDeath[0] = hDeath[0] + 1
-        if hDeath < death or death is None:
+
+        hDeath = hDeath + (0, 9, 0)
+        if hDeath[1] > 12:
+            hDeath[1] = hDeath[1] % 12
+            hDeath[0] = hDeath[0] + 1
+        if not death:
+            for c in self._children:
+                if c.get_birthDate() > hdeath: return False
+            return True
+
+        if hDeath < death:
             death = hDeath
+
         for c in self._children:
-            if c.get_birthDate() > death:
-                raise ValueError("Child " + c.get_id() + " born after death of parent.")
+            if c.get_birthDate() > death: return False
         return True
 
     def siblings_spacing(self):
         from datetime import date
         threshold = [1, 240]  # 8 month is ambiguous, let's just assume 8*30=240 days
         n = len(self.get_children())
-        if n < 2:
-            return True
+        if n < 2: return True
         sumOfDifference = 0
         for i in range(n - 1):
             timedelta = date(*self.get_children()[i].get_birthDate()) - date(
@@ -210,101 +239,22 @@ class Family:
             "missing gender of husband or wife")
         return self._husband.get_gender() == "M" and self._wife.get_gender() == "F"
 
-    def dfs_male_lastnames_hus(self, visited):
-        if self not in visited:
-            visited.add(self)
-            if not self._husband or not self._children:
-                return True
-            fatherLastname = self._husband.get_name().split(' ')[1]
-            for child in self.get_children():
-                if child.get_gender() == 'F' or child.get_gender() == "female" or child.get_gender() == None:
-                    continue
-                maleChildLastname = child.get_name().split(' ')[1]
-                if maleChildLastname != fatherLastname:
-                    return False
-        if self._husband.get_parent_family():
-            return self._husband.get_parent_family().dfs_male_lastnames_hus(visited)
-        else:
-            return True
-
-    def dfs_male_lastnames_wife(self, visited):
-        if self not in visited:
-            visited.add(self)
-            if not self._husband or not self._children:
-                return True
-            fatherLastname = self._husband.get_name().split(' ')[1]
-            for child in self.get_children():
-                if child.get_gender() == 'F' or child.get_gender() == "female" or child.get_gender() == "none":
-                    continue
-                maleChildLastname = child.get_name().split(' ')[1]
-                if maleChildLastname != fatherLastname:
-                    return False
-        if self._wife.get_parent_family():
-            return self._wife.get_parent_family().dfs_male_lastnames_wife(visited)
-        else:
-            return True
-
-    #todo check for cases of names with three words
-    # with one word, with no words
-
     def male_last_names(self):
-        visited = set()
-        return self.dfs_male_lastnames_hus(visited) and self.dfs_male_lastnames_wife(visited)
+        def dfs(family):
+            flag = True
+            hus_last_name = family._husband.get_name().split(' ')[1]
+            for child in family.get_children():
+                if child.get_gender() == None:
+                    raise ValueError("child's gender is not set yet")
+                elif child.get_gender() == "F":
+                    continue
+                if child.get_name().split(' ')[1] != hus_last_name:
+                    return False
+                for fam in child.get_family():
+                    flag = dfs(fam) and flag
+            return flag
 
-    # def dfs_hus(self, visited):
-    #     if self not in visited:
-    #         visited.add(self)
-    #         for child in self.get_children():
-    #             if child == self._husband or child == self._wife:
-    #                 return False
-    #     if self._husband.get_parent_family():
-    #         return self._husband.get_parent_family().dfs_hus(visited)
-    #     else:
-    #         return True
-
-    # parents shouldn't marry their child or child's child (3 levels) n^2 complexity
-
-    def dfs_hus_up(self, visited):
-        if self._husband.get_parent_family():
-            return self._husband.get_parent_family().dfs_hus_up()
-        else:
-            return self.dfs_down(visited)
-
-    def dfs_wife_up(self, visited):
-        if self._wife.get_parent_family():
-            return self._wife.get_parent_family().dfs_wife_up()
-        else:
-            self.dfs_down(visited)
-
-    def dfs_down(self, visited):
-        if self not in visited:
-            visited.add(self)
-            if self.get_children():
-                for child in self._children:
-                    if child == self._husband or child == self._wife:
-                        return False
-                    # if child.get_family()[0] and child.get_family()[0].get_children():
-                    #     for grandChild in child._children:
-                    #         if grandChild == self._husband or grandChild == self._wife:
-                    #             return False
-                    # else:
-                    #     return True
-            else:
-                return True
-
-        if self.get_children():
-            for child in self._children:
-                if (len(child.get_family()) > 0):
-                    for fam in child.get_family():
-                        return fam.dfs_down(visited)
-                else: continue
-        else:
-            return True
-
-    # makes sure no husband or wife is married to their children in the family, and in its parent families
-    def no_marriages_to_descendants(self):
-        visited = set()
-        return self.dfs_hus_up(visited) and self.dfs_wife_up(visited)
+        return dfs(self)
 
     def siblings_should_not_marry(self):
         pass
@@ -318,7 +268,7 @@ class Family:
         return list(filter(lambda x: x.get_birthDate() != None, res))
 
 
-    # ---------------------------testing cases below---------------------------
-
 if __name__ == "__main__":
     pass
+    # from models.Individual import Individual
+    # ---------------------------testing cases below---------------------------
