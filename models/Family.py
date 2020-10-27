@@ -167,9 +167,9 @@ class Family:
         return True
 
     def birth_before_death_of_parents(self):
-        if not self._husband or not self._wife: return True
-        if len(self._children) == 0:
-            return True
+        if not self._husband or not self._wife: raise AttributeError("Missing husband/wife")
+        if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
+        if len(self._children) == 0: return True
         death = self._wife.get_deathDate()
         hDeath = self._husband.get_deathDate()
         if not death and not hDeath:
