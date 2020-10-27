@@ -152,7 +152,7 @@ class Family:
         return timedelta.days < 0
 
     def divorce_before_death(self) -> bool:
-        if not self._husband or not self._wife: return True
+        if not self._husband or not self._wife: raise AttributeError("Missing husband/wife")
         if not self._divorced: return True
         return ((not self._husband.get_deathDate() or self._husband.get_deathDate() > self._divorced) and 
         (not self._wife.get_deathDate() or self._wife.get_deathDate() > self._divorced))
