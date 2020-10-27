@@ -152,10 +152,22 @@ class Family:
         return timedelta.days < 0
 
     def divorce_before_death(self) -> bool:
-        if not self._husband or not self._wife: return True
+        from datetime import date
+        if not self._husband or not self._wife: raise AttributeError("Missing husband/wife")
+        if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
         if not self._divorced: return True
-        return ((not self._husband.get_deathDate() or self._husband.get_deathDate() > self._divorced) and 
-        (not self._wife.get_deathDate() or self._wife.get_deathDate() > self._divorced))
+
+        deathdays = None
+        if not self._husband.get_deathDate():
+            deathdays = (date(self._divorced) - date(self._husband.get_deathDate())).days
+        elif not self._wife.get_deathDate():
+            deathdays = (date(self._divorced) - date(self._wife.get_deathDate())).days
+        else:
+            deathdays = (date(self._divorced) - date(self._husband.get_deathDate())).days
+            if deathdays > (date(self._divorced) - date(self._wife.get_deathDate())).days:
+                deathdays = (date(self._divorced) - date(self._wife.get_deathDate())).days
+
+        return deathdays > 0
 
     def birth_before_marriage_of_parents(self):
         if not self._husband or not self._wife: raise AttributeError("Missing husband/wife")
@@ -167,19 +179,27 @@ class Family:
         return True
 
     def birth_before_death_of_parents(self):
-        if not self._husband or not self._wife: return True
-        if len(self._children) == 0:
-            return True
+        if not self._husband or not self._wife: raise AttributeError("Missing husband/wife")
+        if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
+        if len(self._children) == 0: return True
         death = self._wife.get_deathDate()
         hDeath = self._husband.get_deathDate()
-        if not death and not hDeath:
+
+        if not hDeath:
+            for c in self._children:
+                if c.get_birthDate() > death: return False
             return True
-        if hDeath:
-            hDeath = tuple(map(sum, zip(hDeath, (0,9,0))))
-            if hDeath[1] > 12:
-                hDeath[1] = hDeath[1] % 12
-                hDeath[0] = hDeath[0] + 1
-        if death is None or hDeath < death:
+
+        hDeath = hDeath + (0, 9, 0)
+        if hDeath[1] > 12:
+            hDeath[1] = hDeath[1] % 12
+            hDeath[0] = hDeath[0] + 1
+        if not death:
+            for c in self._children:
+                if c.get_birthDate() > hdeath: return False
+            return True
+
+        if hDeath < death:
             death = hDeath
 
         for c in self._children:
@@ -219,9 +239,7 @@ class Family:
 
 
     def siblings_should_not_marry(self):
-        if not self._husband or not self._wife: raise AttributeError("Missing husband or wife")
-        if not self._husband.get_parent_family() and not self._wife.get_parent_family(): raise AttributeError("Missing husband and wife parent")
-        return self._husband.get_parent_family()!=self._wife.get_parent_family()
+        pass
 
     def order_siblings_by_age(self):
         """
