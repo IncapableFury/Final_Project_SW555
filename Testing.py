@@ -7,7 +7,7 @@ from models.Family import Family
 from models import Gedcom
 
 
-class testSprint1(unittest.TestCase):
+class TestSprint1(unittest.TestCase):
 
     def setUp(self):
         self.ind_1 = Individual("01")
@@ -147,7 +147,7 @@ class testSprint1(unittest.TestCase):
             female1.set_deathDate(["9", "APR", "2002"])
             t1.set_husband(male1)
             t1.set_wife(female1)
-            t1.set_divorced(["1", "JAN", "1999"])
+            t1.set_divorcedDate(["1", "JAN", "1999"])
             # ---------------------------------
             t2 = Family("F02")
             male2 = Individual("P03")
@@ -156,40 +156,12 @@ class testSprint1(unittest.TestCase):
             female2.set_deathDate(["9", "APR", "2002"])
             t2.set_husband(male2)
             t2.set_wife(female2)
-            t2.set_divorced(["1", "JAN", "2001"])
-            # ---------------------------------
-            t3 = Family("F03")
-            male3 = Individual("P05")
-            female3 = Individual("P06")
-            male3.set_deathDate(["5", "MAR", "2000"])
-            female3.set_deathDate(["9", "APR", "2002"])
-            t3.set_husband(male3)
-            t3.set_wife(female3)
-            t3.set_divorced(["1", "JAN", "2003"])
-            # ---------------------------------
-            t4 = Family("F04")
-            male4 = Individual("P07")
-            female4 = Individual("P08")
-            male4.set_deathDate(["5", "MAR", "2000"])
-            t4.set_deathDate(["9", "APR", "2002"])
-            t4.set_husband(male4)
-            t4.set_wife(female4)
-            t4.set_divorced(["1", "JAN", "2000"])
-            # ---------------------------------
-            t5 = Family("F05")
-            male5 = Individual("P09")
-            female5 = Individual("P10")
-            male5.set_deathDate(["5", "MAR", "2000"])
-            t5.set_deathDate(["9", "APR", "2002"])
-            t5.set_husband(male5)
-            t5.set_wife(female5)
-            t5.set_divorced(["1", "JAN", "2002"])
+            t2.set_divorcedDate(["1", "JAN", "2001"])
+
             # ---------------------------------
             assert t1.divorce_before_death() == True
             assert t2.divorce_before_death() == False
-            assert t3.divorce_before_death() == False
-            assert t4.divorce_before_death() == True
-            assert t5.divorce_before_death() == False
+
 
     def test_US08_birth_before_marriage_of_parents(self):
             t1 = Family("F01")
@@ -440,6 +412,408 @@ class testSprint1(unittest.TestCase):
         # ---------------------------------
         assert t1.parents_not_too_old() == True
         assert t2.parents_not_too_old() == False
+
+    def Test_US15_Fewer_than_15_siblings(self):
+        t1 = Family("t1")
+        t2 = Family("t2")
+        p1 = Individual("p1")
+        p2 = Individual("p2")
+        p3 = Individual("p3")
+        p4 = Individual("p4")
+        p5 = Individual("p5")
+        p6 = Individual("p6")
+        p7 = Individual("p7")
+        p8 = Individual("p8")
+        p9 = Individual("p9")
+        p10 = Individual("p10")
+        p11 = Individual("p11")
+        p12 = Individual("p12")
+        p13 = Individual("p13")
+        p14 = Individual("p14")
+        p15= Individual("p15")
+        p16= Individual("p16")
+        p17= Individual("p17")
+        p18= Individual("p18")
+        p19= Individual("p19")
+        p20= Individual("p20")
+        p21= Individual("p21")
+        p22 = Individual("p22")
+        p23 = Individual("p23")
+        p24 = Individual("p24")
+        p25= Individual("p25")
+        p26 = Individual("p26")
+        p27 = Individual("p27")
+        p28 = Individual("p28")
+
+    # ---------------------------------
+        t1.add_child(p1)
+        t1.add_child(p2)
+        t1.add_child(p3)
+        t1.add_child(p4)
+        t1.add_child(p5)
+        t1.add_child(p6)
+        t1.add_child(p7)
+        t1.add_child(p8)
+        t1.add_child(p9)
+        t1.add_child(p10)
+        t1.add_child(p11)
+        t1.add_child(p12)
+        t2.add_child(p13)
+        t2.add_child(p14)
+        t2.add_child(p15)
+        t2.add_child(p16)
+        t2.add_child(p17)
+        t2.add_child(p18)
+        t2.add_child(p19)
+        t2.add_child(p20)
+        t2.add_child(p21)
+        t2.add_child(p22)
+        t2.add_child(p23)
+        t2.add_child(p24)
+        t2.add_child(p25)
+        t2.add_child(p26)
+        t2.add_child(p27)
+        t2.add_child(p28)
+        # ---------------------------------
+        assert t1.fewer_than_15_siblings() == True
+        assert t2.fewer_than_15_siblings() == False
+
+    def Test_US21_Correct_Gender_For_Role(self):
+        t1 = Family("t1")
+        t2 = Family("t2")
+        p1 = Individual("p1")
+        p2 = Individual("p2")
+        p3 = Individual("p3")
+        p4 = Individual("p4")
+
+    # ---------------------------------
+        t1.set_wife(p1)
+        t1.set_husband(p2)
+        t2.set_wife(p3)
+        t2.set_husband(p4)
+        p1.set_gender('F')
+        p2.set_gender('M')
+        p4.set_gender('F')
+        p3.set_gender('M')
+    # ---------------------------------
+        assert t1.correct_gender_for_role() == True
+        assert t2.correct_gender_for_role() == False
+
+    def Test_US24_Unique_families_by_spouses(self):
+        SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
+                        "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
+        G1 = Gedcom('../testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
+        G2 = Gedcom('../testing_files/MichealFahimGEDCOM.ged', SUPPORT_TAGS)
+        G3 = Gedcom('../testing_files/mock-family.ged', SUPPORT_TAGS)
+        # ---------------------------------
+        assert G1.unique_families_by_spouses() == True
+        assert G2.unique_families_by_spouses() == True
+        assert G3.unique_families_by_spouses() == True
+
+
+    def Test_US25_Unique_first_names_in_families(self):
+        SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
+                        "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
+        G1 = Gedcom('../testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
+        G2 = Gedcom('../testing_files/MichealFahimGEDCOM.ged', SUPPORT_TAGS)
+        G3 = Gedcom('../testing_files/mock-family.ged', SUPPORT_TAGS)
+        # ---------------------------------
+        assert G1.unique_first_names_in_families() == True
+        assert G2.unique_first_names_in_families() == True
+        assert G3.unique_first_names_in_families() == True
+
+
+    def Test_US22_UniqueId(self):
+        pass
+
+    # finished in main funciton
+
+    def Test_US23_unique_name_and_birth_date(self):
+        SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
+                        "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
+        G1 = Gedcom('../testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
+        G2 = Gedcom('../testing_files/MichealFahimGEDCOM.ged', SUPPORT_TAGS)
+        G3 = Gedcom('../testing_files/mock-family.ged', SUPPORT_TAGS)
+        # --------------------------------------------------
+        assert G1.unique_name_and_birth_date() == True
+        assert G2.unique_name_and_birth_date() == True
+        assert G3.unique_name_and_birth_date() == True
+
+    def Test_US18_Siblings_should_not_marry(self):
+        t1 = Family("t1")
+        t2 = Family("t2")
+        t3 = Family("t3")
+        t4 = Family("t4")
+        t5 = Family("t5")
+        p1 = Individual("p1")
+        p2 = Individual("p2")
+        p3 = Individual("p3")
+        p4 = Individual("p4")
+        # --------------------------------------------------
+        t1.set_husband(p1)
+        t1.set_wife(p2)
+        t2.add_child(p1)
+        t3.add_child(p2)
+        t4.set_husband(p3)
+        t4.set_wife(p4)
+        t5.add_child(p3)
+        t5.add_child(p4)
+        # --------------------------------------------------
+        assert  t1.siblings_should_not_marry() == True
+        assert t2.siblings_should_not_marry() == True
+        assert t4.siblings_should_not_marry() == False
+        assert t5.siblings_should_not_marry() == False
+
+    def Test_US19_First_cousins_should_not_marry(self):
+        t1 = Family("t1")
+        t2 = Family("t2")
+        t3 = Family("t3")
+        t4 = Family("t4")
+        t5 = Family("t5")
+        t6 = Family("t6")
+        t7 = Family("t7")
+        t8 = Family("t8")
+        t9 = Family("t9")
+        p1 = Individual("p1")
+        p2 = Individual("p2")
+        p3 = Individual("p3")
+        p4 = Individual("p4")
+        p5 = Individual("p5")
+        p6 = Individual("p6")
+        p7 = Individual("p7")
+        p8 = Individual("p8")
+        # --------------------------------------------------
+        t1.add_child(p1)
+        t1.add_child(p2)
+        t2.set_wife(p1)
+        t2.add_child(p3)
+        t3.set_wife(p2)
+        t3.add_child(p4)
+        t4.set_husband(p3)
+        t5.set_wife(p4)
+
+        t6.add_child(p5)
+        t6.add_child(p6)
+        t7.set_wife(p5)
+        t8.set_wife(p6)
+        t7.add_child(p7)
+        t8.add_child(p8)
+        t9.set_wife(p7)
+        t9.set_husband(p8)
+
+        # --------------------------------------------------
+        assert p3.first_cousins_should_not_marry()==True
+        assert p4.first_cousins_should_not_marry()==False
+
+    def Test_US16_Male_last_names(self):
+        t1 = Family("t1")
+        t2 = Family("t2")
+        t3 = Family("t3")
+        t4 = Family("t4")
+        t5 = Family("t5")
+        t6 = Family("t6")
+        t7 = Family("t7")
+        t8 = Family("t8")
+        t9 = Family("t9")
+        t10 = Family("t10")
+        p1 = Individual("p1")
+        p2 = Individual("p2")
+        p3 = Individual("p3")
+        p4 = Individual("p4")
+        p5 = Individual("p5")
+        p6 = Individual("p6")
+        p7 = Individual("p7")
+        p8 = Individual("p8")
+        p9 = Individual("p9")
+        p10 = Individual("p10")
+        # --------------------------------------------------
+        t1.set_husband(p1)
+        t1.add_child(p2)
+        t1.add_child(p3)
+        t2.set_husband(p2)
+        t3.set_husband(p3)
+        t2.add_child(p4)
+        t3.add_child(p5)
+        t4.set_husband(p4)
+        t5.set_husband(p5)
+
+        t6.set_husband(p6)
+        t6.add_child(p7)
+        t6.add_child(p8)
+        t7.set_husband(p7)
+        t8.set_husband(p8)
+        t7.add_child(p9)
+        t8.add_child(p10)
+        t9.set_husband(p9)
+        t10.set_husband(p10)
+
+        p1.set_gender("M")
+        p1.set_name("Charles Glass")
+        p2.set_gender("M")
+        p2.set_name("Charles Glass")
+        p3.set_gender("M")
+        p3.set_name("Charles Glass")
+        p4.set_gender("M")
+        p4.set_name("Charles Glass")
+        p5.set_gender("M")
+        p5.set_name("Charles Glass")
+
+
+        p6.set_gender("M")
+        p6.set_name("Charles Glass")
+        p7.set_gender("M")
+        p7.set_name("Charles Glass")
+        p8.set_gender("M")
+        p8.set_name("Charles WDNMD")
+        p9.set_gender("M")
+        p9.set_name("Charles Glass")
+        p10.set_gender("M")
+        p10.set_name("Charles Glass")
+
+        # --------------------------------------------------
+
+        assert t3.male_last_names()==True
+        assert t8.male_last_names()==False
+
+
+    def Test_US17_No_marriages_to_descendants(self):
+        t1 = Family("t1")
+        t2 = Family("t2")
+        t3 = Family("t3")
+        t4 = Family("t4")
+        p1 = Individual("p1")
+        p2 = Individual("p2")
+        p3 = Individual("p3")
+        p4 = Individual("p4")
+        p5 = Individual("p5")
+        p6 = Individual("p6")
+        p7 = Individual("p7")
+        p8 = Individual("p8")
+        p9 = Individual("p9")
+        t1.set_husband(p1)
+        t1.set_wife(p2)
+        t1.add_child(p3)
+        t2.set_wife(p3)
+        t2.set_husband(p4)
+        t2.add_child(p5)
+        t3.set_husband(p6)
+        t3.set_wife(p7)
+        t3.add_child(p8)
+        t4.set_husband(p6)
+        t4.set_wife(p8)
+        t4.add_child(p9)
+     # --------------------------------------------------
+
+        assert p3.no_marriages_to_descendants()==True
+        assert p8.no_marriages_to_descendants()==False
+
+    def Test_US27_Include_individual_ages(self):
+        SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
+                        "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
+        G1 = Gedcom('../testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
+        G2 = Gedcom('../testing_files/MichealFahimGEDCOM.ged', SUPPORT_TAGS)
+        G3 = Gedcom('../testing_files/mock-family.ged', SUPPORT_TAGS)
+        # --------------------------------------------------
+        assert G1.include_individual_ages() == True
+        assert G2.include_individual_ages() == True
+        assert G3.include_individual_ages() == True
+
+
+    def Test_US28_Order_siblings_by_age(self):
+        t1 = Family("t1")
+        t2 = Family("t2")
+        p1 = Individual("p1")
+        p1.set_birthDate((1990, 4, 1))
+        p2 = Individual("p2")
+        p2.set_birthDate((1990, 1, 1))
+        p3 = Individual("p3")
+        p3.set_birthDate((1990, 9, 1))
+        p4 = Individual("p4")
+        p4.set_birthDate((1987, 1, 1))
+        p5 = Individual("p5")
+        p5.set_birthDate((2019, 1, 1))
+        p6 = Individual("p6")
+        p6.set_birthDate((2017, 5, 30))
+        p7 = Individual("p7")
+        p7.set_birthDate((2018, 3, 30))
+        p8 = Individual("p8")
+        p8.set_birthDate((2019, 8, 30))
+        # --------------------------------------------------
+        t1.add_child(p1)
+        t1.add_child(p2)
+        t1.add_child(p3)
+        t1.add_child(p4)
+        t1.add_child(p5)
+        t1.add_child(p6)
+        t2.add_child(p1)
+        t2.add_child(p2)
+        t2.add_child(p3)
+        t2.add_child(p4)
+        t2.add_child(p7)
+        t2.add_child(p8)
+        # --------------------------------------------------
+        assert t1.order_siblings_by_age() == [p4, p2, p1, p3, p6, p5]
+        assert t2.order_siblings_by_age() == [p4, p2, p1, p3,p7,p8]
+
+
+
+    def Test_US20_Aunts_and_uncles(self):
+        t1 = Family("t1")
+        t2 = Family("t2")
+        t3 = Family("t3")
+        t4 = Family("t4")
+        t5 = Family("t5")
+        t6 = Family("t6")
+        p1 = Individual("p1")
+        p2 = Individual("p2")
+        p3 = Individual("p3")
+        p4 = Individual("p4")
+        p5 = Individual("p5")
+        p6 = Individual("p6")
+        p7 = Individual("p7")
+        p8 = Individual("p8")
+        p9 = Individual("p9")
+        p10 = Individual("p10")
+        p11 = Individual("p11")
+        # --------------------------------------------------
+        t1.set_husband(p1)
+        t1.set_wife(p2)
+        t1.add_child(p3)
+        t1.add_child(p4)
+        t2.set_husband(p3)
+        t3.set_wife(p4)
+        t2.add_child(p5)
+        t3.add_child(p6)
+
+        t4.set_husband(p7)
+        t4.set_wife(p8)
+        t4.add_child(p9)
+        t4.add_child(p10)
+        t5.set_husband(p9)
+        t5.add_child(p11)
+        t6.set_husband(p10)
+        t6.set_wife(p11)
+        # --------------------------------------------------
+        assert p4.aunts_and_uncles()==True
+        assert p10.aunts_and_uncles()==False
+
+    def Test_US26_Corresponding_entries(self):
+        SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
+                        "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
+        G1 = Gedcom('../testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
+        G2 = Gedcom('../testing_files/MichealFahimGEDCOM.ged', SUPPORT_TAGS)
+        G3 = Gedcom('../testing_files/mock-family.ged', SUPPORT_TAGS)
+        # --------------------------------------------------
+        assert G1.corresponding_entries() == True
+        assert G2.corresponding_entries() == True
+        assert G3.corresponding_entries() == True
+
+
+
+
+
+
+
 
     def testInputValidation(self):
         pass
