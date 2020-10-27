@@ -147,7 +147,7 @@ class testSprint1(unittest.TestCase):
             female1.set_deathDate(["9", "APR", "2002"])
             t1.set_husband(male1)
             t1.set_wife(female1)
-            t1.set_divorced(["1", "JAN", "1999"])
+            t1.set_divorcedDate(["1", "JAN", "1999"])
             # ---------------------------------
             t2 = Family("F02")
             male2 = Individual("P03")
@@ -156,40 +156,12 @@ class testSprint1(unittest.TestCase):
             female2.set_deathDate(["9", "APR", "2002"])
             t2.set_husband(male2)
             t2.set_wife(female2)
-            t2.set_divorced(["1", "JAN", "2001"])
-            # ---------------------------------
-            t3 = Family("F03")
-            male3 = Individual("P05")
-            female3 = Individual("P06")
-            male3.set_deathDate(["5", "MAR", "2000"])
-            female3.set_deathDate(["9", "APR", "2002"])
-            t3.set_husband(male3)
-            t3.set_wife(female3)
-            t3.set_divorced(["1", "JAN", "2003"])
-            # ---------------------------------
-            t4 = Family("F04")
-            male4 = Individual("P07")
-            female4 = Individual("P08")
-            male4.set_deathDate(["5", "MAR", "2000"])
-            t4.set_deathDate(["9", "APR", "2002"])
-            t4.set_husband(male4)
-            t4.set_wife(female4)
-            t4.set_divorced(["1", "JAN", "2000"])
-            # ---------------------------------
-            t5 = Family("F05")
-            male5 = Individual("P09")
-            female5 = Individual("P10")
-            male5.set_deathDate(["5", "MAR", "2000"])
-            t5.set_deathDate(["9", "APR", "2002"])
-            t5.set_husband(male5)
-            t5.set_wife(female5)
-            t5.set_divorced(["1", "JAN", "2002"])
+            t2.set_divorcedDate(["1", "JAN", "2001"])
+
             # ---------------------------------
             assert t1.divorce_before_death() == True
             assert t2.divorce_before_death() == False
-            assert t3.divorce_before_death() == False
-            assert t4.divorce_before_death() == True
-            assert t5.divorce_before_death() == False
+
 
     def test_US08_birth_before_marriage_of_parents(self):
             t1 = Family("F01")
@@ -440,6 +412,72 @@ class testSprint1(unittest.TestCase):
         # ---------------------------------
         assert t1.parents_not_too_old() == True
         assert t2.parents_not_too_old() == False
+
+    def Test_US15_Fewer_than_15_siblings(self):
+        t1 = Family("t1")
+        t2 = Family("t2")
+        p1 = Individual("p1")
+        p2 = Individual("p2")
+        p3 = Individual("p3")
+        p4 = Individual("p4")
+        p5 = Individual("p5")
+        p6 = Individual("p6")
+        p7 = Individual("p7")
+        p8 = Individual("p8")
+        p9 = Individual("p9")
+        p10 = Individual("p10")
+        p11 = Individual("p11")
+        p12 = Individual("p12")
+        p13 = Individual("p13")
+        p14 = Individual("p14")
+        p15= Individual("p15")
+        p16= Individual("p16")
+        p17= Individual("p17")
+        p18= Individual("p18")
+        p19= Individual("p19")
+        p20= Individual("p20")
+        p21= Individual("p21")
+        p22 = Individual("p22")
+        p23 = Individual("p23")
+        p24 = Individual("p24")
+        p25= Individual("p25")
+        p26 = Individual("p26")
+        p27 = Individual("p27")
+        p28 = Individual("p28")
+
+    # ---------------------------------
+        t1.set_children(p1)
+        t1.set_children(p2)
+        t1.set_children(p3)
+        t1.set_children(p4)
+        t1.set_children(p5)
+        t1.set_children(p6)
+        t1.set_children(p7)
+        t1.set_children(p8)
+        t1.set_children(p9)
+        t1.set_children(p10)
+        t1.set_children(p11)
+        t1.set_children(p12)
+        t2.set_children(p13)
+        t2.set_children(p14)
+        t2.set_children(p15)
+        t2.set_children(p16)
+        t2.set_children(p17)
+        t2.set_children(p18)
+        t2.set_children(p19)
+        t2.set_children(p20)
+        t2.set_children(p21)
+        t2.set_children(p22)
+        t2.set_children(p23)
+        t2.set_children(p24)
+        t2.set_children(p25)
+        t2.set_children(p26)
+        t2.set_children(p27)
+        t2.set_children(p28)
+        # ---------------------------------
+        assert t1.fewer_than_15_siblings() == True
+        assert t2.fewer_than_15_siblings() == False
+
 
     def testInputValidation(self):
         pass
