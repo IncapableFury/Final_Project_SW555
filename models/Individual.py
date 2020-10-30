@@ -157,18 +157,18 @@ class Individual:
                 if(not dad_side_family.get_husband() or not dad_side_family.get_wife()): raise AttributeError("Error: missing value")
                 uncle_id = dad_side_family.get_husband().get_id()
                 aunt_id = dad_side_family.get_wife().get_id()
-                if(uncle_id === aunt_id): return False
+                if(uncle_id == aunt_id): return False
                 for each_child in dad_side_family.get_children():
-                    if(uncle_id === each_child.get_id() or aunt_id === each_child.get_id()): return False
+                    if(uncle_id == each_child.get_id() or aunt_id == each_child.get_id()): return False
 
         for mom_side_aunt_uncle in mom_grand_family.get_children():
             for mom_side_family in mom_side_aunt_uncle.get_family():
                 if(not mom_side_family.get_husband() or not mom_side_family.get_wife()): raise AttributeError("Error: missing value")
                 uncle_id = mom_side_family.get_husband().get_id()
                 aunt_id = mom_side_family.get_wife().get_id()
-                if(uncle_id === aunt_id): return False
+                if(uncle_id == aunt_id): return False
                 for each_child in mom_side_family.get_children():
-                    if(uncle_id === each_child.get_id() or aunt_id === each_child.get_id()): return False
+                    if(uncle_id == each_child.get_id() or aunt_id == each_child.get_id()): return False
         
         return True
 
