@@ -240,6 +240,8 @@ class Family:
         return self._husband.get_gender() == "M" and self._wife.get_gender() == "F"
 
     def male_last_names(self):
+        if not self._husband:
+            return True
         def dfs(family):
             flag = True
             hus_last_name = family._husband.get_name().split(' ')[1]
