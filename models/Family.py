@@ -104,8 +104,12 @@ class Family:
 
     def parents_not_too_old(self):
         if not self._husband or not self._wife: raise AttributeError("Error: missing husband or wife")
+
         if not self._husband.get_age() or not self._wife.get_age(): raise AttributeError(
             "Error: missing age for husband or wife")
+
+        if not self._husband.get_age() or not self._wife.get_age(): raise AttributeError("Error: missing age for husband or wife")
+
         wife_age = self._wife.get_age()
         husband_age = self._husband.get_age()
         for child in self._children:
@@ -113,7 +117,6 @@ class Family:
             wife_diff = wife_age - child.get_age()
             husband_diff = husband_age - child.get_age()
             if wife_diff >= 60 or husband_diff >= 80: return False
-
         return True
 
     def marriage_before_divorce(self):
@@ -127,16 +130,22 @@ class Family:
 
     def marriage_after_14(self) -> bool:
         from datetime import date
+
         if not self._husband or not self._wife or not self._marriedDate: raise AttributeError(
             "Missing husband/wife/marriedDate")
         if not self._husband.get_birthDate() or not self._wife.get_birthDate(): raise AttributeError(
             "Missing birthdate for husband/wife")
+
+        if not self._husband or not self._wife or not self._marriedDate: raise AttributeError("Missing husband/wife/marriedDate")
+        if not self._husband.get_birthDate() or not self._wife.get_birthDate(): raise AttributeError("Missing birthdate for husband/wife")
+
         husbandMarryAge = (date(self._marriedDate) - date(self._husband.get_birthDate())).days // 365
         wifeMarryAge = (date(self._marriedDate) - date(self._wife.get_birthDate())).days // 365
         return husbandMarryAge > 14 and wifeMarryAge > 14
 
     def marriage_before_death(self):
         from datetime import date
+
         if not self._husband or not self._wife or not self.get_marriedDate(): raise AttributeError(
             "Missing husband/wife/marriedDate")
         if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
@@ -146,6 +155,14 @@ class Family:
             death = self._wife.get_deathDate()
         elif not self._wife.get_deathDate():
             death = self._husband.get_deathDate()
+
+        if not self._husband or not self._wife or not self.get_marriedDate(): raise AttributeError("Missing husband/wife/marriedDate")
+        if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
+
+        death = None
+        if not self._husband.get_deathDate(): death = self._wife.get_deathDate()
+        elif not self._wife.get_deathDate(): death = self._husband.get_deathDate()
+
         else:
             if self._husband.get_deathDate() > self._wife.get_deathDate():
                 death = self._wife.get_deathDate()
@@ -173,9 +190,10 @@ class Family:
 
         return deathdays > 0
 
+
     def birth_before_marriage_of_parents(self):
         if not self._husband or not self._wife: raise AttributeError("Missing husband/wife")
-        if not self.get_marriedDate(): raise AttributeError("Missing marrageDate")
+        if not self.get_marriedDate():raise AttributeError("Missing marrageDate")
 
         for c in self._children:
             if not c.get_birthDate(): raise AttributeError("Missing child birthDate")
@@ -189,6 +207,7 @@ class Family:
         death = self._wife.get_deathDate()
         hDeath = self._husband.get_deathDate()
 
+
         if not hDeath:
             for c in self._children:
                 if c.get_birthDate() > death: return False
@@ -200,10 +219,20 @@ class Family:
             hDeath[0] = hDeath[0] + 1
         if not death:
             for c in self._children:
-                if c.get_birthDate() > hdeath: return False
+                if c.get_birthDate() > hDeath: return False
             return True
 
         if hDeath < death:
+
+            if not death and not hDeath:
+                return True
+        if hDeath:
+            hDeath = tuple(map(sum, zip(hDeath, (0,9,0))))
+            if hDeath[1] > 12:
+                hDeath[1] = hDeath[1] % 12
+                hDeath[0] = hDeath[0] + 1
+        if death is None or hDeath < death:
+
             death = hDeath
 
         for c in self._children:
@@ -217,8 +246,7 @@ class Family:
         if n < 2: return True
         sumOfDifference = 0
         for i in range(n - 1):
-            timedelta = date(*self.get_children()[i].get_birthDate()) - date(
-                *self.get_children()[i + 1].get_birthDate())
+            timedelta = date(*self.get_children()[i].get_birthDate()) - date(*self.get_children()[i + 1].get_birthDate())
             sumOfDifference += abs(timedelta.days)
         return not (threshold[0] < sumOfDifference // (n - 1) < threshold[1])
 
@@ -258,8 +286,11 @@ class Family:
 
         return dfs(self)
 
+
     def siblings_should_not_marry(self):
-        pass
+        if not self._husband or not self._wife: raise AttributeError("Missing husband or wife")
+        if not self._husband.get_parent_family() and not self._wife.get_parent_family(): raise AttributeError("Missing husband and wife parent")
+        return self._husband.get_parent_family()!=self._wife.get_parent_family()
 
     def order_siblings_by_age(self):
         """
@@ -270,7 +301,14 @@ class Family:
         return list(filter(lambda x: x.get_birthDate() != None, res))
 
 
+
+
+
+
 if __name__ == "__main__":
     pass
+
     # from models.Individual import Individual
+
+    #from models.Individual import Individual
     # ---------------------------testing cases below---------------------------

@@ -145,7 +145,34 @@ class Individual:
 
 
     def aunts_and_uncles(self):
-        pass
+        if(not self._parentFamily): raise AttributeError("Error: missing value")
+        if(not self._parentFamily.get_husband() or not self._parentFamily.get_wife()): raise AttributeError("Error: missing value")
+        if(not self._parentFamily.get_husband().get_parent_family() or not self._parentFamily.get_wife().get_parent_family()): raise AttributeError("Error: missing value")
+        
+        dad_grand_family = self._parentFamily.get_husband().get_parent_family()
+        mom_grand_family = self._parentFamily.get_wife().get_parent_family()
+
+        for dad_side_aunt_uncle in dad_grand_family.get_children():
+            for dad_side_family in dad_side_aunt_uncle.get_family():
+                if(not dad_side_family.get_husband() or not dad_side_family.get_wife()): raise AttributeError("Error: missing value")
+                uncle_id = dad_side_family.get_husband().get_id()
+                aunt_id = dad_side_family.get_wife().get_id()
+                if(uncle_id == aunt_id): return False
+                for each_child in dad_side_family.get_children():
+                    if(uncle_id == each_child.get_id() or aunt_id == each_child.get_id()): return False
+
+        for mom_side_aunt_uncle in mom_grand_family.get_children():
+            for mom_side_family in mom_side_aunt_uncle.get_family():
+                if(not mom_side_family.get_husband() or not mom_side_family.get_wife()): raise AttributeError("Error: missing value")
+                uncle_id = mom_side_family.get_husband().get_id()
+                aunt_id = mom_side_family.get_wife().get_id()
+                if(uncle_id == aunt_id): return False
+                for each_child in mom_side_family.get_children():
+                    if(uncle_id == each_child.get_id() or aunt_id == each_child.get_id()): return False
+        
+        return True
+
+
 
     def first_cousins_should_not_marry(self):
         if self.get_parent_family() and self.get_parent_family().get_husband() and \
