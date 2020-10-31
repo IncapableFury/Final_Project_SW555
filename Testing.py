@@ -147,7 +147,7 @@ class TestSprint1(unittest.TestCase):
             female1.set_deathDate(["9", "APR", "2002"])
             t1.set_husband(male1)
             t1.set_wife(female1)
-            t1.set_divorcedDate(["1", "JAN", "1999"])
+            t1.set_divorced(["1", "JAN", "1999"])
             # ---------------------------------
             t2 = Family("F02")
             male2 = Individual("P03")
@@ -156,12 +156,40 @@ class TestSprint1(unittest.TestCase):
             female2.set_deathDate(["9", "APR", "2002"])
             t2.set_husband(male2)
             t2.set_wife(female2)
-            t2.set_divorcedDate(["1", "JAN", "2001"])
-
+            t2.set_divorced(["1", "JAN", "2001"])
+            # ---------------------------------
+            t3 = Family("F03")
+            male3 = Individual("P05")
+            female3 = Individual("P06")
+            male3.set_deathDate(["5", "MAR", "2000"])
+            female3.set_deathDate(["9", "APR", "2002"])
+            t3.set_husband(male3)
+            t3.set_wife(female3)
+            t3.set_divorced(["1", "JAN", "2003"])
+            # ---------------------------------
+            t4 = Family("F04")
+            male4 = Individual("P07")
+            female4 = Individual("P08")
+            male4.set_deathDate(["5", "MAR", "2000"])
+            t4.set_deathDate(["9", "APR", "2002"])
+            t4.set_husband(male4)
+            t4.set_wife(female4)
+            t4.set_divorced(["1", "JAN", "2000"])
+            # ---------------------------------
+            t5 = Family("F05")
+            male5 = Individual("P09")
+            female5 = Individual("P10")
+            male5.set_deathDate(["5", "MAR", "2000"])
+            t5.set_deathDate(["9", "APR", "2002"])
+            t5.set_husband(male5)
+            t5.set_wife(female5)
+            t5.set_divorced(["1", "JAN", "2002"])
             # ---------------------------------
             assert t1.divorce_before_death() == True
             assert t2.divorce_before_death() == False
-
+            assert t3.divorce_before_death() == False
+            assert t4.divorce_before_death() == True
+            assert t5.divorce_before_death() == False
 
     def test_US08_birth_before_marriage_of_parents(self):
             t1 = Family("F01")
@@ -413,6 +441,7 @@ class TestSprint1(unittest.TestCase):
         assert t1.parents_not_too_old() == True
         assert t2.parents_not_too_old() == False
 
+<<<<<<< HEAD
     def Test_US15_Fewer_than_15_siblings(self):
         t1 = Family("t1")
         t2 = Family("t2")
@@ -815,6 +844,8 @@ class TestSprint1(unittest.TestCase):
 
 
 
+=======
+>>>>>>> parent of 47a3b8f... Update Testing.py
     def testInputValidation(self):
         pass
 
