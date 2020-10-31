@@ -169,28 +169,28 @@ class Gedcom:
     
     def unique_families_by_spouses(self):
         """user story 24 No more than one family with the same spouses by name and the same marriage date should appear in a GEDCOM file """
-        if not self._husband or not self._wife: raise AttributeError("no husband or wife")
-        if not self._husband.get_marriedDate and not self._wife.get_marriedDate: raise AttributeError("no marriage date")
-        for anotherFam in self.get_families():
-            if(self.get_husband == anotherFam.get_husband and self.get_wife == anotherFam.get_wife and self.get_marriedDate == anotherFam.get_marriedDate and self.get_id != anotherFam.get_id):
-                return False
-                raise ValueError("Error unique families by spouses: Marriage date of " + self.get_id() + " have the same marriage date as other family and same spouces." +self.get_husband+ self.get_wife)
+        check_list = []
+        for _, family in self._families:
+            if not family.get_husband() or not family.get_wife(): raise AttributeError("no husband or wife")
+            if not family.get_husband().get_name() or not family.get_wife().get_name(): raise AttributeError("no husband or wife name")
+            if not family.get_marriedDate(): raise AttributeError("no marriage date")
+            this_fam_info = [family.get_husband().get_name(), family.get_wife.get_name(), family.get_marriedDate()]
+            if check in check_list: return False
+            check_list.append(this_fam_info)
+        
         return True
 
     def unique_first_names_in_families(self):
         """user story 25 No more than one child with the same name and birth date should appear in a family"""
-        childName=[]
-        childBirthday=[]
-        if not self.get_children(): raise AttributeError("no children")
-        if not self.get_children().get_birthDate:  raise AttributeError("no chlidren birthday")
-        for child in self.get_families().get_children():
-            childName.append(child.get_name().split(" ")[0])
-            childBirthday.append(child.get_birthDate())
-        for x in range(0, len(childName)):
-            for y in range(x+1, len(childName)):
-                if(childName[x]==childName[y] and childBirthday[x]==childBirthday[y]):
-                    return False
-                    raise ValueError("Error unique first names in families: No more than one child with the same name in family "+self.get_id)
+        
+        for _, family in self._families:
+            check_list = []
+            for child in family.get_children():
+                if not child.get_name() or not child.get_birthDate(): raise AttributeError("no name or birthdate for child")
+                child_info = [child.get_name(), child.get_birthDate()]
+                if child_info in check_list: return False
+                check_list.append(child_info)
+        
         return True
 
     def include_individual_ages(self):
@@ -198,6 +198,42 @@ class Gedcom:
 
     def corresponding_entries(self):
         """ user story 26 the information in the individual and family records should be consistent."""
+        for key_id, indi in self._individuals:
+            if indi.get_parentFamily(): 
+                flag = False
+                for child in indi.get_parentFamily().get_children():
+                    if child.get_id() == key_id: flag = True
+                if not flag: return False
+
+            
+            for fam in indi.get_family():
+                if not fam.get_husband() and not fam.get_wife(): return False
+                if not (fam.get_husband().get_id() == key_id or fam.get_wife().get_id() == key_id): return False
+
+
+        for key_id, fam in self._families:
+            if fam.get_husband():
+                flag = False
+                for check_fam in fam.get_husband().get_family():
+                    if check_fam.get_id() == key_id: flag = True
+                if not flag: return False
+
+            if fam.get_wife():
+                flag = False
+                for check_fam in fam.get_wife().get_family():
+                    if check_fam.get_id == key_id: flag = True
+                if not flag: return False
+
+            for child in fam.get_children():
+                if not child.get_parentFamily(): return False
+                if child.get_parentFamily().get_id() == key_id: return False
+
+
+        return True
+                
+
+
+        
         if not self.get_children: raise AttributeError("no children")
         if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
         if self._individuals().get_id()==self._families().get_husband().get_id() or self._individuals().get_id()==self._families().get_wife().get_id():
