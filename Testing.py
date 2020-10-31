@@ -510,18 +510,18 @@ class TestSprint1(unittest.TestCase):
         assert G2.unique_families_by_spouses() == True
         assert G3.unique_families_by_spouses() == True
 
+
     def Test_US25_Unique_first_names_in_families(self):
         SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
                         "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
         G1 = Gedcom('../testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
         G2 = Gedcom('../testing_files/MichealFahimGEDCOM.ged', SUPPORT_TAGS)
         G3 = Gedcom('../testing_files/mock-family.ged', SUPPORT_TAGS)
-        G4 = Gedcom('./testing_files/Peijin_Zhou.ged', SUPPORT_TAGS)
         # ---------------------------------
         assert G1.unique_first_names_in_families() == True
         assert G2.unique_first_names_in_families() == True
         assert G3.unique_first_names_in_families() == True
-        assert G4.unique_first_names_in_families() == False
+
 
     def Test_US22_UniqueId(self):
         pass
@@ -533,12 +533,11 @@ class TestSprint1(unittest.TestCase):
                         "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
         G1 = Gedcom('../testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
         G2 = Gedcom('../testing_files/MichealFahimGEDCOM.ged', SUPPORT_TAGS)
-        G4 = Gedcom('./testing_files/Peijin_Zhou.ged', SUPPORT_TAGS)
-        # ---------------------------------
-        assert G1.unique_first_names_in_families() == True
-        assert G2.unique_first_names_in_families() == True
-        assert G3.unique_first_names_in_families() == True
-        assert G4.unique_first_names_in_families() == False
+        G3 = Gedcom('../testing_files/mock-family.ged', SUPPORT_TAGS)
+        # --------------------------------------------------
+        assert G1.unique_name_and_birth_date() == True
+        assert G2.unique_name_and_birth_date() == True
+        assert G3.unique_name_and_birth_date() == True
 
     def Test_US18_Siblings_should_not_marry(self):
         t1 = Family("t1")
@@ -617,8 +616,6 @@ class TestSprint1(unittest.TestCase):
         t8 = Family("t8")
         t9 = Family("t9")
         t10 = Family("t10")
-        t11 = Family("t11")
-        t12 = Family("t12")
         p1 = Individual("p1")
         p2 = Individual("p2")
         p3 = Individual("p3")
@@ -629,8 +626,6 @@ class TestSprint1(unittest.TestCase):
         p8 = Individual("p8")
         p9 = Individual("p9")
         p10 = Individual("p10")
-        p11 = Individual("p11")
-        p12 = Individual("p12")
         # --------------------------------------------------
         t1.set_husband(p1)
         t1.add_child(p2)
@@ -652,10 +647,6 @@ class TestSprint1(unittest.TestCase):
         t9.set_husband(p9)
         t10.set_husband(p10)
 
-        t11.set_husband(p11)
-        t11.add_child(p12)
-        t12.set_wife(p12)
-
         p1.set_gender("M")
         p1.set_name("Charles Glass")
         p2.set_gender("M")
@@ -666,6 +657,7 @@ class TestSprint1(unittest.TestCase):
         p4.set_name("Charles Glass")
         p5.set_gender("M")
         p5.set_name("Charles Glass")
+
 
         p6.set_gender("M")
         p6.set_name("Charles Glass")
@@ -678,25 +670,17 @@ class TestSprint1(unittest.TestCase):
         p10.set_gender("M")
         p10.set_name("Charles Glass")
 
-        p11.get_gender("M")
-        p11.set_name("Charles Glass")
-        p12.set_gender('F')
-        p12.set_name("Charles WDNMD")
-
         # --------------------------------------------------
 
-        assert t3.male_last_names() == True
-        assert t8.male_last_names() == False
-        assert t11.male_last_names() == True
+        assert t3.male_last_names()==True
+        assert t8.male_last_names()==False
+
 
     def Test_US17_No_marriages_to_descendants(self):
         t1 = Family("t1")
         t2 = Family("t2")
         t3 = Family("t3")
         t4 = Family("t4")
-        t5 = Family("t5")
-        t6 = Family("t6")
-        t7 = Family("t7")
         p1 = Individual("p1")
         p2 = Individual("p2")
         p3 = Individual("p3")
@@ -706,36 +690,22 @@ class TestSprint1(unittest.TestCase):
         p7 = Individual("p7")
         p8 = Individual("p8")
         p9 = Individual("p9")
-        p10 = Individual("p10")
-        p11 = Individual("p11")
-        p12 = Individual("p12")
-        # --------------------------------------------------
-
         t1.set_husband(p1)
         t1.set_wife(p2)
         t1.add_child(p3)
         t2.set_wife(p3)
         t2.set_husband(p4)
         t2.add_child(p5)
-
         t3.set_husband(p6)
         t3.set_wife(p7)
         t3.add_child(p8)
         t4.set_husband(p6)
         t4.set_wife(p8)
         t4.add_child(p9)
+     # --------------------------------------------------
 
-        t5.set_husband(p10)
-        t5.add_child(p11)
-        t6.set_husband(p11)
-        t6.add_child(p12)
-        t7.set_husband(p10)
-        t7.set_wife(p12)
-        # --------------------------------------------------
-
-        assert p3.no_marriages_to_descendants() == True
-        assert p8.no_marriages_to_descendants() == False
-        assert p10.no_marriages_to_descendants() == False
+        assert p3.no_marriages_to_descendants()==True
+        assert p8.no_marriages_to_descendants()==False
 
     def Test_US27_Include_individual_ages(self):
         SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
