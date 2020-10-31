@@ -149,7 +149,7 @@ class Family:
                 death = self._husband.get_deathDate()
         marriage = self._marriedDate
         timedelta = date(*marriage) - date(*death)
-        return timedelta.days < 0
+        return timedelta.days <= 0
 
     def divorce_before_death(self) -> bool:
         if not self._husband or not self._wife: raise AttributeError("Missing husband/wife")
@@ -163,7 +163,7 @@ class Family:
 
         for c in self._children:
             if not c.get_birthDate(): raise AttributeError("Missing child birthDate")
-            if c.get_birthDate() > self.get_marriedDate(): return False
+            if c.get_birthDate() <= self.get_marriedDate(): return False
         return True
 
     def birth_before_death_of_parents(self):
