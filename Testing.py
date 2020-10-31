@@ -5,7 +5,8 @@ import sys
 from models.Individual import Individual
 from models.Family import Family
 from models.Gedcom import Gedcom
-
+G1 = Gedcom('../testing_files/right.ged', SUPPORT_TAGS)
+G2 = Gedcom('../testing_files/wrong.ged', SUPPORT_TAGS)
 
 class TestSprint1(unittest.TestCase):
 
@@ -957,6 +958,7 @@ class TestSprint1(unittest.TestCase):
 
 
 
+
     def testInputValidation(self):
         pass
 
@@ -964,4 +966,3 @@ class TestSprint1(unittest.TestCase):
 if __name__ == '__main__':
     print('Running unit tests')
     unittest.main()
-
