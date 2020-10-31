@@ -201,22 +201,24 @@ class Individual:
         if not self.get_family():
             return True
         spouse = []
+        if self.get_gender() == None:
+            raise ValueError("Gender of Individual not set")
         if self.get_gender() == "M":
             for past_family in self.get_family():
                 spouse.append(past_family.get_wife())
         else:
             for past_family in self.get_family():
                 spouse.append(past_family.get_husband())
-        print(list(map(lambda x: x.get_id(), spouse)))
+        # print(list(map(lambda x: x.get_id(), spouse)))
 
-        def dfs(next_member):
-            print(next_member.get_id())
-            if not next_member.get_family():
+        def dfs(indi):
+            # print(indi.get_id())
+            if not indi.get_family():
                 return True
             result = True
-            for family in next_member.get_family():
+            for family in indi.get_family():
                 for child in family.get_children():
-                    if child in spouse:
+                    if child in spouse or child == indi:
                         return False
                     result = dfs(child) and result
             return result

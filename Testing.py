@@ -156,7 +156,7 @@ class TestSprint1(unittest.TestCase):
             female2.set_deathDate(["9", "APR", "2002"])
             t2.set_husband(male2)
             t2.set_wife(female2)
-            t2.set_divorcedDate(["1", "JAN", "2001"])
+            t2.set_divorcedDate(["1", "JAN", "2003"])
 
             # ---------------------------------
             assert t1.divorce_before_death() == True
