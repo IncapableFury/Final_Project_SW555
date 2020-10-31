@@ -181,8 +181,8 @@ class Gedcom:
         """user story 25 No more than one child with the same name and birth date should appear in a family"""
         childName=[]
         childBirthday=[]
-        if not self.get_children: raise AttributeError("no children") 
-        if not self.get_children.get_birthDate:  raise AttributeError("no chlidren birthday")
+        if not self.get_children(): raise AttributeError("no children")
+        if not self.get_children().get_birthDate:  raise AttributeError("no chlidren birthday")
         for child in self.get_families().get_children():
             childName.append(child.get_name().split(" ")[0])
             childBirthday.append(child.get_birthDate())
