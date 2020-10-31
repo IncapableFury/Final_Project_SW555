@@ -104,7 +104,12 @@ class Family:
 
     def parents_not_too_old(self):
         if not self._husband or not self._wife: raise AttributeError("Error: missing husband or wife")
+
+        if not self._husband.get_age() or not self._wife.get_age(): raise AttributeError(
+            "Error: missing age for husband or wife")
+
         if not self._husband.get_age() or not self._wife.get_age(): raise AttributeError("Error: missing age for husband or wife")
+
         wife_age = self._wife.get_age()
         husband_age = self._husband.get_age()
         for child in self._children:
@@ -112,10 +117,7 @@ class Family:
             wife_diff = wife_age - child.get_age()
             husband_diff = husband_age - child.get_age()
             if wife_diff >= 60 or husband_diff >= 80: return False
-            
         return True
-
-
 
     def marriage_before_divorce(self):
         from datetime import date
@@ -128,28 +130,46 @@ class Family:
 
     def marriage_after_14(self) -> bool:
         from datetime import date
+
+        if not self._husband or not self._wife or not self._marriedDate: raise AttributeError(
+            "Missing husband/wife/marriedDate")
+        if not self._husband.get_birthDate() or not self._wife.get_birthDate(): raise AttributeError(
+            "Missing birthdate for husband/wife")
+
         if not self._husband or not self._wife or not self._marriedDate: raise AttributeError("Missing husband/wife/marriedDate")
         if not self._husband.get_birthDate() or not self._wife.get_birthDate(): raise AttributeError("Missing birthdate for husband/wife")
-        husbandMarryAge = (date(self._marriedDate) - date(self._husband.get_birthDate())).days // 365
-        wifeMarryAge = (date(self._marriedDate) - date(self._wife.get_birthDate())).days // 365
+        husbandMarryAge = (date(*self._marriedDate) - date(*self._husband.get_birthDate())).days // 365
+        wifeMarryAge = (date(*self._marriedDate) - date(*self._wife.get_birthDate())).days // 365
         return husbandMarryAge > 14 and wifeMarryAge > 14
 
     def marriage_before_death(self):
         from datetime import date
+
+        if not self._husband or not self._wife or not self.get_marriedDate(): raise AttributeError(
+            "Missing husband/wife/marriedDate")
+        if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
+
+        death = None
+        if not self._husband.get_deathDate():
+            death = self._wife.get_deathDate()
+        elif not self._wife.get_deathDate():
+            death = self._husband.get_deathDate()
+
         if not self._husband or not self._wife or not self.get_marriedDate(): raise AttributeError("Missing husband/wife/marriedDate")
         if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
 
         death = None
         if not self._husband.get_deathDate(): death = self._wife.get_deathDate()
         elif not self._wife.get_deathDate(): death = self._husband.get_deathDate()
+
         else:
             if self._husband.get_deathDate() > self._wife.get_deathDate():
                 death = self._wife.get_deathDate()
             else:
                 death = self._husband.get_deathDate()
-
+        marriage = self._marriedDate
         timedelta = date(*marriage) - date(*death)
-        return timedelta.days < 0
+        return timedelta.days <= 0
 
     def divorce_before_death(self) -> bool:
         from datetime import date
@@ -159,15 +179,16 @@ class Family:
 
         deathdays = None
         if not self._husband.get_deathDate():
-            deathdays = (date(self._divorced) - date(self._husband.get_deathDate())).days
+            deathdays = (date(*self._divorced) - date(*self._husband.get_deathDate())).days
         elif not self._wife.get_deathDate():
-            deathdays = (date(self._divorced) - date(self._wife.get_deathDate())).days
+            deathdays = (date(*self._divorced) - date(*self._wife.get_deathDate())).days
         else:
-            deathdays = (date(self._divorced) - date(self._husband.get_deathDate())).days
-            if deathdays > (date(self._divorced) - date(self._wife.get_deathDate())).days:
-                deathdays = (date(self._divorced) - date(self._wife.get_deathDate())).days
+            deathdays = (date(*self._divorced) - date(*self._husband.get_deathDate())).days
+            if deathdays > (date(*self._divorced) - date(*self._wife.get_deathDate())).days:
+                deathdays = (date(*self._divorced) - date(*self._wife.get_deathDate())).days
 
-        return deathdays > 0
+        return deathdays < 0
+
 
     def birth_before_marriage_of_parents(self):
         if not self._husband or not self._wife: raise AttributeError("Missing husband/wife")
@@ -175,7 +196,7 @@ class Family:
 
         for c in self._children:
             if not c.get_birthDate(): raise AttributeError("Missing child birthDate")
-            if c.get_birthDate() > self.get_marriedDate(): return False
+            if c.get_birthDate() <= self.get_marriedDate(): return False
         return True
 
     def birth_before_death_of_parents(self):
@@ -184,6 +205,7 @@ class Family:
         if len(self._children) == 0: return True
         death = self._wife.get_deathDate()
         hDeath = self._husband.get_deathDate()
+
 
         if not hDeath:
             for c in self._children:
@@ -196,10 +218,20 @@ class Family:
             hDeath[0] = hDeath[0] + 1
         if not death:
             for c in self._children:
-                if c.get_birthDate() > hdeath: return False
+                if c.get_birthDate() > hDeath: return False
             return True
 
         if hDeath < death:
+
+            if not death and not hDeath:
+                return True
+        if hDeath:
+            hDeath = tuple(map(sum, zip(hDeath, (0,9,0))))
+            if hDeath[1] > 12:
+                hDeath[1] = hDeath[1] % 12
+                hDeath[0] = hDeath[0] + 1
+        if death is None or hDeath < death:
+
             death = hDeath
 
         for c in self._children:
@@ -229,17 +261,35 @@ class Family:
         throw error when missing husband/wife or missing gender of husband/wife
         :return: boolean from compare the string of husband and wife gender
         """
-        if(not self._husband or not self._wife): raise AttributeError("missing husband or wife")
-        if(not self._husband.get_gender() or not self._wife.get_gender()): raise AttributeError("missing gender of husband or wife")
+        if (not self._husband or not self._wife): raise AttributeError("missing husband or wife")
+        if (not self._husband.get_gender() or not self._wife.get_gender()): raise AttributeError(
+            "missing gender of husband or wife")
         return self._husband.get_gender() == "M" and self._wife.get_gender() == "F"
 
-
     def male_last_names(self):
-        pass
+        if not self._husband:
+            return True
+        def dfs(family):
+            flag = True
+            hus_last_name = family._husband.get_name().split(' ')[1]
+            for child in family.get_children():
+                if child.get_gender() == None:
+                    raise ValueError("child's gender is not set yet")
+                elif child.get_gender() == "F":
+                    continue
+                if child.get_name().split(' ')[1] != hus_last_name:
+                    return False
+                for fam in child.get_family():
+                    flag = dfs(fam) and flag
+            return flag
+
+        return dfs(self)
 
 
     def siblings_should_not_marry(self):
-        pass
+        if not self._husband or not self._wife: raise AttributeError("Missing husband or wife")
+        if not self._husband.get_parent_family() and not self._wife.get_parent_family(): raise AttributeError("Missing husband and wife parent")
+        return self._husband.get_parent_family()!=self._wife.get_parent_family()
 
     def order_siblings_by_age(self):
         """
@@ -256,5 +306,8 @@ class Family:
 
 if __name__ == "__main__":
     pass
+
+    # from models.Individual import Individual
+
     #from models.Individual import Individual
     # ---------------------------testing cases below---------------------------
