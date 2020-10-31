@@ -533,6 +533,7 @@ class TestSprint1(unittest.TestCase):
                         "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
         G1 = Gedcom('../testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
         G2 = Gedcom('../testing_files/MichealFahimGEDCOM.ged', SUPPORT_TAGS)
+        G3 = Gedcom('../testing_files/mock-family.ged', SUPPORT_TAGS)
         G4 = Gedcom('./testing_files/Peijin_Zhou.ged', SUPPORT_TAGS)
         # ---------------------------------
         assert G1.unique_first_names_in_families() == True
