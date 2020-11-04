@@ -5,7 +5,8 @@ import sys
 from models.Individual import Individual
 from models.Family import Family
 from models.Gedcom import Gedcom
-
+G1 = Gedcom('../testing_files/right.ged', SUPPORT_TAGS)
+G2 = Gedcom('../testing_files/wrong.ged', SUPPORT_TAGS)
 
 class TestSprint1(unittest.TestCase):
 
@@ -843,8 +844,116 @@ class TestSprint1(unittest.TestCase):
         assert G2.corresponding_entries() == True
         assert G3.corresponding_entries() == True
 
+    def test_US29_list_deceased(self):
+        self.assertEqual(G1.listDeceased().len(),5 )
+        self.assertNotEqual(G1.listDeceased().len(),3 )
+        deceasedPeople = []
+        for indi in deceasedPeople:
+            self.assertIn(indi, G1.listDeceased())
+
+    #List all living married people in a GEDCOM file
+    def test_US30_list_living_married(self):
+        self.assertEqual(G1.listLivingMarried().len(),5 )
+        self.assertNotEqual(G1.listLivingMarried().len(),3 )
+        marriedProple = []
+        for indi in marriedProple:
+            self.assertIn(indi, G1.listLivingmarried())
+
+    #List all living people over 30 who have never been married in a GEDCOM file
+    def test_US31_list_living_single(self):
+        self.assertEqual(G1.listLivingSingle().len(),5 )
+        self.assertNotEqual(G1.listLivingSingle().len(),3 )
+        singlePeople = []
+        for indi in singlePeople:
+            self.assertIn(indi, G1.listLivingSingle())
+
+    #List all multiple births in a GEDCOM file
+    def test_US32_list_multiple_births(self):
+        self.assertEqual(G1.listMultipleBirths().len(),4 )
+        MultipleBirths = []
+        for birt in MultipleBirths:
+            self.assertIn(birt, G1.listMultipleBirths())
+
+    #List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file
+    def test_US33_list_orphans(self):
+
+        self.assertEqual(G1.listOrphans().len(),4)
+        OrphansPeople = []
+        for indi in OrphansPeople:
+            self.assertIn(indi, G1.listOrphans())
+
+    #List all couples who were married when the older spouse was more than twice as old as the younger spouse
+    def test_US34_list_large_age_differences(self):
+        self.assertEqual(G1.listLargeAgeDifferences().len(),4 )
+        ageDifferences = []
+        for birt in ageDifferences:
+            self.assertIn(birt, G1.listLargeAgeDifferences())
+
+    #List all people in a GEDCOM file who were born in the last 30 days
+    def test_US35_list_recent_births(self):
+
+        self.assertEqual(G1.listRecentBirths().len(),5 )
+        self.assertNotEqual(G1.listRecentBirths().len(),3 )
+        bornPeople =[]
+        for indi in bornPeople:
+            self.assertIn(indi, G1.listRecentBirths())
 
 
+    #list all people in a GEDCOM file who died in the last 30 days
+    def test_US36_ListRecentDeaths(self):
+
+        self.assertEqual(G1.listRecentDeaths().len(), 5)
+        self.assertNotEqual(G1.listRecentDeaths().len(), 3)
+
+        #manually input deceased people and append to the array
+        deceasedProple =[]
+        for indi in deceasedProple:
+            self.assertIn(indi, G1.listRecentDeaths())
+
+    #list all living spouses and descendants of people in the GEDCOM who died in the last 30 days
+    def test_US37_listRecentSurvivors(self):
+        self.assertEqual(G1.listRecentSurviors().len(),7)
+        self.assertNotEqual(G1.listRecentSurviors().len(), 8)
+        # manually input deceased people's relatives and append to the array
+        deceasedProple = []
+        for indi in deceasedProple:
+            self.assertIn(indi, G1.listRecentSurviors())
+
+
+    #list all living people in a GEDCOM file whose birthdays occur in the next 30 days
+    def test_US38_listUpcomingBirthdays(self):
+        self.assertEqual(G1.listUpcomingBirthdays().len(),6)
+        #manually input people with birthdays
+        birthdayPeople =[]
+        for indi in birthdayPeople:
+            self.assertIn(indi, G1.listUpcomingBirthdays())
+
+    # list all living people in a GEDCOM file whose marriage anniversaries occur in the next 30 days
+    def test_US39_UpcomingAnniversaries(self):
+        self.assertEqual(G1.upcomingAnniversaries().len(),4)
+        #manually input individuals who have anniversaries coming up
+        AnniversaryIndi = []
+        for indi in AnniversaryIndi:
+            self.assertIn(indi, G1.upcomingAnniversaries())
+
+    # list line numbers from GEDCOM source file when reporting errors
+    def test_US40_includeInputLineNumbers(self):
+
+        self.assertEqual(G1.includeInputLineNumbers().len(), 2)
+
+        self.assertTrue(G1.includeInputLineNumbers() == ['20','25'])
+
+        self.assertTrue(G2.includeInputLineNumbers() == ['15'])
+
+    # Accept and use dates without days or without days and months
+    def test_US41_IncludePartialDates(self):
+        self.assertTrue(G1.IncludePartialDates())
+
+
+    # All dates should be legitimate dates for the months specified(e.g. 2/30/2015 is not legitimate)
+    def test_US42_RejectIllegitimateDates(self):
+        self.assertTrue(G1.rejectIllegitimateDates())
+        self.assertFalse(G2.rejectIllegitimateDates())
 
 
 
@@ -857,4 +966,3 @@ class TestSprint1(unittest.TestCase):
 if __name__ == '__main__':
     print('Running unit tests')
     unittest.main()
-
