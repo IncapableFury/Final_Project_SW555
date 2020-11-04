@@ -57,12 +57,23 @@ class Individual:
         # if not isinstance(gender, str): raise TypeError("input has to be a str type")
         self._gender = gender
 
-    def set_birthDate(self, birth_date: list) -> None:
+    def set_birthDate(self, birth_date: list) -> None:  # set missing dates to Jan/01
         # if not isinstance(birth_date, str): raise TypeError("input has to be a str type")
-        if all(isinstance(v, int) for v in birth_date):
+        from datetime import datetime
+        if not birth_date:  # ignore empty input
+            pass
+        elif len(birth_date) == 1:  # assume only year is provided
+            birth_date = (int(birth_date[0]), 1, 1)
+        elif len(birth_date) == 2:  # assume only year & month are provided
+            birth_date = (int(birth_date[1]), birth_date[0], 1)
+        # now we know at least all the fields are supplied
+        if not all(isinstance(v, int) for v in birth_date):  # convert to desired format
+            birth_date = self.change_date_formate(birth_date)
+        try:  # check date validity
+            datetime(*birth_date)  # raise error if failed
             self._birthDate = birth_date
-            return
-        self._birthDate = self.change_date_formate(birth_date)
+        except ValueError:
+            raise ValueError("Birthday provided for " + self.get_id() + " is not valid.")
 
     def set_deathDate(self, death_date: list) -> None:
         # if not isinstance(death_date, str): raise TypeError("input has to be a str type")
@@ -83,19 +94,17 @@ class Individual:
 
         monthList = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6, "JUL": 7, "AUG": 8, "SEP": 9,
                      "OCT": 10, "NOV": 11, "DEC": 12}
-        return int(date[2]), monthList[date[1]], int(date[0])
-
-
-
+        return int(date[2]), monthList[date[1]] if date[1] in monthList else 13, int(
+            date[0])  # handle invalid month input
 
     def birth_before_marriage(self):
         from datetime import date
         if not self._birthDate or not self._family: raise AttributeError("Error: Missing attribute")
-        #if not self._parentFamily.get_marriedDate(): raise AttributeError("Error: Missing attribute")
+        # if not self._parentFamily.get_marriedDate(): raise AttributeError("Error: Missing attribute")
         for family in self.get_family():
             if not family.get_marriedDate(): raise AttributeError("Error: Missing attribute")
             timedelta = date(*family.get_marriedDate()) - date(*self._birthDate)
-            if(timedelta.days <= 0): return False
+            if (timedelta.days <= 0): return False
         return True
 
     def birth_before_death(self):
@@ -142,37 +151,38 @@ class Individual:
             marrageAgeList.append((marrageAge, devorceAge))
         return True
 
-
-
     def aunts_and_uncles(self):
-        if(not self._parentFamily): raise AttributeError("Error: missing value")
-        if(not self._parentFamily.get_husband() or not self._parentFamily.get_wife()): raise AttributeError("Error: missing value")
-        if(not self._parentFamily.get_husband().get_parent_family() or not self._parentFamily.get_wife().get_parent_family()): raise AttributeError("Error: missing value")
-        
+        if (not self._parentFamily): raise AttributeError("Error: missing value")
+        if (not self._parentFamily.get_husband() or not self._parentFamily.get_wife()): raise AttributeError(
+            "Error: missing value")
+        if (
+                not self._parentFamily.get_husband().get_parent_family() or not self._parentFamily.get_wife().get_parent_family()): raise AttributeError(
+            "Error: missing value")
+
         dad_grand_family = self._parentFamily.get_husband().get_parent_family()
         mom_grand_family = self._parentFamily.get_wife().get_parent_family()
 
         for dad_side_aunt_uncle in dad_grand_family.get_children():
             for dad_side_family in dad_side_aunt_uncle.get_family():
-                if(not dad_side_family.get_husband() or not dad_side_family.get_wife()): raise AttributeError("Error: missing value")
+                if (not dad_side_family.get_husband() or not dad_side_family.get_wife()): raise AttributeError(
+                    "Error: missing value")
                 uncle_id = dad_side_family.get_husband().get_id()
                 aunt_id = dad_side_family.get_wife().get_id()
-                if(uncle_id == aunt_id): return False
+                if (uncle_id == aunt_id): return False
                 for each_child in dad_side_family.get_children():
-                    if(uncle_id == each_child.get_id() or aunt_id == each_child.get_id()): return False
+                    if (uncle_id == each_child.get_id() or aunt_id == each_child.get_id()): return False
 
         for mom_side_aunt_uncle in mom_grand_family.get_children():
             for mom_side_family in mom_side_aunt_uncle.get_family():
-                if(not mom_side_family.get_husband() or not mom_side_family.get_wife()): raise AttributeError("Error: missing value")
+                if (not mom_side_family.get_husband() or not mom_side_family.get_wife()): raise AttributeError(
+                    "Error: missing value")
                 uncle_id = mom_side_family.get_husband().get_id()
                 aunt_id = mom_side_family.get_wife().get_id()
-                if(uncle_id == aunt_id): return False
+                if (uncle_id == aunt_id): return False
                 for each_child in mom_side_family.get_children():
-                    if(uncle_id == each_child.get_id() or aunt_id == each_child.get_id()): return False
-        
+                    if (uncle_id == each_child.get_id() or aunt_id == each_child.get_id()): return False
+
         return True
-
-
 
     def first_cousins_should_not_marry(self):
         if self.get_parent_family() and self.get_parent_family().get_husband() and \
@@ -209,6 +219,7 @@ class Individual:
         else:
             for past_family in self.get_family():
                 spouse.append(past_family.get_husband())
+
         # print(list(map(lambda x: x.get_id(), spouse)))
 
         def dfs(indi):
@@ -224,3 +235,13 @@ class Individual:
             return result
 
         return dfs(self)
+
+
+if __name__ == "__main__":
+    i1 = Individual("i1")
+    date = [2018, 123, 1]
+    try:
+        i1.set_birthDate(date)
+    except ValueError as e:
+        print(e)
+    print(i1.get_birthDate())
