@@ -236,9 +236,6 @@ class Individual:
 
         return dfs(self)
 
-    
-
-
 
 if __name__ == "__main__":
     i1 = Individual("i1")
