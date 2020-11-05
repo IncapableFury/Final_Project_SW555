@@ -238,6 +238,29 @@ class Gedcom:
         raise ValueError(
             "Error corresponding entries: All family roles (spouse, child) specified in an individual record should have corresponding entries in the corresponding family, the information in the individual and family records should be consistent.")
 
+
+        def list_deceased(self):
+            """us 29 list all deceased individuals in a gedcom file"""
+            deceasedPeople=[]
+            if self._individuals.get_deathDate()==None: raise AttributeError("no one deceased")
+            for individual in self._individuals():
+                if self.get_deathDate() != None:
+                    deceasedPeople.append(self.get_id())
+            return deceasedPeople
+
+
+        def list_living_married(self):
+            """list all living married people in a Gedcom file"""
+            marriedPeople=[]
+            if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
+            for family in self._families():
+                if self.get_husband==self.get_id and self.husband.get_deathDate == None:
+                    marriedPeople.append(self.get_husband)
+                if self.get_wife==self.get_id and self.get_wife.get_deathDate==None:
+                    marriedPeople.append(self.get_wife)
+            return marriedPeople 
+
+
 # if __name__ == "__main__":
 #     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
 #                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
