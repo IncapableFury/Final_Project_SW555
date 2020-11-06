@@ -266,19 +266,34 @@ class Gedcom:
         return output_list
 
 
+    def list_deceased(self):
+        """us 29 list all deceased individuals in a gedcom file"""
+        deceasedPeople=[]
+        if self._individuals.get_deathDate()==None: raise AttributeError("no one deceased")
+        for individual in self._individuals():
+            if self.get_deathDate() != None:
+                deceasedPeople.append(self.get_id())
+        return deceasedPeople
 
 
+    def list_living_married(self):
+        """list all living married people in a Gedcom file"""
+        marriedPeople=[]
+        if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
+        for family in self._families():
+            if self.get_husband==self.get_id and self.husband.get_deathDate == None:
+                marriedPeople.append(self.get_husband)
+            if self.get_wife==self.get_id and self.get_wife.get_deathDate==None:
+                marriedPeople.append(self.get_wife)
+        return marriedPeople 
 
-'''
-if __name__ == "__main__":
 
-    SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
-                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
-    g1 = Gedcom("../testing_files/Jiashu_Wang.ged", SUPPORT_TAGS)  # testing_files/Jiashu_Wang.ged
-    g1.peek()
-    g1.parse()
-    g1.list_upcoming_birthdays()
-    #print(g1.get_individuals().keys(), g1.get_families().keys())
-    #print(g1.get_individuals()["@I4@"].get_birthDate())
-    #g1.unique_name_and_birth_date()
-'''
+# if __name__ == "__main__":
+#     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
+#                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
+#     g1 = Gedcom("../testing_files/test_date_validation.ged", SUPPORT_TAGS)  # testing_files/Jiashu_Wang.ged
+#     g1.peek()
+# g1.parse()
+# print(g1.get_individuals().keys(), g1.get_families().keys())
+# print(g1.get_individuals()["@I4@"].get_birthDate())
+# g1.unique_name_and_birth_date()

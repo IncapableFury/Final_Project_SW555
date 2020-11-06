@@ -868,8 +868,8 @@ class TestSprint1(unittest.TestCase):
     def test_US30_list_living_married(self):
         self.assertEqual(G1.listLivingMarried().len(),5 )
         self.assertNotEqual(G1.listLivingMarried().len(),3 )
-        marriedProple = []
-        for indi in marriedProple:
+        marriedPeople = []
+        for indi in marriedPeople:
             self.assertIn(indi, G1.listLivingmarried())
 
     #List all living people over 30 who have never been married in a GEDCOM file
