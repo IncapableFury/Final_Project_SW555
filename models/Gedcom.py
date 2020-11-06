@@ -305,6 +305,40 @@ class Gedcom:
             if self.get_wife==self.get_id and self.get_wife.get_deathDate==None:
                 marriedPeople.append(self.get_wife)
         return marriedPeople 
+    
+    def list_large_age_differences(self):
+        "US34, List all couples who were married when the older spouse was more than twice as old as the younger spouse"
+
+        res = []
+
+        for id in self._families:
+            family = self._families[id]
+            if not family.get_husband() or not family.get_wife(): continue
+            husband = family.get_husband()
+            wife = family.get_wife()
+
+            if not husband.get_birthDate() or not wife.get_birthDate(): continue
+
+            husband_age = husband.get_age()
+            wife_age = wife.get_age()
+            age_difference = husband_age - wife_age
+            if age_difference > 0 and age_difference > wife_age:
+                res.append((husband.get_id(), wife.get_id()))
+            if age_difference < 0 and -age_difference > husband_age:
+                res.append((husband.get_id(), wife.get_id()))
+        return res
+
+
+    def list_recent_birth(self):
+        "US35, List all people in a GEDCOM file who were born in the last 30 days"
+
+        recent_birth = []
+
+        for id in self._individuals:
+           indi = self._individuals[id]
+           if not indi.get_birthDate(): continue
+           if 0<= indi.get_age(days = True) < 30: recent_birth.append(id)
+        return recent_birth
 
 
 # if __name__ == "__main__":
