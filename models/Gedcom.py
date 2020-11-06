@@ -239,31 +239,50 @@ class Gedcom:
 
     def list_upcoming_birthdays(self):
         from datetime import date
-        mark_day_diff = -1
         output_list = []
         today = date.today()
         for key in self._individuals:
             indi = self._individuals[key]
-            if not indi.get_birthDate(): continue
-            if not indi.get_birthDate()[1] or not indi.get_birthDate()[2]: continue
+            if not indi.get_birthDate() or not indi.get_birthDate()[1] or not indi.get_birthDate()[2] or indi.get_deathDate(): continue
 
-            this_year_birth = date(today.year, indi.get_birthDate()[1], indi.get_birthDate()[2])
-            day_diff = (this_year_birth - today).days
-            if day_diff < 0: day_diff += 365
-            if mark_day_diff < 0: 
-                mark_day_diff = day_diff
-                output_list = [indi]
-                continue
+            day_diff = (today - indi.get_birthDate()).days % 365
 
-            if mark_day_diff == day_diff: output_list.append(indi)
-            if day_diff < mark_day_diff: 
-                mark_day_diff = day_diff
-                output_list = [indi]
-
-        for indi in output_list:
-            print("User ID:", str(indi.get_id()) + "\nBirthDate:", str(indi.get_birthDate()[0]) + "/" +str(indi.get_birthDate()[1])+ "/"+ str(indi.get_birthDate()[2]))
+            if 0 <= day_diff < 30: output_list.append(key)
 
         return output_list
+
+    def list_resent_survivors(self):
+        from datetime import date
+        output = {}
+        for key in self._individuals:
+            indi = self._individuals[key]
+            if not indi.get_deathDate(): continue
+
+            death = date(*indi.get_deathDate())
+
+            if(0 <= (date.today() - death).days < 30):
+
+                info = [[],[]] #0: spouses, 1: descendants
+                if not indi.get_gender(): continue
+                for fam in indi.get_family():
+                    if indi.get_gender() == "M":
+                        if not indi.get_wife(): continue
+                        info[0].append(indi.get_wife().get_id())
+                    else:
+                        if not indi.get_husband(): continue
+                        info[0].append(indi.get_husband().get_id())
+
+                    info[1] += indi.get_children()
+
+                output[indi.get_id()] = tuple(info)
+
+        return output
+
+
+
+
+
+
 
 
     def list_deceased(self):
