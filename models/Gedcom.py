@@ -235,15 +235,50 @@ class Gedcom:
             if self._individuals().get_id() == self._families().get_id() and self._individuals.get_id() == child:
                 return True
         return False
-        raise ValueError(
-            "Error corresponding entries: All family roles (spouse, child) specified in an individual record should have corresponding entries in the corresponding family, the information in the individual and family records should be consistent.")
+        raise ValueError( "Error corresponding entries: All family roles (spouse, child) specified in an individual record should have corresponding entries in the corresponding family, the information in the individual and family records should be consistent.")
 
-# if __name__ == "__main__":
-#     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
-#                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
-#     g1 = Gedcom("../testing_files/test_date_validation.ged", SUPPORT_TAGS)  # testing_files/Jiashu_Wang.ged
-#     g1.peek()
-# g1.parse()
-# print(g1.get_individuals().keys(), g1.get_families().keys())
-# print(g1.get_individuals()["@I4@"].get_birthDate())
-# g1.unique_name_and_birth_date()
+    def list_upcoming_birthdays(self):
+        from datetime import date
+        mark_day_diff = -1
+        output_list = []
+        today = date.today()
+        for key in self._individuals:
+            indi = self._individuals[key]
+            if not indi.get_birthDate(): continue
+            if not indi.get_birthDate()[1] or not indi.get_birthDate()[2]: continue
+
+            this_year_birth = date(today.year, indi.get_birthDate()[1], indi.get_birthDate()[2])
+            day_diff = (this_year_birth - today).days
+            if day_diff < 0: day_diff += 365
+            if mark_day_diff < 0: 
+                mark_day_diff = day_diff
+                output_list = [indi]
+                continue
+
+            if mark_day_diff == day_diff: output_list.append(indi)
+            if day_diff < mark_day_diff: 
+                mark_day_diff = day_diff
+                output_list = [indi]
+
+        for indi in output_list:
+            print("User ID:", str(indi.get_id()) + "\nBirthDate:", str(indi.get_birthDate()[0]) + "/" +str(indi.get_birthDate()[1])+ "/"+ str(indi.get_birthDate()[2]))
+
+        return output_list
+
+
+
+
+
+'''
+if __name__ == "__main__":
+
+    SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
+                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
+    g1 = Gedcom("../testing_files/Jiashu_Wang.ged", SUPPORT_TAGS)  # testing_files/Jiashu_Wang.ged
+    g1.peek()
+    g1.parse()
+    g1.list_upcoming_birthdays()
+    #print(g1.get_individuals().keys(), g1.get_families().keys())
+    #print(g1.get_individuals()["@I4@"].get_birthDate())
+    #g1.unique_name_and_birth_date()
+'''
