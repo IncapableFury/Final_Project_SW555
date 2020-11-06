@@ -259,7 +259,28 @@ class Gedcom:
                 if self.get_wife==self.get_id and self.get_wife.get_deathDate==None:
                     marriedPeople.append(self.get_wife)
             return marriedPeople 
-
+    def list_living_single(self):
+        from models.Individual import Individual
+        singlePeople=[]
+        for ind in self.get_individuals():
+            if not ind.get_deathDate():
+                if ind.get_age()>30:
+                    if len(ind.get_family())==0:
+                        singlePeople.append(ind)
+        return singlePeople
+    def list_orphans(self):
+        from models.Individual import Individual
+        from models.Family import Family
+        orphans=[]
+        for ind in self.get_individuals():
+            if ind.get_age()<18:
+                if ind.get_parent_family():
+                    if ind.get_parent_family().get_husband() and ind.get_parent_family().get_wife():
+                        if ind.get_parent_family().get_husband().get_deathDate() and ind.get_parent_family().get_wife().get_deathDate():
+                            orphans.append(ind)
+                    else: raise AttributeError("Missing wife or husband: "+ind.get_parent_family().get_id())
+                else: raise AttributeError("Missing parent family: "+ind.get_id())
+        return orphans
 
 # if __name__ == "__main__":
 #     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
