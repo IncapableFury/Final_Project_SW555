@@ -198,7 +198,7 @@ class Individual:
         return True
 
     def no_marriages_to_descendants(self):  # dfs in dfs
-        if not self.get_family():
+        if len(self.get_family()) == 0:
             return True
         spouse = []
         if self.get_gender() == None:
@@ -218,7 +218,7 @@ class Individual:
             result = True
             for family in indi.get_family():
                 for child in family.get_children():
-                    if child in spouse or child == indi:
+                    if child in spouse:
                         return False
                     result = dfs(child) and result
             return result

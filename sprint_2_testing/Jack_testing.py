@@ -179,7 +179,7 @@ class sprint2Test(unittest.TestCase):
         fam2.set_marriedDate((1989, 7, 25))
         fam2.set_children([ind6,ind9,ind10])
 
-        self.assertFalse(ind6.no_marriages_to_descendants())
+        self.assertFalse(ind7.no_marriages_to_descendants())
 
         #fam3
         fam3 = Family("3")

@@ -275,7 +275,7 @@ class Family:
             hus_last_name = family._husband.get_name().split(' ')[1]
             for child in family.get_children():
                 if child.get_gender() == None:
-                    raise ValueError("child's gender is not set yet")
+                    raise AttributeError("child's gender is not set yet")
                 elif child.get_gender() == "F":
                     continue
                 if child.get_name().split(' ')[1] != hus_last_name:

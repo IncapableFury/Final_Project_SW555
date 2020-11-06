@@ -1,4 +1,8 @@
+from models.Individual import Individual
+from models.Family import Family
+
 class Gedcom:
+
     def __init__(self, path, supportTags):
         self._supportTags = supportTags
         self._individuals = {}
@@ -199,7 +203,7 @@ class Gedcom:
     def corresponding_entries(self):
         """ user story 26 the information in the individual and family records should be consistent."""
         if not self.get_children: raise AttributeError("no children")
-        if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
+        if not se+lf.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
         if self._individuals().get_id()==self._families().get_husband().get_id() or self._individuals().get_id()==self._families().get_wife().get_id():
             return True 
         for child in self._families.get_children():
@@ -208,22 +212,55 @@ class Gedcom:
         return False
         raise ValueError("Error corresponding entries: All family roles (spouse, child) specified in an individual record should have corresponding entries in the corresponding family, the information in the individual and family records should be consistent.")
 
+    # compares each families's marriage dates(month and day) to today's date, returns array of members with upcoming anniversaries
+    # return empty array if no dates are found
 
-# if __name__ == "__main__":
-#     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
-#                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
-#     g1 = Gedcom("../testing_files/Jiashu_Wang.ged", SUPPORT_TAGS)#testing_files/Jiashu_Wang.ged
-#     # for i in range(len(g1.get_data()[0])):
-#     #     print(i,g1.get_data()[0][i])
-#     # for i in range(len(g1.get_data()[1])):
-#     #     print(g1.get_data()[1][i])
-#     # print(g1.get_data(),sep='/n')
-#     g1.parse()
-#     # print(g1.get_individuals(),g1.get_families())
-#     # print(len(g1.get_individuals()),g1.get_individuals()["@I2@"].get_birthDate())
-#     g1.unique_name_and_birth_date()
-#     # print("what")
-#     offset = 11
-#     id = "@I123@"
-#     print("@I"+str(int(id[2:-1])+offset)+"@")
-#     print(g1.get_families().values())
+    # exclude dead individuals
+    #return tuples
+    def list_upcoming_anniversaries(self):
+        """
+        return couples tuple of ids
+        """
+
+        from datetime import date, datetime
+        indiUpcomingAnniversaries = []
+        today = date.today()
+        if(len(self._families) == 0):
+            raise AttributeError("GEDCOM file doesn't have any families")
+        for fam in self._families[id]:
+            dateToCompare = date(*fam.get_marriedDate())
+            #datetime.strptime(dateToCompare,'%b %d').replace...
+            parsedDate = datetime.strptime(dateToCompare, '%b %d').date().replace(year =today.year)
+            #with in 30 days
+            if (parsedDate > today):
+                indiUpcomingAnniversaries.append(fam.get_husband())
+                indiUpcomingAnniversaries.append(fam.get_wife())
+            else:
+                return indiUpcomingAnniversaries
+        return indiUpcomingAnniversaries
+
+    def include_InputLine_Numbers(self):
+        pass
+
+    if __name__ == "__main__":
+        pass
+
+
+if __name__ == "__main__":
+    SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
+                    "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
+    g1 = Gedcom("../testing_files/Jiashu_Wang.ged", SUPPORT_TAGS)#testing_files/Jiashu_Wang.ged
+    # for i in range(len(g1.get_data()[0])):
+    #     print(i,g1.get_data()[0][i])
+    # for i in range(len(g1.get_data()[1])):
+    #     print(g1.get_data()[1][i])
+    # print(g1.get_data(),sep='/n')
+    g1.parse()
+    # print(g1.get_individuals(),g1.get_families())
+    # print(len(g1.get_individuals()),g1.get_individuals()["@I2@"].get_birthDate())
+    g1.unique_name_and_birth_date()
+    # print("what")
+    offset = 11
+    id = "@I123@"
+    print("@I"+str(int(id[2:-1])+offset)+"@")
+    print(g1.get_families().values())
