@@ -138,9 +138,8 @@ class Family:
 
         if not self._husband or not self._wife or not self._marriedDate: raise AttributeError("Missing husband/wife/marriedDate")
         if not self._husband.get_birthDate() or not self._wife.get_birthDate(): raise AttributeError("Missing birthdate for husband/wife")
-
-        husbandMarryAge = (date(self._marriedDate) - date(self._husband.get_birthDate())).days // 365
-        wifeMarryAge = (date(self._marriedDate) - date(self._wife.get_birthDate())).days // 365
+        husbandMarryAge = (date(*self._marriedDate) - date(*self._husband.get_birthDate())).days // 365
+        wifeMarryAge = (date(*self._marriedDate) - date(*self._wife.get_birthDate())).days // 365
         return husbandMarryAge > 14 and wifeMarryAge > 14
 
     def marriage_before_death(self):
@@ -168,9 +167,9 @@ class Family:
                 death = self._wife.get_deathDate()
             else:
                 death = self._husband.get_deathDate()
-
+        marriage = self._marriedDate
         timedelta = date(*marriage) - date(*death)
-        return timedelta.days < 0
+        return timedelta.days <= 0
 
     def divorce_before_death(self) -> bool:
         from datetime import date
@@ -180,15 +179,15 @@ class Family:
 
         deathdays = None
         if not self._husband.get_deathDate():
-            deathdays = (date(self._divorced) - date(self._husband.get_deathDate())).days
+            deathdays = (date(*self._divorced) - date(*self._husband.get_deathDate())).days
         elif not self._wife.get_deathDate():
-            deathdays = (date(self._divorced) - date(self._wife.get_deathDate())).days
+            deathdays = (date(*self._divorced) - date(*self._wife.get_deathDate())).days
         else:
-            deathdays = (date(self._divorced) - date(self._husband.get_deathDate())).days
-            if deathdays > (date(self._divorced) - date(self._wife.get_deathDate())).days:
-                deathdays = (date(self._divorced) - date(self._wife.get_deathDate())).days
+            deathdays = (date(*self._divorced) - date(*self._husband.get_deathDate())).days
+            if deathdays > (date(*self._divorced) - date(*self._wife.get_deathDate())).days:
+                deathdays = (date(*self._divorced) - date(*self._wife.get_deathDate())).days
 
-        return deathdays > 0
+        return deathdays < 0
 
 
     def birth_before_marriage_of_parents(self):
@@ -197,7 +196,7 @@ class Family:
 
         for c in self._children:
             if not c.get_birthDate(): raise AttributeError("Missing child birthDate")
-            if c.get_birthDate() > self.get_marriedDate(): return False
+            if c.get_birthDate() <= self.get_marriedDate(): return False
         return True
 
     def birth_before_death_of_parents(self):
