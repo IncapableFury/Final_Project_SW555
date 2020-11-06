@@ -235,30 +235,76 @@ class Gedcom:
             if self._individuals().get_id() == self._families().get_id() and self._individuals.get_id() == child:
                 return True
         return False
-        raise ValueError(
-            "Error corresponding entries: All family roles (spouse, child) specified in an individual record should have corresponding entries in the corresponding family, the information in the individual and family records should be consistent.")
+        raise ValueError( "Error corresponding entries: All family roles (spouse, child) specified in an individual record should have corresponding entries in the corresponding family, the information in the individual and family records should be consistent.")
+
+    def list_upcoming_birthdays(self):
+        from datetime import date
+        output_list = []
+        today = date.today()
+        for key in self._individuals:
+            indi = self._individuals[key]
+            if not indi.get_birthDate() or not indi.get_birthDate()[1] or not indi.get_birthDate()[2] or indi.get_deathDate(): continue
+
+            day_diff = (today - indi.get_birthDate()).days % 365
+
+            if 0 <= day_diff < 30: output_list.append(key)
+
+        return output_list
+
+    def list_resent_survivors(self):
+        from datetime import date
+        output = {}
+        for key in self._individuals:
+            indi = self._individuals[key]
+            if not indi.get_deathDate(): continue
+
+            death = date(*indi.get_deathDate())
+
+            if(0 <= (date.today() - death).days < 30):
+
+                info = [[],[]] #0: spouses, 1: descendants
+                if not indi.get_gender(): continue
+                for fam in indi.get_family():
+                    if indi.get_gender() == "M":
+                        if not indi.get_wife(): continue
+                        info[0].append(indi.get_wife().get_id())
+                    else:
+                        if not indi.get_husband(): continue
+                        info[0].append(indi.get_husband().get_id())
+
+                    info[1] += indi.get_children()
+
+                output[indi.get_id()] = tuple(info)
+
+        return output
 
 
-        def list_deceased(self):
-            """us 29 list all deceased individuals in a gedcom file"""
-            deceasedPeople=[]
-            if self._individuals.get_deathDate()==None: raise AttributeError("no one deceased")
-            for individual in self._individuals():
-                if self.get_deathDate() != None:
-                    deceasedPeople.append(self.get_id())
-            return deceasedPeople
 
 
-        def list_living_married(self):
-            """list all living married people in a Gedcom file"""
-            marriedPeople=[]
-            if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
-            for family in self._families():
-                if self.get_husband==self.get_id and self.husband.get_deathDate == None:
-                    marriedPeople.append(self.get_husband)
-                if self.get_wife==self.get_id and self.get_wife.get_deathDate==None:
-                    marriedPeople.append(self.get_wife)
-            return marriedPeople 
+
+
+
+
+    def list_deceased(self):
+        """us 29 list all deceased individuals in a gedcom file"""
+        deceasedPeople=[]
+        if self._individuals.get_deathDate()==None: raise AttributeError("no one deceased")
+        for individual in self._individuals():
+            if self.get_deathDate() != None:
+                deceasedPeople.append(self.get_id())
+        return deceasedPeople
+
+
+    def list_living_married(self):
+        """list all living married people in a Gedcom file"""
+        marriedPeople=[]
+        if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
+        for family in self._families():
+            if self.get_husband==self.get_id and self.husband.get_deathDate == None:
+                marriedPeople.append(self.get_husband)
+            if self.get_wife==self.get_id and self.get_wife.get_deathDate==None:
+                marriedPeople.append(self.get_wife)
+        return marriedPeople 
 
 
 # if __name__ == "__main__":
