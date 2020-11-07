@@ -58,7 +58,7 @@ class sprint3Test(unittest.TestCase):
 
     # list all living people in a GEDCOM file whose marriage anniversaries occur in the next 30 days
     def test_UpcomingAnniversaries(self):
-        self.assertEqual(len(G1.list_upcoming_anniversaries()),4)
+        self.assertEqual(len(G1.list_upcoming_anniversaries()),1)
         # #manually input individuals who have anniversaries coming up
         # AnniversaryIndi = []
         # for indi in AnniversaryIndi:

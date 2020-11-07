@@ -231,50 +231,30 @@ class Gedcom:
 
         return True
 
-        if not self.get_children: raise AttributeError("no children")
-<<<<<<< HEAD
-        if not se+lf.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
-        if self._individuals().get_id()==self._families().get_husband().get_id() or self._individuals().get_id()==self._families().get_wife().get_id():
-            return True 
-=======
-        if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
-        if self._individuals().get_id() == self._families().get_husband().get_id() or self._individuals().get_id() == self._families().get_wife().get_id():
-            return True
->>>>>>> upstream/master
-        for child in self._families.get_children():
-            if self._individuals().get_id() == self._families().get_id() and self._individuals.get_id() == child:
-                return True
-        return False
-        raise ValueError(
-            "Error corresponding entries: All family roles (spouse, child) specified in an individual record should have corresponding entries in the corresponding family, the information in the individual and family records should be consistent.")
-
-
-        def list_deceased(self):
-            """us 29 list all deceased individuals in a gedcom file"""
-            deceasedPeople=[]
-            if self._individuals.get_deathDate()==None: raise AttributeError("no one deceased")
-            for individual in self._individuals():
-                if self.get_deathDate() != None:
-                    deceasedPeople.append(self.get_id())
-            return deceasedPeople
-
-
-        def list_living_married(self):
-            """list all living married people in a Gedcom file"""
-            marriedPeople=[]
-            if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
-            for family in self._families():
-                if self.get_husband==self.get_id and self.husband.get_deathDate == None:
-                    marriedPeople.append(self.get_husband)
-                if self.get_wife==self.get_id and self.get_wife.get_deathDate==None:
-                    marriedPeople.append(self.get_wife)
-            return marriedPeople 
+    # def list_deceased(self):
+    #     """us 29 list all deceased individuals in a gedcom file"""
+    #     deceasedPeople=[]
+    #     if self._individuals.get_deathDate()==None: raise AttributeError("no one deceased")
+    #     for individual in self._individuals():
+    #         if self.get_deathDate() != None:
+    #             deceasedPeople.append(self.get_id())
+    #     return deceasedPeople
+    #
+    #
+    # def list_living_married(self):
+    #     """list all living married people in a Gedcom file"""
+    #     marriedPeople=[]
+    #     if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
+    #     for family in self._families():
+    #         if self.get_husband==self.get_id and self.husband.get_deathDate == None:
+    #             marriedPeople.append(self.get_husband)
+    #         if self.get_wife==self.get_id and self.get_wife.get_deathDate==None:
+    #             marriedPeople.append(self.get_wife)
+    #     return marriedPeople
 
     # compares each families's marriage dates(month and day) to today's date, returns array of members with upcoming anniversaries
     # return empty array if no dates are found
 
-    # exclude dead individuals
-    #return tuples
     def list_upcoming_anniversaries(self):
         """
         return couples tuple of ids
@@ -285,16 +265,13 @@ class Gedcom:
         today = date.today()
         if(len(self._families) == 0):
             raise AttributeError("GEDCOM file doesn't have any families")
-        for fam in self._families[id]:
-            dateToCompare = date(*fam.get_marriedDate())
-            #datetime.strptime(dateToCompare,'%b %d').replace...
-            parsedDate = datetime.strptime(dateToCompare, '%b %d').date().replace(year =today.year)
-            #with in 30 days
-            if (parsedDate > today):
-                indiUpcomingAnniversaries.append(fam.get_husband())
-                indiUpcomingAnniversaries.append(fam.get_wife())
-            else:
-                return indiUpcomingAnniversaries
+        for fam in self._families.values():
+            if (date(*fam.get_marriedDate()) - today).days % 365 <= 30:
+                if(fam.get_husband().get_deathDate() or fam.get_wife().get_deathDate()):
+                    continue
+                else:
+                    indiUpcomingAnniversaries.append((fam.get_husband().get_id(),fam.get_wife().get_id()))
+
         return indiUpcomingAnniversaries
 
     def include_InputLine_Numbers(self):
@@ -304,7 +281,6 @@ class Gedcom:
         pass
 
 
-<<<<<<< HEAD
 if __name__ == "__main__":
     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
@@ -315,6 +291,7 @@ if __name__ == "__main__":
     #     print(g1.get_data()[1][i])
     # print(g1.get_data(),sep='/n')
     g1.parse()
+    g1.peek()
     # print(g1.get_individuals(),g1.get_families())
     # print(len(g1.get_individuals()),g1.get_individuals()["@I2@"].get_birthDate())
     g1.unique_name_and_birth_date()
@@ -323,7 +300,6 @@ if __name__ == "__main__":
     id = "@I123@"
     print("@I"+str(int(id[2:-1])+offset)+"@")
     print(g1.get_families().values())
-=======
 # if __name__ == "__main__":
 #     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
 #                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
@@ -333,4 +309,4 @@ if __name__ == "__main__":
 # print(g1.get_individuals().keys(), g1.get_families().keys())
 # print(g1.get_individuals()["@I4@"].get_birthDate())
 # g1.unique_name_and_birth_date()
->>>>>>> upstream/master
+
