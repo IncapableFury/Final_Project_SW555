@@ -231,6 +231,7 @@ class Gedcom:
 
         return True
 
+<<<<<<< HEAD
     # def list_deceased(self):
     #     """us 29 list all deceased individuals in a gedcom file"""
     #     deceasedPeople=[]
@@ -273,6 +274,120 @@ class Gedcom:
                     indiUpcomingAnniversaries.append((fam.get_husband().get_id(),fam.get_wife().get_id()))
 
         return indiUpcomingAnniversaries
+=======
+        if not self.get_children: raise AttributeError("no children")
+        if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
+        if self._individuals().get_id() == self._families().get_husband().get_id() or self._individuals().get_id() == self._families().get_wife().get_id():
+            return True
+        for child in self._families.get_children():
+            if self._individuals().get_id() == self._families().get_id() and self._individuals.get_id() == child:
+                return True
+        return False
+        raise ValueError( "Error corresponding entries: All family roles (spouse, child) specified in an individual record should have corresponding entries in the corresponding family, the information in the individual and family records should be consistent.")
+
+    def list_upcoming_birthdays(self):
+        from datetime import date
+        output_list = []
+        today = date.today()
+        for key in self._individuals:
+            indi = self._individuals[key]
+            if not indi.get_birthDate() or not indi.get_birthDate()[1] or not indi.get_birthDate()[2] or indi.get_deathDate(): continue
+
+            day_diff = (today - indi.get_birthDate()).days % 365
+
+            if 0 <= day_diff < 30: output_list.append(key)
+
+        return output_list
+
+    def list_resent_survivors(self):
+        from datetime import date
+        output = {}
+        for key in self._individuals:
+            indi = self._individuals[key]
+            if not indi.get_deathDate(): continue
+
+            death = date(*indi.get_deathDate())
+
+            if(0 <= (date.today() - death).days < 30):
+
+                info = [[],[]] #0: spouses, 1: descendants
+                if not indi.get_gender(): continue
+                for fam in indi.get_family():
+                    if indi.get_gender() == "M":
+                        if not indi.get_wife(): continue
+                        info[0].append(indi.get_wife().get_id())
+                    else:
+                        if not indi.get_husband(): continue
+                        info[0].append(indi.get_husband().get_id())
+
+                    info[1] += indi.get_children()
+
+                output[indi.get_id()] = tuple(info)
+
+        return output
+
+
+
+
+
+
+
+
+    def list_deceased(self):
+        """us 29 list all deceased individuals in a gedcom file"""
+        deceasedPeople=[]
+        if self._individuals.get_deathDate()==None: raise AttributeError("no one deceased")
+        for individual in self._individuals():
+            if self.get_deathDate() != None:
+                deceasedPeople.append(self.get_id())
+        return deceasedPeople
+
+
+    def list_living_married(self):
+        """list all living married people in a Gedcom file"""
+        marriedPeople=[]
+        if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
+        for family in self._families():
+            if self.get_husband==self.get_id and self.husband.get_deathDate == None:
+                marriedPeople.append(self.get_husband)
+            if self.get_wife==self.get_id and self.get_wife.get_deathDate==None:
+                marriedPeople.append(self.get_wife)
+        return marriedPeople 
+    
+    def list_large_age_differences(self):
+        "US34, List all couples who were married when the older spouse was more than twice as old as the younger spouse"
+
+        res = []
+
+        for id in self._families:
+            family = self._families[id]
+            if not family.get_husband() or not family.get_wife(): continue
+            husband = family.get_husband()
+            wife = family.get_wife()
+
+            if not husband.get_birthDate() or not wife.get_birthDate(): continue
+
+            husband_age = husband.get_age()
+            wife_age = wife.get_age()
+            age_difference = husband_age - wife_age
+            if age_difference > 0 and age_difference > wife_age:
+                res.append((husband.get_id(), wife.get_id()))
+            if age_difference < 0 and -age_difference > husband_age:
+                res.append((husband.get_id(), wife.get_id()))
+        return res
+
+
+    def list_recent_birth(self):
+        "US35, List all people in a GEDCOM file who were born in the last 30 days"
+
+        recent_birth = []
+
+        for id in self._individuals:
+           indi = self._individuals[id]
+           if not indi.get_birthDate(): continue
+           if 0<= indi.get_age(days = True) < 30: recent_birth.append(id)
+        return recent_birth
+>>>>>>> upstream/master
 
     def include_InputLine_Numbers(self):
         pass

@@ -267,29 +267,29 @@ class Family:
         return self._husband.get_gender() == "M" and self._wife.get_gender() == "F"
 
     def male_last_names(self):
-        if not self._husband:
-            return True
-        def dfs(family):
+        if not self._husband: raise AttributeError("Missing Father")
+        if not self._husband.get_name(): raise AttributeError("Missing Father's name")
+
+        check_last_name = self._husband.get_name().split(' ')[1]
+        def dfs(family, last_name):
             flag = True
-            hus_last_name = family._husband.get_name().split(' ')[1]
             for child in family.get_children():
-                if child.get_gender() == None:
-                    raise AttributeError("child's gender is not set yet")
-                elif child.get_gender() == "F":
-                    continue
-                if child.get_name().split(' ')[1] != hus_last_name:
-                    return False
+                if child.get_gender() == None: raise AttributeError("child's gender is not set yet")
+                
+                if child.get_gender() == "F": continue
+                if not child.get_name(): raise AttributeError("Child's name is missing")
+                if child.get_name().split(' ')[1] != last_name: return False
                 for fam in child.get_family():
                     flag = dfs(fam) and flag
             return flag
 
-        return dfs(self)
+        return dfs(self, check_last_name)
 
 
     def siblings_should_not_marry(self):
         if not self._husband or not self._wife: raise AttributeError("Missing husband or wife")
         if not self._husband.get_parent_family() and not self._wife.get_parent_family(): raise AttributeError("Missing husband and wife parent")
-        return self._husband.get_parent_family()!=self._wife.get_parent_family()
+        return not self._husband.get_parent_family().get_id() == self._wife.get_parent_family().get_id()
 
     def order_siblings_by_age(self):
         """
