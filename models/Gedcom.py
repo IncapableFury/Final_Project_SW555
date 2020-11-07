@@ -235,81 +235,118 @@ class Gedcom:
             if self._individuals().get_id() == self._families().get_id() and self._individuals.get_id() == child:
                 return True
         return False
-        raise ValueError(
-            "Error corresponding entries: All family roles (spouse, child) specified in an individual record should have corresponding entries in the corresponding family, the information in the individual and family records should be consistent.")
+        raise ValueError( "Error corresponding entries: All family roles (spouse, child) specified in an individual record should have corresponding entries in the corresponding family, the information in the individual and family records should be consistent.")
 
-
-        def list_deceased(self):
-            """us 29 list all deceased individuals in a gedcom file"""
-            deceasedPeople=[]
-            if self._individuals.get_deathDate()==None: raise AttributeError("no one deceased")
-            for individual in self._individuals():
-                if self.get_deathDate() != None:
-                    deceasedPeople.append(self.get_id())
-            return deceasedPeople
-
-
-        def list_living_married(self):
-            """list all living married people in a Gedcom file"""
-            marriedPeople=[]
-            if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
-            for family in self._families():
-                if self.get_husband==self.get_id and self.husband.get_deathDate == None:
-                    marriedPeople.append(self.get_husband)
-                if self.get_wife==self.get_id and self.get_wife.get_deathDate==None:
-                    marriedPeople.append(self.get_wife)
-            return marriedPeople
-
-    def list_recent_deaths(self):
+    def list_upcoming_birthdays(self):
         from datetime import date
-        from datetime import timedelta
-        deathPeople = []
-        for indi in self._individuals.values():
-            if indi.get_deathDate[0]>(date.today() - timedelta(30)).strftime("%Y"):
-                deathPeople.append(indi.get_name)
-            elif indi.get_deathDate[0]==(date.today() - timedelta(30)).strftime("%Y"):
-                if indi.get_deathDate[1]>(date.today() - timedelta(30)).strftime("%m"):
-                    deathPeople.append(indi.get_name)
-                elif indi.get_deathDate[1]==(date.today() - timedelta(30)).strftime("%m"):
-                    if indi.get_deathDate[2]>(date.today() - timedelta(30)).strftime("%d"):
-                        deathPeople.append(indi.get_name)
+        output_list = []
+        today = date.today()
+        for key in self._individuals:
+            indi = self._individuals[key]
+            if not indi.get_birthDate() or not indi.get_birthDate()[1] or not indi.get_birthDate()[2] or indi.get_deathDate(): continue
 
-        return deathPeople
+            day_diff = (today - indi.get_birthDate()).days % 365
 
-    def list_multiple_births(self):
-        dic = {}
-        multiple_birth = []
-        for indi in self._individuals.values():
-            key = indi.get_parent_family().get_id()+str(indi.get_birthDate())
-            if key in dic:
-                dic[key].append(indi.get_id())
-            else:
-                dic[key] = [indi.get_id()]
-        for list1 in dic.values():
-            if len(list1)>1 :
-                multiple_birth.append(list1)
-        return multiple_birth
+            if 0 <= day_diff < 30: output_list.append(key)
+
+        return output_list
+
+    def list_resent_survivors(self):
+        from datetime import date
+        output = {}
+        for key in self._individuals:
+            indi = self._individuals[key]
+            if not indi.get_deathDate(): continue
+
+            death = date(*indi.get_deathDate())
+
+            if(0 <= (date.today() - death).days < 30):
+
+                info = [[],[]] #0: spouses, 1: descendants
+                if not indi.get_gender(): continue
+                for fam in indi.get_family():
+                    if indi.get_gender() == "M":
+                        if not indi.get_wife(): continue
+                        info[0].append(indi.get_wife().get_id())
+                    else:
+                        if not indi.get_husband(): continue
+                        info[0].append(indi.get_husband().get_id())
+
+                    info[1] += indi.get_children()
+
+                output[indi.get_id()] = tuple(info)
+
+        return output
 
 
 
 
-if __name__ == "__main__":
-    # from datetime import datetime, date
-    # # from datetime import timedelta
-    # # SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
-    # #                 "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
-    # # g1 = Gedcom("../testing_files/test_date_validation.ged", SUPPORT_TAGS)  # testing_files/Jiashu_Wang.ged
-    # # g1.peek()
-    # # g1.parse()
-    # # print(g1.get_individuals().keys(), g1.get_families().keys())
-    # # print(str(g1.get_individuals()["@I3@"].get_parent_family().get_id())+str(g1.get_individuals()["@I2@"].get_birthDate()))
-    # # g1.unique_name_and_birth_date()
 
-    key = 1
-    value = 10
-    dic= {}
-    dic[key] = value
-    value = 20
-    list = []
-    list.append([1,2])
-    print(type([1,2]).__name__ =='list')
+
+
+
+    def list_deceased(self):
+        """us 29 list all deceased individuals in a gedcom file"""
+        deceasedPeople=[]
+        if self._individuals.get_deathDate()==None: raise AttributeError("no one deceased")
+        for individual in self._individuals():
+            if self.get_deathDate() != None:
+                deceasedPeople.append(self.get_id())
+        return deceasedPeople
+
+
+    def list_living_married(self):
+        """list all living married people in a Gedcom file"""
+        marriedPeople=[]
+        if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
+        for family in self._families():
+            if self.get_husband==self.get_id and self.husband.get_deathDate == None:
+                marriedPeople.append(self.get_husband)
+            if self.get_wife==self.get_id and self.get_wife.get_deathDate==None:
+                marriedPeople.append(self.get_wife)
+        return marriedPeople 
+    
+    def list_large_age_differences(self):
+        "US34, List all couples who were married when the older spouse was more than twice as old as the younger spouse"
+
+        res = []
+
+        for id in self._families:
+            family = self._families[id]
+            if not family.get_husband() or not family.get_wife(): continue
+            husband = family.get_husband()
+            wife = family.get_wife()
+
+            if not husband.get_birthDate() or not wife.get_birthDate(): continue
+
+            husband_age = husband.get_age()
+            wife_age = wife.get_age()
+            age_difference = husband_age - wife_age
+            if age_difference > 0 and age_difference > wife_age:
+                res.append((husband.get_id(), wife.get_id()))
+            if age_difference < 0 and -age_difference > husband_age:
+                res.append((husband.get_id(), wife.get_id()))
+        return res
+
+
+    def list_recent_birth(self):
+        "US35, List all people in a GEDCOM file who were born in the last 30 days"
+
+        recent_birth = []
+
+        for id in self._individuals:
+           indi = self._individuals[id]
+           if not indi.get_birthDate(): continue
+           if 0<= indi.get_age(days = True) < 30: recent_birth.append(id)
+        return recent_birth
+
+
+# if __name__ == "__main__":
+#     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
+#                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
+#     g1 = Gedcom("../testing_files/test_date_validation.ged", SUPPORT_TAGS)  # testing_files/Jiashu_Wang.ged
+#     g1.peek()
+# g1.parse()
+# print(g1.get_individuals().keys(), g1.get_families().keys())
+# print(g1.get_individuals()["@I4@"].get_birthDate())
+# g1.unique_name_and_birth_date()80619a37c4cf6cf744c9
