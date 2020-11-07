@@ -261,7 +261,7 @@ class Gedcom:
             return marriedPeople
 
     def list_recent_deaths(self):
-        from datetime import datetime, date
+        from datetime import date
         from datetime import timedelta
         deathPeople = []
         for indi in self._individuals.values():
@@ -277,27 +277,39 @@ class Gedcom:
         return deathPeople
 
     def list_multiple_births(self):
-        dic = set()
-        for indi1 in self._individuals.values():
-            for indi2 in self._individuals.values():
-                if indi1.get_name() != indi2.get_name():
-                    if indi1.get_birthDate()==indi2.get_birthDate():
-                        dic.add(indi1)
-                        dic.add(indi2)
+        dic = {}
+        multiple_birth = []
+        for indi in self._individuals.values():
+            key = indi.get_parent_family().get_id()+str(indi.get_birthDate())
+            if key in dic:
+                dic[key].append(indi.get_id())
+            else:
+                dic[key] = [indi.get_id()]
+        for list1 in dic.values():
+            if len(list1)>1 :
+                multiple_birth.append(list1)
+        return multiple_birth
 
-        return dic
+
 
 
 if __name__ == "__main__":
-    from datetime import datetime, date
-    from datetime import timedelta
-    SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
-                    "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
-    g1 = Gedcom("../testing_files/test_date_validation.ged", SUPPORT_TAGS)  # testing_files/Jiashu_Wang.ged
-    g1.peek()
-g1.parse()
-print(g1.get_individuals().keys(), g1.get_families().keys())
-print(g1.get_individuals()["@I4@"].get_deathDate())
-print((date.today() - timedelta(30)).strftime("%m"))
-g1.unique_name_and_birth_date()
+    # from datetime import datetime, date
+    # # from datetime import timedelta
+    # # SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
+    # #                 "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
+    # # g1 = Gedcom("../testing_files/test_date_validation.ged", SUPPORT_TAGS)  # testing_files/Jiashu_Wang.ged
+    # # g1.peek()
+    # # g1.parse()
+    # # print(g1.get_individuals().keys(), g1.get_families().keys())
+    # # print(str(g1.get_individuals()["@I3@"].get_parent_family().get_id())+str(g1.get_individuals()["@I2@"].get_birthDate()))
+    # # g1.unique_name_and_birth_date()
 
+    key = 1
+    value = 10
+    dic= {}
+    dic[key] = value
+    value = 20
+    list = []
+    list.append([1,2])
+    print(type([1,2]).__name__ =='list')
