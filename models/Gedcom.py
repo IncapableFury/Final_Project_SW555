@@ -231,7 +231,6 @@ class Gedcom:
 
         return True
 
-<<<<<<< HEAD
     # def list_deceased(self):
     #     """us 29 list all deceased individuals in a gedcom file"""
     #     deceasedPeople=[]
@@ -267,23 +266,13 @@ class Gedcom:
         if(len(self._families) == 0):
             raise AttributeError("GEDCOM file doesn't have any families")
         for fam in self._families.values():
-            if (date(*fam.get_marriedDate()) - today).days % 365 <= 30:
+            if (today - date(*fam.get_marriedDate())).days % 365 <= 30: #to test
                 if(fam.get_husband().get_deathDate() or fam.get_wife().get_deathDate()):
                     continue
                 else:
                     indiUpcomingAnniversaries.append((fam.get_husband().get_id(),fam.get_wife().get_id()))
 
         return indiUpcomingAnniversaries
-=======
-        if not self.get_children: raise AttributeError("no children")
-        if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
-        if self._individuals().get_id() == self._families().get_husband().get_id() or self._individuals().get_id() == self._families().get_wife().get_id():
-            return True
-        for child in self._families.get_children():
-            if self._individuals().get_id() == self._families().get_id() and self._individuals.get_id() == child:
-                return True
-        return False
-        raise ValueError( "Error corresponding entries: All family roles (spouse, child) specified in an individual record should have corresponding entries in the corresponding family, the information in the individual and family records should be consistent.")
 
     def list_upcoming_birthdays(self):
         from datetime import date
@@ -325,13 +314,6 @@ class Gedcom:
                 output[indi.get_id()] = tuple(info)
 
         return output
-
-
-
-
-
-
-
 
     def list_deceased(self):
         """us 29 list all deceased individuals in a gedcom file"""
@@ -387,7 +369,6 @@ class Gedcom:
            if not indi.get_birthDate(): continue
            if 0<= indi.get_age(days = True) < 30: recent_birth.append(id)
         return recent_birth
->>>>>>> upstream/master
 
     def include_InputLine_Numbers(self):
         pass
