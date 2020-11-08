@@ -340,6 +340,35 @@ class Gedcom:
            if 0<= indi.get_age(days = True) < 30: recent_birth.append(id)
         return recent_birth
 
+    def list_recent_deaths(self):
+        from datetime import date
+        from datetime import timedelta
+        deathPeople = []
+        for indi in self._individuals.values():
+            if indi.get_deathDate[0]>(date.today() - timedelta(30)).strftime("%Y"):
+                deathPeople.append(indi.get_name)
+            elif indi.get_deathDate[0]==(date.today() - timedelta(30)).strftime("%Y"):
+                if indi.get_deathDate[1]>(date.today() - timedelta(30)).strftime("%m"):
+                    deathPeople.append(indi.get_name)
+                elif indi.get_deathDate[1]==(date.today() - timedelta(30)).strftime("%m"):
+                    if indi.get_deathDate[2]>(date.today() - timedelta(30)).strftime("%d"):
+                        deathPeople.append(indi.get_name)
+
+        return deathPeople
+
+    def list_multiple_births(self):
+        dic = {}
+        multiple_birth = []
+        for indi in self._individuals.values():
+            key = indi.get_parent_family().get_id()+str(indi.get_birthDate())
+            if key in dic:
+                dic[key].append(indi.get_id())
+            else:
+                dic[key] = [indi.get_id()]
+        for list1 in dic.values():
+            if len(list1)>1 :
+                multiple_birth.append(list1)
+        return multiple_birth
 
 # if __name__ == "__main__":
 #     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
@@ -349,4 +378,4 @@ class Gedcom:
 # g1.parse()
 # print(g1.get_individuals().keys(), g1.get_families().keys())
 # print(g1.get_individuals()["@I4@"].get_birthDate())
-# g1.unique_name_and_birth_date()
+# g1.unique_name_and_birth_date()80619a37c4cf6cf744c9
