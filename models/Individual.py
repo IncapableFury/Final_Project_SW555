@@ -15,6 +15,10 @@ class Individual:
         self._deathDate = None
         self._family = []
         self._parentFamily = None
+        self._lineNum = None
+
+    def get_lineNum(self)->int:
+        return self._lineNum
 
     def get_id(self) -> str:
         return self.id
@@ -48,6 +52,9 @@ class Individual:
 
     def get_parent_family(self):
         return self._parentFamily
+
+    def set_lineNum(self, tag,lineNumber) -> None:
+        self._lineNum[tag] = lineNumber
 
     def set_name(self, name: str) -> None:
         # if not isinstance(name, str): raise TypeError("input has to be a str type")
@@ -120,9 +127,9 @@ class Individual:
         if (len(self._family) <= 1): return True
         marrageAgeList = []
         birthDate = self._birthDate
-        if not self._family: raise AttributeError("Erro: Missing attribute")
+        if not self._family: raise AttributeError("Error: Missing attribute")
         for each_marrage in self._family:
-            if not each_marrage.get_marriedDate(): raise AttributeError("Erro: Missing attribute")
+            if not each_marrage.get_marriedDate(): raise AttributeError("Error: Missing attribute")
             marrageAge = each_marrage.get_marriedDate()[0] - birthDate[0] + (
                     each_marrage.get_marriedDate()[1] - birthDate[1]) / 12 + (
                                  each_marrage.get_marriedDate()[2] - birthDate[2]) / 365

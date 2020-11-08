@@ -10,21 +10,28 @@ class Gedcom:
         self._data = self.readfile(path)
 
     def readfile(self, path):
-        res = [[], [], []]  # [[level, tag, arguments], [start indices of indi], [start indices of fam]]
+        res = [[], [], [], {}]  # [[level, tag, arguments], [start indices of indi], [start indices of fam], [line number]]
         f = open(path, "r")
         index = 0
+        lineNumber = 0
         for line in f:
             level, tag, arguments = self.parseline(line)
             if tag not in self._supportTags:  # skip unsupported tags
+                lineNumber += 1
                 continue
             res[0].append([level, tag, arguments])
+            #####
             if tag == "INDI":
                 res[1].append(index)
+                res[3][index] = lineNumber
             elif tag == "FAM":
                 if not res[2]:
                     res[1].append(index)  # the first start index for family is the last end index for indis
                 res[2].append(index)
+                res[3][index] = lineNumber
             index += 1
+            lineNumber += 1
+
         res[2].append(index)  # end index for fam
         f.close()
         return res
@@ -64,6 +71,7 @@ class Gedcom:
                 offset += 1
                 id = "@I" + str(int(id[2:-1]) + offset) + "@"
             new_indi = Individual(id)
+            new_indi.set_lineNum(self._data[3][start_index])
             self._individuals[id] = new_indi
             # print(start_index, end_index)
             for j in range(start_index + 1, end_index):
@@ -103,6 +111,7 @@ class Gedcom:
             #     offset+=1
             #     id = "@F" + str(int(id[2:-1]) + offset) + "@"
             new_fam = Family(id)
+            new_fam.set_lineNum(self._data[3][start_index])
             self._families[id] = new_fam
             for j in range(start_index + 1, end_index):
                 level, tag, arguments = self._data[0][j]
@@ -392,10 +401,10 @@ if __name__ == "__main__":
     # print(len(g1.get_individuals()),g1.get_individuals()["@I2@"].get_birthDate())
     g1.unique_name_and_birth_date()
     # print("what")
-    offset = 11
-    id = "@I123@"
-    print("@I"+str(int(id[2:-1])+offset)+"@")
-    print(g1.get_families().values())
+    # offset = 11
+    # id = "@I123@"
+    # print("@I"+str(int(id[2:-1])+offset)+"@")
+    #print(g1.get_families().values())
 # if __name__ == "__main__":
 #     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
 #                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}

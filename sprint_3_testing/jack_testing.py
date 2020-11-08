@@ -28,16 +28,16 @@ G1.parse()
 class sprint3Test(unittest.TestCase):
 
     #list all people in a GEDCOM file who died in the last 30 days
-    # def test_ListRecentDeaths(self):
-    #
-    #     self.assertEqual(G1.listRecentDeaths().len(), 5)
-    #     self.assertNotEqual(G1.listRecentDeaths().len(), 3)
-    #
-    #     #manually input deceased people and append to the array
-    #     deceasedProple =[]
-    #     for indi in deceasedProple:
-    #         self.assertIn(indi, G1.listRecentDeaths())
-    #
+    def test_ListRecentDeaths(self):
+
+        self.assertEqual(G1.listRecentDeaths().len(), 5)
+        self.assertNotEqual(G1.listRecentDeaths().len(), 3)
+
+        #manually input deceased people and append to the array
+        deceasedProple =[]
+        for indi in deceasedProple:
+            self.assertIn(indi, G1.listRecentDeaths())
+
     # #list all living spouses and descendants of people in the GEDCOM who died in the last 30 days
     # def test_listRecentSurvivors(self):
     #     self.assertEqual(G1.listRecentSurviors().len(),7)
