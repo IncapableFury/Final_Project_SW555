@@ -15,6 +15,10 @@ class Individual:
         self._deathDate = None
         self._family = []
         self._parentFamily = None
+        self._lineNum = {}
+
+    def get_lineNum(self)-> {}:
+        return self._lineNum
 
     def get_id(self) -> str:
         return self.id
@@ -48,6 +52,9 @@ class Individual:
 
     def get_parent_family(self):
         return self._parentFamily
+
+    def set_lineNum(self, lineNumberDict) -> None:
+        self._lineNum = lineNumberDict
 
     def set_name(self, name: str) -> None:
         # if not isinstance(name, str): raise TypeError("input has to be a str type")
@@ -120,9 +127,9 @@ class Individual:
         if (len(self._family) <= 1): return True
         marrageAgeList = []
         birthDate = self._birthDate
-        if not self._family: raise AttributeError("Erro: Missing attribute")
+        if not self._family: raise AttributeError("Error: Missing attribute")
         for each_marrage in self._family:
-            if not each_marrage.get_marriedDate(): raise AttributeError("Erro: Missing attribute")
+            if not each_marrage.get_marriedDate(): raise AttributeError("Error: Missing attribute")
             marrageAge = each_marrage.get_marriedDate()[0] - birthDate[0] + (
                     each_marrage.get_marriedDate()[1] - birthDate[1]) / 12 + (
                                  each_marrage.get_marriedDate()[2] - birthDate[2]) / 365
@@ -163,6 +170,7 @@ class Individual:
         mom_grand_family = self._parentFamily.get_wife().get_parent_family()
 
         for dad_side_aunt_uncle in dad_grand_family.get_children():
+            check_id = dad_side_aunt_uncle.get_id()
             for dad_side_family in dad_side_aunt_uncle.get_family():
                 if (not dad_side_family.get_husband() or not dad_side_family.get_wife()): raise AttributeError(
                     "Error: missing value")
@@ -185,34 +193,38 @@ class Individual:
         return True
 
     def first_cousins_should_not_marry(self):
-        if self.get_parent_family() and self.get_parent_family().get_husband() and \
-                self.get_parent_family().get_husband().get_parent_family():
-            daddy = self.get_parent_family().get_husband()
-            daddy_siblings = self.get_parent_family().get_husband().get_parent_family().get_children()[:]
-            daddy_siblings.remove(daddy)  # if singleton, this loop does nothing
-            for daddy_sibling in daddy_siblings:
-                daddy_sibling_families = daddy_sibling.get_family()  # consider past families
-                for child_fam in daddy_sibling_families:
-                    for first_cousin in child_fam.get_children():
-                        if first_cousin == self: return False
-        if self.get_parent_family() and self.get_parent_family().get_wife() and \
-                self.get_parent_family().get_wife().get_parent_family():
-            mummy = self.get_parent_family().get_wife()
-            mummy_siblings = self.get_parent_family().get_wife().get_parent_family().get_children()[:]
-            mummy_siblings.remove(mummy)  # if singleton, this loop does nothing
-            for mummy_sibling in mummy_siblings:
-                mummy_sibling_families = mummy_sibling.get_family()  # consider past families
-                for mummy_sibling_fam in mummy_sibling_families:
-                    for first_cousin in mummy_sibling_fam.get_children():
-                        if first_cousin == self: return False
+        if not self.get_parent_family(): raise AttributeError("Error: missing parent family")
+        if not self.get_parent_family().get_husband() or not self.get_parent_family().get_wife(): raise AttributeError("Error: missing husband or wife")
+        if not self.get_parent_family().get_husband().get_parent_family() or not self.get_parent_family().get_wife().get_parent_family(): raise AttributeError("Error: missing husband/wife's parent family")
+
+
+
+        daddy = self.get_parent_family().get_husband()
+        daddy_siblings = self.get_parent_family().get_husband().get_parent_family().get_children()[:]
+        daddy_siblings.remove(daddy)  # if singleton, this loop does nothing
+        for daddy_sibling in daddy_siblings:
+            daddy_sibling_families = daddy_sibling.get_family()  # consider past families
+            for child_fam in daddy_sibling_families:
+                for first_cousin in child_fam.get_children():
+                    if first_cousin == self: return False
+
+        mummy = self.get_parent_family().get_wife()
+        mummy_siblings = self.get_parent_family().get_wife().get_parent_family().get_children()[:]
+        mummy_siblings.remove(mummy)  # if singleton, this loop does nothing
+        for mummy_sibling in mummy_siblings:
+            mummy_sibling_families = mummy_sibling.get_family()  # consider past families
+            for mummy_sibling_fam in mummy_sibling_families:
+                for first_cousin in mummy_sibling_fam.get_children():
+                    if first_cousin == self: return False
         return True
 
     def no_marriages_to_descendants(self):  # dfs in dfs
-        if not self.get_family():
+
+        if len(self.get_family()) == 0:
             return True
+
         spouse = []
-        if self.get_gender() == None:
-            raise ValueError("Gender of Individual not set")
+        if not self.get_gender(): raise AttributeError("Gender of Individual not set")
         if self.get_gender() == "M":
             for past_family in self.get_family():
                 spouse.append(past_family.get_wife())
@@ -220,16 +232,13 @@ class Individual:
             for past_family in self.get_family():
                 spouse.append(past_family.get_husband())
 
-        # print(list(map(lambda x: x.get_id(), spouse)))
 
         def dfs(indi):
             # print(indi.get_id())
-            if not indi.get_family():
-                return True
             result = True
             for family in indi.get_family():
                 for child in family.get_children():
-                    if child in spouse or child == indi:
+                    if child in spouse:
                         return False
                     result = dfs(child) and result
             return result
