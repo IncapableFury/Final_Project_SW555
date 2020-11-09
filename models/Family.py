@@ -14,6 +14,10 @@ class Family:
         self._marriedDate = None
         self._divorced = None
         self._children = []
+        self._lineNum = {}
+
+    def get_lineNum(self) -> {}:
+        return self._lineNum
 
     def get_id(self) -> str:
         return self.id
@@ -32,6 +36,9 @@ class Family:
 
     def get_children(self) -> list:
         return self._children
+
+    def set_lineNum(self, lineNumberDict)->None:
+         self._lineNum = lineNumberDict
 
     def set_husband(self, husband) -> None:
         ##if not isinstance(husband, Individual): raise TypeError("input has to be a Individual type")
@@ -278,10 +285,8 @@ class Family:
                 if child.get_gender() == "F": continue
                 if not child.get_name(): raise AttributeError("Child's name is missing")
                 if child.get_name().split(' ')[1] != last_name: return False
-                
                 for fam in child.get_family():
                     flag = dfs(fam) and flag
-
             return flag
 
         return dfs(self, check_last_name)

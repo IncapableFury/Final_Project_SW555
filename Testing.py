@@ -5,12 +5,16 @@ import sys
 from models.Individual import Individual
 from models.Family import Family
 from models.Gedcom import Gedcom
-G1 = Gedcom('../testing_files/right.ged', SUPPORT_TAGS)
-G2 = Gedcom('../testing_files/wrong.ged', SUPPORT_TAGS)
+
 
 class TestSprint1(unittest.TestCase):
 
     def setUp(self):
+        SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
+                        "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
+        self.G1 = Gedcom('../testing_files/right.ged', SUPPORT_TAGS)
+        self.G2 = Gedcom('../testing_files/wrong.ged', SUPPORT_TAGS)
+
         self.ind_1 = Individual("01")
         self.ind_2 = Individual("02")
         self.ind_3 = Individual("03")
@@ -506,11 +510,11 @@ class TestSprint1(unittest.TestCase):
     def test_US24_Unique_families_by_spouses(self):
         SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
                         "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
-        G1 = Gedcom('testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
+        self.G1 = Gedcom('testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
         G2 = Gedcom('testing_files/MichealFahimGEDCOM.ged', SUPPORT_TAGS)
         G3 = Gedcom('testing_files/mock-family.ged', SUPPORT_TAGS)
         # ---------------------------------
-        assert G1.unique_families_by_spouses() == True
+        assert self.G1.unique_families_by_spouses() == True
         assert G2.unique_families_by_spouses() == True
         assert G3.unique_families_by_spouses() == True
 
@@ -518,11 +522,11 @@ class TestSprint1(unittest.TestCase):
     def test_US25_Unique_first_names_in_families(self):
         SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
                         "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
-        G1 = Gedcom('testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
+        self.G1 = Gedcom('testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
         G2 = Gedcom('testing_files/MichealFahimGEDCOM.ged', SUPPORT_TAGS)
         G3 = Gedcom('testing_files/mock-family.ged', SUPPORT_TAGS)
         # ---------------------------------
-        assert G1.unique_first_names_in_families() == True
+        assert self.G1.unique_first_names_in_families() == True
         assert G2.unique_first_names_in_families() == True
         assert G3.unique_first_names_in_families() == True
 
@@ -535,11 +539,11 @@ class TestSprint1(unittest.TestCase):
     def test_US23_unique_name_and_birth_date(self):
         SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
                         "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
-        G1 = Gedcom('testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
+        self.G1 = Gedcom('testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
         G2 = Gedcom('testing_files/MichealFahimGEDCOM.ged', SUPPORT_TAGS)
         G3 = Gedcom('testing_files/mock-family.ged', SUPPORT_TAGS)
         # --------------------------------------------------
-        assert G1.unique_name_and_birth_date() == True
+        assert self.G1.unique_name_and_birth_date() == True
         assert G2.unique_name_and_birth_date() == True
         assert G3.unique_name_and_birth_date() == True
 
@@ -738,12 +742,12 @@ class TestSprint1(unittest.TestCase):
     def test_US27_eInclude_individual_ags(self):
         SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
                         "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
-        G1 = Gedcom('testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
+        self.G1 = Gedcom('testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
         G2 = Gedcom('testing_files/MichealFahimGEDCOM.ged', SUPPORT_TAGS)
         G3 = Gedcom('testing_files/mock-family.ged', SUPPORT_TAGS)
         # --------------------------------------------------
         '''
-        assert G1.include_individual_ages() == True
+        assert self.G1.include_individual_ages() == True
         assert G2.include_individual_ages() == True
         assert G3.include_individual_ages() == True
         '''
@@ -848,124 +852,125 @@ class TestSprint1(unittest.TestCase):
     def test_US26_Corresponding_entries(self):
         SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
                         "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
-        G1 = Gedcom('testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
+        self.G1 = Gedcom('testing_files/Jiashu_Wang.ged', SUPPORT_TAGS)
         G2 = Gedcom('testing_files/MichealFahimGEDCOM.ged', SUPPORT_TAGS)
         G3 = Gedcom('testing_files/mock-family.ged', SUPPORT_TAGS)
         # --------------------------------------------------
-        assert G1.corresponding_entries() == True
+        assert self.G1.corresponding_entries() == True
         assert G2.corresponding_entries() == True
         assert G3.corresponding_entries() == True
 
     def test_US29_list_deceased(self):
-        self.assertEqual(G1.listDeceased().len(),5 )
-        self.assertNotEqual(G1.listDeceased().len(),3 )
+
+        self.assertEqual(self.G1.listDeceased().len(),5 )
+        self.assertNotEqual(self.G1.listDeceased().len(),3 )
         deceasedPeople = []
         for indi in deceasedPeople:
-            self.assertIn(indi, G1.listDeceased())
+            self.assertIn(indi, self.G1.listDeceased())
 
     #List all living married people in a GEDCOM file
     def test_US30_list_living_married(self):
-        self.assertEqual(G1.listLivingMarried().len(),5 )
-        self.assertNotEqual(G1.listLivingMarried().len(),3 )
+        self.assertEqual(self.G1.listLivingMarried().len(),5 )
+        self.assertNotEqual(self.G1.listLivingMarried().len(),3 )
         marriedPeople = []
         for indi in marriedPeople:
-            self.assertIn(indi, G1.listLivingmarried())
+            self.assertIn(indi, self.G1.listLivingmarried())
 
     #List all living people over 30 who have never been married in a GEDCOM file
     def test_US31_list_living_single(self):
-        self.assertEqual(G1.listLivingSingle().len(),5 )
-        self.assertNotEqual(G1.listLivingSingle().len(),3 )
+        self.assertEqual(self.G1.listLivingSingle().len(),5 )
+        self.assertNotEqual(self.G1.listLivingSingle().len(),3 )
         singlePeople = []
         for indi in singlePeople:
-            self.assertIn(indi, G1.listLivingSingle())
+            self.assertIn(indi, self.G1.listLivingSingle())
 
     #List all multiple births in a GEDCOM file
     def test_US32_list_multiple_births(self):
-        self.assertEqual(G1.listMultipleBirths().len(),4 )
+        self.assertEqual(self.G1.listMultipleBirths().len(),4 )
         MultipleBirths = []
         for birt in MultipleBirths:
-            self.assertIn(birt, G1.listMultipleBirths())
+            self.assertIn(birt, self.G1.listMultipleBirths())
 
     #List all orphaned children (both parents dead and child < 18 years old) in a GEDCOM file
     def test_US33_list_orphans(self):
 
-        self.assertEqual(G1.listOrphans().len(),4)
+        self.assertEqual(self.G1.listOrphans().len(),4)
         OrphansPeople = []
         for indi in OrphansPeople:
-            self.assertIn(indi, G1.listOrphans())
+            self.assertIn(indi, self.G1.listOrphans())
 
     #List all couples who were married when the older spouse was more than twice as old as the younger spouse
     def test_US34_list_large_age_differences(self):
-        self.assertEqual(G1.listLargeAgeDifferences().len(),4 )
+        self.assertEqual(self.G1.listLargeAgeDifferences().len(),4 )
         ageDifferences = []
         for birt in ageDifferences:
-            self.assertIn(birt, G1.listLargeAgeDifferences())
+            self.assertIn(birt, self.G1.listLargeAgeDifferences())
 
     #List all people in a GEDCOM file who were born in the last 30 days
     def test_US35_list_recent_births(self):
 
-        self.assertEqual(G1.listRecentBirths().len(),5 )
-        self.assertNotEqual(G1.listRecentBirths().len(),3 )
+        self.assertEqual(self.G1.listRecentBirths().len(),5 )
+        self.assertNotEqual(self.G1.listRecentBirths().len(),3 )
         bornPeople =[]
         for indi in bornPeople:
-            self.assertIn(indi, G1.listRecentBirths())
+            self.assertIn(indi, self.G1.listRecentBirths())
 
 
     #list all people in a GEDCOM file who died in the last 30 days
     def test_US36_ListRecentDeaths(self):
 
-        self.assertEqual(G1.listRecentDeaths().len(), 5)
-        self.assertNotEqual(G1.listRecentDeaths().len(), 3)
+        self.assertEqual(self.G1.listRecentDeaths().len(), 5)
+        self.assertNotEqual(self.G1.listRecentDeaths().len(), 3)
 
         #manually input deceased people and append to the array
         deceasedProple =[]
         for indi in deceasedProple:
-            self.assertIn(indi, G1.listRecentDeaths())
+            self.assertIn(indi, self.G1.listRecentDeaths())
 
     #list all living spouses and descendants of people in the GEDCOM who died in the last 30 days
     def test_US37_listRecentSurvivors(self):
-        self.assertEqual(G1.listRecentSurviors().len(),7)
-        self.assertNotEqual(G1.listRecentSurviors().len(), 8)
+        self.assertEqual(self.G1.listRecentSurviors().len(),7)
+        self.assertNotEqual(self.G1.listRecentSurviors().len(), 8)
         # manually input deceased people's relatives and append to the array
         deceasedProple = []
         for indi in deceasedProple:
-            self.assertIn(indi, G1.listRecentSurviors())
+            self.assertIn(indi, self.G1.listRecentSurviors())
 
 
     #list all living people in a GEDCOM file whose birthdays occur in the next 30 days
     def test_US38_listUpcomingBirthdays(self):
-        self.assertEqual(G1.listUpcomingBirthdays().len(),6)
+        self.assertEqual(self.G1.listUpcomingBirthdays().len(),6)
         #manually input people with birthdays
         birthdayPeople =[]
         for indi in birthdayPeople:
-            self.assertIn(indi, G1.listUpcomingBirthdays())
+            self.assertIn(indi, self.G1.listUpcomingBirthdays())
 
     # list all living people in a GEDCOM file whose marriage anniversaries occur in the next 30 days
     def test_US39_UpcomingAnniversaries(self):
-        self.assertEqual(G1.upcomingAnniversaries().len(),4)
+        self.assertEqual(self.G1.upcomingAnniversaries().len(),4)
         #manually input individuals who have anniversaries coming up
         AnniversaryIndi = []
         for indi in AnniversaryIndi:
-            self.assertIn(indi, G1.upcomingAnniversaries())
+            self.assertIn(indi, self.G1.upcomingAnniversaries())
 
     # list line numbers from GEDCOM source file when reporting errors
     def test_US40_includeInputLineNumbers(self):
 
-        self.assertEqual(G1.includeInputLineNumbers().len(), 2)
+        self.assertEqual(self.G1.includeInputLineNumbers().len(), 2)
 
-        self.assertTrue(G1.includeInputLineNumbers() == ['20','25'])
+        self.assertTrue(self.G1.includeInputLineNumbers() == ['20','25'])
 
-        self.assertTrue(G2.includeInputLineNumbers() == ['15'])
+        self.assertTrue(self.G2.includeInputLineNumbers() == ['15'])
 
     # Accept and use dates without days or without days and months
     def test_US41_IncludePartialDates(self):
-        self.assertTrue(G1.IncludePartialDates())
+        self.assertTrue(self.G1.IncludePartialDates())
 
 
     # All dates should be legitimate dates for the months specified(e.g. 2/30/2015 is not legitimate)
     def test_US42_RejectIllegitimateDates(self):
-        self.assertTrue(G1.rejectIllegitimateDates())
-        self.assertFalse(G2.rejectIllegitimateDates())
+        self.assertTrue(self.G1.rejectIllegitimateDates())
+        self.assertFalse(self.G2.rejectIllegitimateDates())
 
 
 

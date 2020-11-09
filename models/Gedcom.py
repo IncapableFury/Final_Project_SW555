@@ -1,4 +1,8 @@
+from models.Individual import Individual
+from models.Family import Family
+
 class Gedcom:
+
     def __init__(self, path, supportTags):
         self._supportTags = supportTags
         self._individuals = {}
@@ -6,21 +10,74 @@ class Gedcom:
         self._data = self.readfile(path)
 
     def readfile(self, path):
-        res = [[], [], []]  # [[level, tag, arguments], [start indices of indi], [start indices of fam]]
+        """
+        res[3] returns a dictionary with index as the starting index of either an individual or a family.
+        Each attribute of that object will have a corresponding line number
+        { index: {attribute field: line number in GEDCOM}
+        """
+        res = [[], [], [], {}]  # [[level, tag, arguments], [start indices of indi], [start indices of fam], {index:{attribute: line number}]
         f = open(path, "r")
         index = 0
+        lineNumber = 0
+
         for line in f:
             level, tag, arguments = self.parseline(line)
             if tag not in self._supportTags:  # skip unsupported tags
+                lineNumber += 1
                 continue
             res[0].append([level, tag, arguments])
+            #appending index and linenumbers for individual
             if tag == "INDI":
                 res[1].append(index)
+                res[3][index] = {}
+                res[3][index]["INDI ID"] = lineNumber
+                x = index
+            elif tag == "NAME" and level == '1':
+                res[3][x]["NAME"] = lineNumber
+            elif tag == "SEX":
+                res[3][x]["SEX"] = lineNumber
+            elif tag == "BIRT":
+                res[3][x]["BIRT"] =  lineNumber + 1
+            elif tag == "DEAT":
+                res[3][x]["DEAT"] = lineNumber + 1
+            elif tag == "FAMC":
+                if "FAMC" in res[3][x]:
+                    res[3][x]["FAMC"].append(lineNumber)
+                else:
+                    res[3][x]["FAMC"] =[]
+                    res[3][x]["FAMC"].append(lineNumber)
+            elif tag == "FAMS":
+                if "FAMS" in res[3][x]:
+                    res[3][x]["FAMS"].append(lineNumber)
+                else:
+                    res[3][x]["FAMS"] = []
+                    res[3][x]["FAMS"].append(lineNumber)
+            #appending index and line numbers for FAM
             elif tag == "FAM":
                 if not res[2]:
                     res[1].append(index)  # the first start index for family is the last end index for indis
                 res[2].append(index)
+                res[3][index] = {}
+                res[3][index]["FAM ID"] = lineNumber
+                y = index
+            elif tag == "HUSB":
+                res[3][y]["HUSB"] = lineNumber
+            elif tag == "WIFE":
+                res[3][y]["WIFE"] = lineNumber
+            elif tag == "CHIL":
+                if "CHIL" in res[3][y]:
+                    res[3][y]["CHIL"].append(lineNumber)
+                else:
+                    res[3][y]["CHIL"] = []
+                    res[3][y]["CHIL"].append(lineNumber)
+            elif tag == "MARR":
+                res[3][y]["MARR"] = lineNumber + 1
+            elif tag == "DIV":
+                res[3][y]["DIV"] = lineNumber + 1
+
             index += 1
+            lineNumber += 1
+
         res[2].append(index)  # end index for fam
         f.close()
         return res
@@ -60,6 +117,7 @@ class Gedcom:
                 offset += 1
                 id = "@I" + str(int(id[2:-1]) + offset) + "@"
             new_indi = Individual(id)
+            new_indi.set_lineNum(self._data[3][start_index])
             self._individuals[id] = new_indi
             # print(start_index, end_index)
             for j in range(start_index + 1, end_index):
@@ -99,6 +157,7 @@ class Gedcom:
             #     offset+=1
             #     id = "@F" + str(int(id[2:-1]) + offset) + "@"
             new_fam = Family(id)
+            new_fam.set_lineNum(self._data[3][start_index])
             self._families[id] = new_fam
             for j in range(start_index + 1, end_index):
                 level, tag, arguments = self._data[0][j]
@@ -227,15 +286,48 @@ class Gedcom:
 
         return True
 
-        if not self.get_children: raise AttributeError("no children")
-        if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
-        if self._individuals().get_id() == self._families().get_husband().get_id() or self._individuals().get_id() == self._families().get_wife().get_id():
-            return True
-        for child in self._families.get_children():
-            if self._individuals().get_id() == self._families().get_id() and self._individuals.get_id() == child:
-                return True
-        return False
-        raise ValueError( "Error corresponding entries: All family roles (spouse, child) specified in an individual record should have corresponding entries in the corresponding family, the information in the individual and family records should be consistent.")
+    # def list_deceased(self):
+    #     """us 29 list all deceased individuals in a gedcom file"""
+    #     deceasedPeople=[]
+    #     if self._individuals.get_deathDate()==None: raise AttributeError("no one deceased")
+    #     for individual in self._individuals():
+    #         if self.get_deathDate() != None:
+    #             deceasedPeople.append(self.get_id())
+    #     return deceasedPeople
+    #
+    #
+    # def list_living_married(self):
+    #     """list all living married people in a Gedcom file"""
+    #     marriedPeople=[]
+    #     if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
+    #     for family in self._families():
+    #         if self.get_husband==self.get_id and self.husband.get_deathDate == None:
+    #             marriedPeople.append(self.get_husband)
+    #         if self.get_wife==self.get_id and self.get_wife.get_deathDate==None:
+    #             marriedPeople.append(self.get_wife)
+    #     return marriedPeople
+
+    # compares each families's marriage dates(month and day) to today's date, returns array of members with upcoming anniversaries
+    # return empty array if no dates are found
+
+    def list_upcoming_anniversaries(self):
+        """
+        return couples tuple of ids
+        """
+
+        from datetime import date, datetime
+        indiUpcomingAnniversaries = []
+        today = date.today()
+        if(len(self._families) == 0):
+            raise AttributeError("GEDCOM file doesn't have any families")
+        for fam in self._families.values():
+            if (today - date(*fam.get_marriedDate())).days % 365 <= 30: #to test
+                if(fam.get_husband().get_deathDate() or fam.get_wife().get_deathDate()):
+                    continue
+                else:
+                    indiUpcomingAnniversaries.append((fam.get_husband().get_id(),fam.get_wife().get_id()))
+
+        return indiUpcomingAnniversaries
 
     def list_upcoming_birthdays(self):
         from datetime import date
@@ -277,13 +369,6 @@ class Gedcom:
                 output[indi.get_id()] = tuple(info)
 
         return output
-
-
-
-
-
-
-
 
     def list_deceased(self):
         """us 29 list all deceased individuals in a gedcom file"""
@@ -369,7 +454,27 @@ class Gedcom:
             if len(list1)>1 :
                 multiple_birth.append(list1)
         return multiple_birth
+      
 
+if __name__ == "__main__":
+    SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
+                    "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
+    g1 = Gedcom("../testing_files/Jiashu_Wang.ged", SUPPORT_TAGS)#testing_files/Jiashu_Wang.ged
+    # for i in range(len(g1.get_data()[0])):
+    #     print(i,g1.get_data()[0][i])
+    # for i in range(len(g1.get_data()[1])):
+    #     print(g1.get_data()[1][i])
+    # print(g1.get_data(),sep='/n')
+    g1.parse()
+    g1.peek()
+    # print(g1.get_individuals(),g1.get_families())
+    # print(len(g1.get_individuals()),g1.get_individuals()["@I2@"].get_birthDate())
+    g1.unique_name_and_birth_date()
+    # print("what")
+    # offset = 11
+    # id = "@I123@"
+    # print("@I"+str(int(id[2:-1])+offset)+"@")
+    #print(g1.get_families().values())
 # if __name__ == "__main__":
 #     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
 #                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
@@ -378,4 +483,4 @@ class Gedcom:
 # g1.parse()
 # print(g1.get_individuals().keys(), g1.get_families().keys())
 # print(g1.get_individuals()["@I4@"].get_birthDate())
-# g1.unique_name_and_birth_date()80619a37c4cf6cf744c9
+

@@ -15,6 +15,10 @@ class Individual:
         self._deathDate = None
         self._family = []
         self._parentFamily = None
+        self._lineNum = {}
+
+    def get_lineNum(self)-> {}:
+        return self._lineNum
 
     def get_id(self) -> str:
         return self.id
@@ -48,6 +52,9 @@ class Individual:
 
     def get_parent_family(self):
         return self._parentFamily
+
+    def set_lineNum(self, lineNumberDict) -> None:
+        self._lineNum = lineNumberDict
 
     def set_name(self, name: str) -> None:
         # if not isinstance(name, str): raise TypeError("input has to be a str type")
@@ -120,9 +127,9 @@ class Individual:
         if (len(self._family) <= 1): return True
         marrageAgeList = []
         birthDate = self._birthDate
-        if not self._family: raise AttributeError("Erro: Missing attribute")
+        if not self._family: raise AttributeError("Error: Missing attribute")
         for each_marrage in self._family:
-            if not each_marrage.get_marriedDate(): raise AttributeError("Erro: Missing attribute")
+            if not each_marrage.get_marriedDate(): raise AttributeError("Error: Missing attribute")
             marrageAge = each_marrage.get_marriedDate()[0] - birthDate[0] + (
                     each_marrage.get_marriedDate()[1] - birthDate[1]) / 12 + (
                                  each_marrage.get_marriedDate()[2] - birthDate[2]) / 365
@@ -213,6 +220,9 @@ class Individual:
 
     def no_marriages_to_descendants(self):  # dfs in dfs
 
+        if len(self.get_family()) == 0:
+            return True
+
         spouse = []
         if not self.get_gender(): raise AttributeError("Gender of Individual not set")
         if self.get_gender() == "M":
@@ -228,7 +238,7 @@ class Individual:
             result = True
             for family in indi.get_family():
                 for child in family.get_children():
-                    if child in spouse or child == indi:
+                    if child in spouse:
                         return False
                     result = dfs(child) and result
             return result
