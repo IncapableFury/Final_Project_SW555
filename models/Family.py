@@ -3,7 +3,6 @@ class Family:
     This is the class for Family.
     id is the only variable that is required. If other variable does not exist, it would return None
     If children does not exist, it would return an empty list
-
     all date value are passed in as str, and saved as tuple with formate (year, month, day)
     '''
 
