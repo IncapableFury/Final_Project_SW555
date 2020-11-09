@@ -15,9 +15,9 @@ class Family:
         self._marriedDate = None
         self._divorced = None
         self._children = []
-        self._lineNum = None
+        self._lineNum = {}
 
-    def get_lineNum(self) -> int:
+    def get_lineNum(self) -> {}:
         return self._lineNum
 
     def get_id(self) -> str:
@@ -38,8 +38,8 @@ class Family:
     def get_children(self) -> list:
         return self._children
 
-    def set_lineNum(self, lineNumber)->None:
-         self._lineNum = lineNumber
+    def set_lineNum(self, lineNumberDict)->None:
+         self._lineNum = lineNumberDict
 
     def set_husband(self, husband) -> None:
         ##if not isinstance(husband, Individual): raise TypeError("input has to be a Individual type")

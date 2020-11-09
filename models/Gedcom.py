@@ -10,25 +10,66 @@ class Gedcom:
         self._data = self.readfile(path)
 
     def readfile(self, path):
-        res = [[], [], [], {}]  # [[level, tag, arguments], [start indices of indi], [start indices of fam], [line number]]
+        res = [[], [], [], {}]  # [[level, tag, arguments], [start indices of indi], [start indices of fam], {index:{attribute: line number}]
         f = open(path, "r")
         index = 0
         lineNumber = 0
+
         for line in f:
             level, tag, arguments = self.parseline(line)
             if tag not in self._supportTags:  # skip unsupported tags
                 lineNumber += 1
                 continue
             res[0].append([level, tag, arguments])
-            #####
+            #appending index and linenumbers for individual
             if tag == "INDI":
                 res[1].append(index)
-                res[3][index] = lineNumber
+                res[3][index] = {}
+                res[3][index]["INDI ID"] = lineNumber
+                x = index
+            elif tag == "NAME" and level == '1':
+                res[3][x]["NAME"] = lineNumber
+            elif tag == "SEX":
+                res[3][x]["SEX"] = lineNumber
+            elif tag == "BIRT":
+                res[3][x]["BIRT"] =  lineNumber + 1
+            elif tag == "DEAT":
+                res[3][x]["DEAT"] = lineNumber + 1
+            elif tag == "FAMC":
+                if "FAMC" in res[3][x]:
+                    res[3][x]["FAMC"].append(lineNumber)
+                else:
+                    res[3][x]["FAMC"] =[]
+                    res[3][x]["FAMC"].append(lineNumber)
+            elif tag == "FAMS":
+                if "FAMS" in res[3][x]:
+                    res[3][x]["FAMS"].append(lineNumber)
+                else:
+                    res[3][x]["FAMS"] = []
+                    res[3][x]["FAMS"].append(lineNumber)
+            #appending index and line numbers for FAM
             elif tag == "FAM":
                 if not res[2]:
                     res[1].append(index)  # the first start index for family is the last end index for indis
                 res[2].append(index)
-                res[3][index] = lineNumber
+                res[3][index] = {}
+                res[3][index]["FAM ID"] = lineNumber
+                y = index
+            elif tag == "HUSB":
+                res[3][y]["HUSB"] = lineNumber
+            elif tag == "WIFE":
+                res[3][y]["WIFE"] = lineNumber
+            elif tag == "CHIL":
+                if "CHIL" in res[3][y]:
+                    res[3][y]["CHIL"].append(lineNumber)
+                else:
+                    res[3][y]["CHIL"] = []
+                    res[3][y]["CHIL"].append(lineNumber)
+            elif tag == "MARR":
+                res[3][y]["MARR"] = lineNumber + 1
+            elif tag == "DIV":
+                res[3][y]["DIV"] = lineNumber + 1
+
             index += 1
             lineNumber += 1
 

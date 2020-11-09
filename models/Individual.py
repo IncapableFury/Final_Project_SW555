@@ -15,9 +15,9 @@ class Individual:
         self._deathDate = None
         self._family = []
         self._parentFamily = None
-        self._lineNum = None
+        self._lineNum = {}
 
-    def get_lineNum(self)->int:
+    def get_lineNum(self)-> {}:
         return self._lineNum
 
     def get_id(self) -> str:
@@ -53,8 +53,8 @@ class Individual:
     def get_parent_family(self):
         return self._parentFamily
 
-    def set_lineNum(self, tag,lineNumber) -> None:
-        self._lineNum[tag] = lineNumber
+    def set_lineNum(self, lineNumberDict) -> None:
+        self._lineNum = lineNumberDict
 
     def set_name(self, name: str) -> None:
         # if not isinstance(name, str): raise TypeError("input has to be a str type")
