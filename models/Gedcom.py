@@ -10,6 +10,11 @@ class Gedcom:
         self._data = self.readfile(path)
 
     def readfile(self, path):
+        """
+        res[3] returns a dictionary with index as the starting index of either an individual or a family.
+        Each attribute of that object will have a corresponding line number
+        { index: {attribute field: line number in GEDCOM}
+        """
         res = [[], [], [], {}]  # [[level, tag, arguments], [start indices of indi], [start indices of fam], {index:{attribute: line number}]
         f = open(path, "r")
         index = 0
