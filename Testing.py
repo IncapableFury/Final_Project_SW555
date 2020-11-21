@@ -836,7 +836,6 @@ class TestSprint1(unittest.TestCase):
         t3.set_wife(p4)
         t2.add_child(p5)
         t3.add_child(p6)
-
         t4.set_husband(p7)
         t4.set_wife(p8)
         t4.add_child(p9)
