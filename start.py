@@ -3,6 +3,8 @@ from models.Family import Family
 from models.Gedcom import Gedcom
 # from sprint1_final import pretty_print
 
+import click
+
 SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
                 "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
 

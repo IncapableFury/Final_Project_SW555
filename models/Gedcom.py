@@ -314,7 +314,6 @@ class Gedcom:
         """
         return couples tuple of ids
         """
-
         from datetime import date, datetime
         indiUpcomingAnniversaries = []
         today = date.today()
@@ -436,13 +435,15 @@ if __name__ == "__main__":
     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
     g1 = Gedcom("../testing_files/Jiashu_Wang.ged", SUPPORT_TAGS)#testing_files/Jiashu_Wang.ged
+
     # for i in range(len(g1.get_data()[0])):
     #     print(i,g1.get_data()[0][i])
     # for i in range(len(g1.get_data()[1])):
     #     print(g1.get_data()[1][i])
     # print(g1.get_data(),sep='/n')
     g1.parse()
-    g1.peek()
+    print(g1.get_individuals()["@I4@"].get_lineNum()["NAME"])
+    # g1.peek()
     # print(g1.get_individuals(),g1.get_families())
     # print(len(g1.get_individuals()),g1.get_individuals()["@I2@"].get_birthDate())
     g1.unique_name_and_birth_date()
