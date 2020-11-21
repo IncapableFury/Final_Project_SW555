@@ -1,3 +1,5 @@
+#TODO: import error class
+
 class Family:
     '''
     This is the class for Family.
@@ -92,6 +94,8 @@ class Family:
                 list(map(lambda i: abs((date(*i) - today).days), [x.get_birthDate() for x in self.get_children()])))
         except AttributeError:
             raise AttributeError("Missing birthdate for children")
+            error = error(1,1,1,1,1,1)
+
         if len(births) <= 5:
             return True
         multi, sameDay, pre = 0, 0, births[0]
