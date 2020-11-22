@@ -24,9 +24,17 @@ class Error :
             fun()
         return
 
+    
+    def __str__(self):
+        message = f'{self.severity}: {self.className}: {self.instance}: {self.lineNum}: {self.message}'
+        return message
+
+
+
 if __name__ == "__main__":
     e1 = Error("123",1,1,1,1)
     e1.call()
+    print(e1)
 #     e2 = Error("456")
 #     print(e1.id,e1.message)
 #     print(e2.id,e2.message)
