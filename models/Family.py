@@ -309,8 +309,23 @@ class Family:
         res = sorted(self.get_children(), key=lambda x: x.get_age(days=True), reverse=True)
         return list(filter(lambda x: x.get_birthDate() != None, res))
 
+    def list_all_husbands(self):
+        """US 52 lists all husbands"""
+        husbandslist=[]
+        if not self.get_husband: raise AttributeError("no husband found")
+        for family in self._families():
+            if self.get_husband==self.get_id:
+                husbandslist.append(self.get_husband)
+        return husbandslist 
 
-
+    def list_all_wives(self):
+        """US 53 lists all wives"""
+        wiveslist=[]
+        if not self.get_wife: raise AttributeError("no wives found")
+        for family in self._families():
+            if self.get_wife==self.get_id:
+                wiveslist.append(self.get_wife)
+        return wiveslist
 
 
 
