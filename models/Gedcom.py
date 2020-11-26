@@ -459,10 +459,10 @@ class Gedcom:
         from models.Individual import Individual
         singlePeople=[]
         for ind in self.get_individuals():
-            if not ind.get_deathDate():
-                if ind.get_age()>30:
-                    if len(ind.get_family())==0:
-                        singlePeople.append(ind)
+            if not self.get_individuals()[ind].get_deathDate():
+                if self.get_individuals()[ind].get_age()>30:
+                    if len(self.get_individuals()[ind].get_family())==0:
+                        singlePeople.append(self.get_individuals()[ind])
         return singlePeople
     
     def list_orphans(self):
@@ -470,14 +470,41 @@ class Gedcom:
         from models.Family import Family
         orphans=[]
         for ind in self.get_individuals():
-            if ind.get_age()<18:
-                if ind.get_parent_family():
-                    if ind.get_parent_family().get_husband() and ind.get_parent_family().get_wife():
-                        if ind.get_parent_family().get_husband().get_deathDate() and ind.get_parent_family().get_wife().get_deathDate():
-                            orphans.append(ind)
-                    else: raise AttributeError("Missing wife or husband: "+ind.get_parent_family().get_id())
-                else: raise AttributeError("Missing parent family: "+ind.get_id())
+            if self.get_individuals()[ind].get_age()<18:
+                if self.get_individuals()[ind].get_parent_family():
+                    if self.get_individuals()[ind].get_parent_family().get_husband() and self.get_individuals()[ind].get_parent_family().get_wife():
+                        if self.get_individuals()[ind].get_parent_family().get_husband().get_deathDate() and self.get_individuals()[ind].get_parent_family().get_wife().get_deathDate():
+                            orphans.append(self.get_individuals()[ind])
+                    else: raise AttributeError("Missing wife or husband: "+self.get_individuals()[ind].get_parent_family().get_id())
+                else: raise AttributeError("Missing parent family: "+self.get_individuals()[ind].get_id())
         return orphans
+    def sort_individual(self):
+        from models.Individual import Individual
+        sorted=[]
+        for ind in self.get_individuals():
+            sorted.append(self.get_individuals()[ind].get_name())
+        sorted.sort()
+        return sorted
+    "US 56 functions"
+    def fix_child_to_family(self, individual, family):
+        from models.Individual import Individual
+        from models.Family import Family
+        ind.set_parentFamily(individual)
+    def fix_family_to_child(self, individual, family):
+        from models.Individual import Individual
+        from models.Family import Family
+        family.add_child(individual)
+    def fix_parent_to_family(self, individual, family):
+        from models.Individual import Individual
+        from models.Family import Family
+        individual.add_to_family(family)
+    def fix_family_to_parent(self, individual, family):
+        from models.Individual import Individual
+        from models.Family import Family
+        if(individual.get_gender()=="F"):
+            family.set_wife(individual)
+        else:
+            family.set_husband(individual)
 
 if __name__ == "__main__":
     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
