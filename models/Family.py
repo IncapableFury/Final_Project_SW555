@@ -1,5 +1,5 @@
 #TODO: import error class
-
+from Gedcom import Gedcom
 class Family(Gedcom):
     '''
     This is the class for Family.
