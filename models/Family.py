@@ -64,7 +64,7 @@ class Family:
 
         ##if not isinstance(divorced_date, str): raise TypeError("input has to be a str type")
         if all(isinstance(v, int) for v in divorced_date):
-            self._divorcedDate = divorced_date
+            self._divorced = divorced_date
             return
         self._divorced = self.change_date_formate(divorced_date)
 
@@ -166,19 +166,9 @@ class Family:
                               f"Family marriage date {self.get_marriedDate()} is not 14 years after"
                               f"Husband birthday {self._husband.get_birthDate()} or Wife birthday {self._wife.get_birthDate()}")
 
-    #US05 Marriage should occur before death of either spouse //PROBLEM HERE
+    #US05 Marriage should occur before death of either spouse
     def marriage_before_death(self):
         from datetime import date
-
-        if not self._husband or not self._wife or not self.get_marriedDate(): raise AttributeError(
-            "Missing husband/wife/marriedDate")
-        if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
-
-        death = None
-        if not self._husband.get_deathDate():
-            death = self._wife.get_deathDate()
-        elif not self._wife.get_deathDate():
-            death = self._husband.get_deathDate()
 
         if not self._husband or not self._wife or not self.get_marriedDate(): raise AttributeError("Missing husband/wife/marriedDate")
         if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
@@ -239,43 +229,40 @@ class Family:
         if len(self._children) == 0: return True
         death = self._wife.get_deathDate()
         hDeath = self._husband.get_deathDate()
-
         if not hDeath:
             for c in self._children:
                 if c.get_birthDate() > death:
                     #return False
                     raise Error('ERROR', 'FAMILY', 'US09', c.get_lineNum()["BIRT"],
                                 f"Child birthday {c.get_birthDate()} is after death date of mother {death}")
-
             return True
-
-        hDeath = hDeath + (0, 9, 0)
-        if hDeath[1] > 12:
-            hDeath[1] = hDeath[1] % 12
-            hDeath[0] = hDeath[0] + 1
-        if not death:
-            for c in self._children:
-                if c.get_birthDate() > hDeath:
-                    # return False
-                    raise Error('ERROR', 'FAMILY', 'US09', c.get_lineNum()['BIRT'],
-                                f"Child birthday {c.get_birthDate()} is after 9 month of death date of father {hDeath}")
-
-            return True
-
-        if hDeath < death:
-            if not death and not hDeath:
-                return True
+        # hDeath = hDeath + (0, 9, 0)
+        # if hDeath[1] > 12:
+        #     hDeath[1] = hDeath[1] % 12
+        #     hDeath[0] = hDeath[0] + 1
+        # if not death:
+        #     for c in self._children:
+        #         if c.get_birthDate() > hDeath:
+        #             # return False
+        #             raise Error('ERROR', 'FAMILY', 'US09', c.get_lineNum()['BIRT'],
+        #                         f"Child birthday {c.get_birthDate()} is after 9 month of death date of father {hDeath}")
+        #     return True
+        # if hDeath < death:
+        #     if not death and not hDeath:
+        #         return True
         if hDeath:
-            hDeath = tuple(map(sum, zip(hDeath, (0,9,0))))
+            hDeath = list(map(sum, zip(hDeath, (0,9,0))))
             if hDeath[1] > 12:
                 hDeath[1] = hDeath[1] % 12
                 hDeath[0] = hDeath[0] + 1
         if death is None or hDeath < death:
-
             death = hDeath
 
         for c in self._children:
-            if c.get_birthDate() > death: return False
+            if c.get_birthDate() > death:
+                # return False
+                raise Error('ERROR', 'FAMILY', 'US09', c.get_lineNum()['BIRT'],
+                                f"Child birthday {c.get_birthDate()} is after 9 month of death date of father {hDeath}")
         return True
 
     def siblings_spacing(self):
@@ -345,7 +332,12 @@ class Family:
 
 
 if __name__ == "__main__":
-    pass
+    fam1 = Family('01')
+
+    fam1.set_marriedDate((2010,10,1))
+    fam1.set_divorcedDate((2010,9,1))
+    print(fam1.marriage_before_divorce())
+
 
     # from models.Individual import Individual
 

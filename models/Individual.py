@@ -156,31 +156,31 @@ class Individual:
                 if (Age_range[1] == devorceAge and devorceAge == None):
                     #return False
                     raise Error('ERROR', 'INDIVIDUAL', 'US11', self.get_lineNum()['INDI ID'],
-                                      f" Individual has committed bigamy")
+                                      f" Individual{self.get_id()} has committed bigamy")
 
                 elif ((not Age_range[1] == devorceAge) and devorceAge == None):
                     if (not (Age_range[0] < marrageAge and Age_range[1] < marrageAge)):
                         #return False
                         raise Error('ERROR', 'INDIVIDUAL', 'US11', self.get_lineNum()['INDI ID'],
-                                    f" Individual has committed bigamy")
+                                    f" Individual{self.get_id()} has committed bigamy")
                 elif ((not Age_range[1] == devorceAge) and Age_range[1] == None):
                     if (not (marrageAge < Age_range[0] and devorceAge < Age_range[0])):
                         #return False
                         raise Error('ERROR', 'INDIVIDUAL', 'US11', self.get_lineNum()['INDI ID'],
-                                    f" Individual has committed bigamy")
+                                    f" Individual{self.get_id()} has committed bigamy")
                 else:
                     if (marrageAge > Age_range[0] and marrageAge < Age_range[1]):
                         #return False
                         raise Error('ERROR', 'INDIVIDUAL', 'US11', self.get_lineNum()['INDI ID'],
-                                    f" Individual has committed bigamy")
+                                    f" Individual{self.get_id()} has committed bigamy")
                     elif (devorceAge > Age_range[0] and devorceAge < Age_range[1]):
                         #return False
                         raise Error('ERROR', 'INDIVIDUAL', 'US11', self.get_lineNum()['INDI ID'],
-                                    f" Individual has committed bigamy")
+                                    f" Individual{self.get_id()} has committed bigamy")
             marrageAgeList.append((marrageAge, devorceAge))
         return True
 
-    #US20 Aunts and uncles should not marry their nieces or nephews //NOT REMOVING OWN FATHER/MOTHER?
+    #US20 Aunts and uncles should not marry their nieces or nephews
     def aunts_and_uncles(self):
         if (not self._parentFamily): raise AttributeError("Error: missing value")
         if (not self._parentFamily.get_husband() or not self._parentFamily.get_wife()): raise AttributeError(
@@ -193,6 +193,7 @@ class Individual:
         mom_grand_family = self._parentFamily.get_wife().get_parent_family()
 
         for dad_side_aunt_uncle in dad_grand_family.get_children():
+            if(dad_side_aunt_uncle == self.get_parent_family().get_husband()): continue
             check_id = dad_side_aunt_uncle.get_id()
             for dad_side_family in dad_side_aunt_uncle.get_family():
                 if (not dad_side_family.get_husband() or not dad_side_family.get_wife()): raise AttributeError(
@@ -210,6 +211,7 @@ class Individual:
                                     dad_side_family.get_husband().get_lineNum()['INDI ID'],
                                     f" Individual's Aunt{aunt_id} or Uncle{uncle_id} is married to their child {each_child.get_id()}")
         for mom_side_aunt_uncle in mom_grand_family.get_children():
+            if (mom_side_aunt_uncle == self.get_parent_family().get_wife()): continue
             for mom_side_family in mom_side_aunt_uncle.get_family():
                 if (not mom_side_family.get_husband() or not mom_side_family.get_wife()): raise AttributeError(
                     "Error: missing value")

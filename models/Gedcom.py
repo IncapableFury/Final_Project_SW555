@@ -224,8 +224,6 @@ class Gedcom:
     def Unique_IDs(self):
         pass
 
-    # Finshed in mainfunction.
-
     #US23 No more than one individual with the same name and birth date should appear in a GEDCOM file
     def unique_name_and_birth_date(self):
         dic = set()
@@ -250,10 +248,10 @@ class Gedcom:
                 "no husband or wife name")
             if not family.get_marriedDate(): raise AttributeError("no marriage date")
             this_fam_info = [family.get_husband().get_name(), family.get_wife.get_name(), family.get_marriedDate()]
-            if check in check_list:
+            if this_fam_info in check_list:
                 # return False
                 raise Error('ANOMALY', 'GEDCOM', 'US024', family.get_lineNum()['FAM ID'],
-                        f"Family{family.get_id()} has repetead marriage date{family.get_marriedDate()} or spouse name{family._wife.get_name()}")
+                        f"Family{family.get_id()} has repeated marriage date{family.get_marriedDate()} or spouse name{family._wife.get_name()}")
             check_list.append(this_fam_info)
 
         return True
@@ -280,7 +278,7 @@ class Gedcom:
 
     #US26 All family roles (spouse, child) specified in an individual record should have corresponding entries in the corresponding family records.
     # Likewise, all individual roles (spouse, child) specified in family records should have corresponding entries in the corresponding  individual's records.
-    # I.e. the information in the individual and family records should be consistent. //CHECK LAST CONDITIONAL
+    # I.e. the information in the individual and family records should be consistent.
     def corresponding_entries(self):
         """ user story 26 the information in the individual and family records should be consistent."""
         for key_id, indi in self._individuals:
@@ -326,7 +324,7 @@ class Gedcom:
                     # return False
                     raise Error('ERROR', 'GEDCOM', 'US026', child.get_lineNum()['INDI ID'],
                                 f"Individual{child.get_id()}'s family{fam.get_id()} has non-corresponding entries")
-                if child.get_parentFamily().get_id() == key_id:
+                if not child.get_parentFamily().get_id() == key_id:
                     # return False
                     raise Error('ERROR', 'GEDCOM', 'US026', child.get_lineNum()['INDI ID'],
                                 f"Individual{child.get_id()}'s family{fam.get_id()} has non-corresponding entries")
