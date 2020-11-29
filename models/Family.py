@@ -335,7 +335,7 @@ class Family:
                 if not child.get_name(): raise AttributeError("Child's name is missing")
                 if child.get_name().split('/')[1] != last_name:
                     #return False
-                    raise Error('ERROR', 'FAMILY', 'US16', self.get_lineNum()['CHIL'], f"Missing the first name of the {self.get_children()
+                    raise Error('ERROR', 'FAMILY', 'US16', self.get_lineNum()['CHIL'], f"Missing the first name of the {self.get_children()}.")
                 for fam in child.get_family():
                     flag = dfs(fam, check_last_name) and flag
             return flag
