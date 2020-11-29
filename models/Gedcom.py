@@ -215,24 +215,24 @@ class Gedcom:
             if not (today - date(indi.get_birthDate())).days < 0:
                 #return False
                 raise Error('ERROR', 'GEDCOM', 'US01', indi.get_lineNum()['INDI ID'],
-                            f"Individual{indi.get_id()}'s birthday {indi.get_birthDate()} is after today's date {today}")
+                            f"Individual {indi.get_id()} 's birthday {indi.get_birthDate()} is after today's date {today}")
             if not indi.get_deathDate() == None:
                 if not (today - date(indi.get_deathDate())).days < 0:
                     # return False
                     raise Error('ERROR', 'GEDCOM', 'US01', indi.get_lineNum()['INDI ID'],
-                                f"Individual{indi.get_id()}'s death date {indi.get_deathDate()} is after today's date {today}")
+                                f"Individual {indi.get_id()}'s death date {indi.get_deathDate()} is after today's date {today}")
 
         for _, fam in self._families:
             if not fam.get_marriedDate(): raise AttributeError("missing marriedDate for family")
             if not (today - date(fam.get_marriedDate())).days < 0:
                 #return False
                 raise Error('ERROR', 'GEDCOM', 'US01', fam.get_lineNum()['FAM ID'],
-                            f"Family{fam.get_id()}'s marriage date {fam.get_marriedDate()} is after today's date {today}")
+                            f"Family {fam.get_id()} 's marriage date {fam.get_marriedDate()} is after today's date {today}")
             if not fam.get_divorcedDate() == None:
                 if not (today - date(fam.get_divorcedDate())).days < 0:
                     #return False
                     raise Error('ERROR', 'GEDCOM', 'US01', fam.get_lineNum()['INDI ID'],
-                                f"Individual{fam.get_id()}'s divorce date {fam.get_divorcedDate()} is after today's date {today}")
+                                f"Individual {fam.get_id()} 's divorce date {fam.get_divorcedDate()} is after today's date {today}")
 
         return True
 
@@ -252,7 +252,7 @@ class Gedcom:
                 else:
                     #return False
                     raise Error('ANOMALY', 'GEDCOM', 'US023', indi.get_lineNum()['INDI ID'],
-                                f"Individual{indi.get_id()} appears multiple times in the GEDCOM file")
+                                f"Individual {indi.get_id()} appears multiple times in the GEDCOM file")
         return True
 
     #US24 No more than one family with the same spouses by name and the same marriage date should appear in a GEDCOM file //PROBLEM
@@ -267,7 +267,7 @@ class Gedcom:
             if this_fam_info in check_list:
                 # return False
                 raise Error('ANOMALY', 'GEDCOM', 'US024', family.get_lineNum()['FAM ID'],
-                        f"Family{family.get_id()} has repeated marriage date{family.get_marriedDate()} or spouse name{family._wife.get_name()}")
+                        f"Family {family.get_id()} has repeated marriage date {family.get_marriedDate()} or spouse name {family._wife.get_name()}")
             check_list.append(this_fam_info)
 
         return True
@@ -283,7 +283,7 @@ class Gedcom:
                 if child_info in check_list:
                     # return False
                     raise Error('ERROR', 'GEDCOM', 'US025', child.get_lineNum()['INDI ID'],
-                            f"Child{child.get_id()}'s birthday{child.get_birthDate()}or name{child.get_name()} is repeated in a family")
+                            f"Child {child.get_id()} 's birthday {child.get_birthDate()} or name {child.get_name()} is repeated in a family")
                 check_list.append(child_info)
 
         return True
@@ -305,17 +305,17 @@ class Gedcom:
                 if not flag:
                     # return False
                     raise Error('ERROR', 'GEDCOM', 'US026', indi.get_parentFamily().get_lineNum()['FAM ID'],
-                                f"Individual{indi.get_id()} 's family{indi.get_parentFamily().get_id()} have non-corresponding IDs'")
+                                f"Individual {indi.get_id()} 's family {indi.get_parentFamily().get_id()} have non-corresponding IDs'")
 
             for fam in indi.get_family():
                 if not fam.get_husband() and not fam.get_wife():
                     # return False
                     raise Error('ANOMALY', 'GEDCOM', 'US026', fam.get_lineNum()['FAM ID'],
-                                f"Family{fam.get_id()} has no husband or no wife")
+                                f"Family {fam.get_id()} has no husband or no wife")
                 if not (fam.get_husband().get_id() == key_id or fam.get_wife().get_id() == key_id):
                     # return False
                     raise Error('ERROR', 'GEDCOM', 'US026', fam.get_lineNum()['FAM ID'],
-                                f"Family{fam.get_id()} has non-corresponding entries")
+                                f"Family {fam.get_id()} has non-corresponding entries")
 
         for key_id, fam in self._families:
             if fam.get_husband():
@@ -325,7 +325,7 @@ class Gedcom:
                 if not flag:
                     # return False
                     raise Error('ERROR', 'GEDCOM', 'US026', fam.get_lineNum()['FAM ID'],
-                                f"Family{fam.get_id()} has non-corresponding entries")
+                                f"Family {fam.get_id()} has non-corresponding entries")
             if fam.get_wife():
                 flag = False
                 for check_fam in fam.get_wife().get_family():
@@ -333,17 +333,17 @@ class Gedcom:
                 if not flag:
                     # return False
                     raise Error('ERROR', 'GEDCOM', 'US026', fam.get_lineNum()['FAM ID'],
-                                f"Family{fam.get_id()} has non-corresponding entries")
+                                f"Family {fam.get_id()} has non-corresponding entries")
 
             for child in fam.get_children():
                 if not child.get_parentFamily():
                     # return False
                     raise Error('ERROR', 'GEDCOM', 'US026', child.get_lineNum()['INDI ID'],
-                                f"Individual{child.get_id()}'s family{fam.get_id()} has non-corresponding entries")
+                                f"Individual {child.get_id()} 's family {fam.get_id()} has non-corresponding entries")
                 if not child.get_parentFamily().get_id() == key_id:
                     # return False
                     raise Error('ERROR', 'GEDCOM', 'US026', child.get_lineNum()['INDI ID'],
-                                f"Individual{child.get_id()}'s family{fam.get_id()} has non-corresponding entries")
+                                f"Individual {child.get_id()} 's family {fam.get_id()} has non-corresponding entries")
 
         return True
 

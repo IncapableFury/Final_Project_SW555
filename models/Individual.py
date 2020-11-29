@@ -156,27 +156,27 @@ class Individual:
                 if (Age_range[1] == devorceAge and devorceAge == None):
                     #return False
                     raise Error('ERROR', 'INDIVIDUAL', 'US11', self.get_lineNum()['INDI ID'],
-                                      f" Individual{self.get_id()} has committed bigamy")
+                                      f" Individual {self.get_id()} has committed bigamy")
 
                 elif ((not Age_range[1] == devorceAge) and devorceAge == None):
                     if (not (Age_range[0] < marrageAge and Age_range[1] < marrageAge)):
                         #return False
                         raise Error('ERROR', 'INDIVIDUAL', 'US11', self.get_lineNum()['INDI ID'],
-                                    f" Individual{self.get_id()} has committed bigamy")
+                                    f" Individual {self.get_id()} has committed bigamy")
                 elif ((not Age_range[1] == devorceAge) and Age_range[1] == None):
                     if (not (marrageAge < Age_range[0] and devorceAge < Age_range[0])):
                         #return False
                         raise Error('ERROR', 'INDIVIDUAL', 'US11', self.get_lineNum()['INDI ID'],
-                                    f" Individual{self.get_id()} has committed bigamy")
+                                    f" Individual {self.get_id()} has committed bigamy")
                 else:
                     if (marrageAge > Age_range[0] and marrageAge < Age_range[1]):
                         #return False
                         raise Error('ERROR', 'INDIVIDUAL', 'US11', self.get_lineNum()['INDI ID'],
-                                    f" Individual{self.get_id()} has committed bigamy")
+                                    f" Individual {self.get_id()} has committed bigamy")
                     elif (devorceAge > Age_range[0] and devorceAge < Age_range[1]):
                         #return False
                         raise Error('ERROR', 'INDIVIDUAL', 'US11', self.get_lineNum()['INDI ID'],
-                                    f" Individual{self.get_id()} has committed bigamy")
+                                    f" Individual {self.get_id()} has committed bigamy")
             marrageAgeList.append((marrageAge, devorceAge))
         return True
 
@@ -203,7 +203,7 @@ class Individual:
                 if (uncle_id == aunt_id):
                     #return False
                     raise Error('ERROR', 'INDIVIDUAL', 'US20', dad_side_family.get_husband().get_lineNum()['INDI ID'],
-                                    f" Individual's Aunt{aunt_id} and Uncle{uncle_id} has the same ID")
+                                    f" Individual's Aunt {aunt_id} and Uncle {uncle_id} has the same ID")
                 for each_child in dad_side_family.get_children():
                     if (uncle_id == each_child.get_id() or aunt_id == each_child.get_id()):
                         #return False
@@ -220,13 +220,13 @@ class Individual:
                 if (uncle_id == aunt_id):
                     #return False
                     raise Error('ERROR', 'INDIVIDUAL', 'US20', mom_side_family.get_husband().get_lineNum()['INDI ID'],
-                                f" Individual's Aunt{aunt_id} and Uncle{uncle_id} has the same ID")
+                                f" Individual's Aunt {aunt_id} and Uncle {uncle_id} has the same ID")
                 for each_child in mom_side_family.get_children():
                     if (uncle_id == each_child.get_id() or aunt_id == each_child.get_id()):
                         #return False
                         raise Error('ERROR', 'INDIVIDUAL', 'US20',
                                     mom_side_family.get_husband().get_lineNum()['INDI ID'],
-                                    f" Individual's Aunt{aunt_id} or Uncle{uncle_id} is married to their child {each_child.get_id()}")
+                                    f" Individual's Aunt {aunt_id} or Uncle {uncle_id} is married to their child {each_child.get_id()}")
 
         return True
 
@@ -285,7 +285,7 @@ class Individual:
                         #return False
                         raise Error('ERROR', 'INDIVIDUAL', 'US17',
                                     child.get_lineNum()['INDI ID'],
-                                    f"Parent is married to a descendant{child.get_id()}")
+                                    f"Parent is married to a descendant {child.get_id()}")
                     result = dfs(child) and result
             return result
 

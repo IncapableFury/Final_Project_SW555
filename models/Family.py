@@ -134,7 +134,7 @@ class Family:
             husband_diff = husband_age - child.get_age()
             if wife_diff >= 60 or husband_diff >= 80:
                 raise Error('ANOMALY', 'FAMILY', 'US12', self.get_lineNum()["FAM ID"],
-                            f"Family Mother's age{wife_age} exceeds child's age{child.get_age()} by 60 or Father's age{husband_age} exceeds child's age by 80")
+                            f"Family Mother's age {wife_age} exceeds child's age {child.get_age()} by 60 or Father's age {husband_age} exceeds child's age by 80")
                 # return False
         return True
 
@@ -199,7 +199,7 @@ class Family:
             return True
         else:
             raise Error('ERROR', 'FAMILY', 'US05', self.get_lineNum()["MARR"],
-                        f"Family marriage date {marriage} is after death date of husband{self._husband.get_deathDate()} or wife{self._wife.get_deathDate()}")
+                        f"Family marriage date {marriage} is after death date of husband {self._husband.get_deathDate()} or wife {self._wife.get_deathDate()}")
 
     # US06 Divorce can only occur before death of both spouses
     def divorce_before_death(self) -> bool:
@@ -223,7 +223,7 @@ class Family:
             return True
         else:
             raise Error('ERROR', 'FAMILY', 'US05', self.get_lineNum()["DIV"],
-                        f"Family divorce date {self.get_divorcedDate()} is after death date of husband{self._husband.get_deathDate()} or wife{self._wife.get_deathDate()}")
+                        f"Family divorce date {self.get_divorcedDate()} is after death date of husband {self._husband.get_deathDate()} or wife {self._wife.get_deathDate()}")
 
     # US08 Children should be born after marriage of parents (and not more than 9 months after their divorce)
     def birth_before_marriage_of_parents(self):
@@ -283,6 +283,7 @@ class Family:
                             f"Child birthday {c.get_birthDate()} is after 9 month of death date of father {hDeath}")
         return True
 
+    #US13 Birth dates of siblings should be more than 8 months apart or less than 2 days apart (twins may be born one day apart, e.g. 11:59 PM and 12:02 AM the following calendar day)
     def siblings_spacing(self):
         from datetime import date
         threshold = [1, 240]  # 8 month is ambiguous, let's just assume 8*30=240 days
@@ -295,9 +296,10 @@ class Family:
             sumOfDifference += abs(timedelta.days)
         if not (threshold[0] < sumOfDifference // (n - 1) < threshold[1]):
             return True
-        else:raise Error('ERROR', 'FAMILY', 'US13', self.get_lineNum()["BIRT"],
-                      f"The birth date {self.get_birthDate()} and {self.get_birthDate()} spacing of siblings are less than 8 month")
+        else: raise Error('ERROR', 'FAMILY', 'US13', self.get_lineNum()["FAM ID"],
+                      f"The birth date spacing of siblings is greater than 2 days and less than 8 month")
 
+    #US15 There should be fewer than 15 siblings in a family
     def fewer_than_15_siblings(self):
         """
         if self._children is empty, it is a empty list which the length is 0
@@ -305,9 +307,10 @@ class Family:
         """
         if len(self._children) < 15:
             return True
-        else: raise Error ('ERROR', 'FAMILY', 'US15', self.get_lineNum()["FAM ID"],
+        else: raise Error('ERROR', 'FAMILY', 'US15', self.get_lineNum()["FAM ID"],
                       f"The siblings of the family is more than 15.")
 
+    #US21 Husband in family should be male and wife in family should be female
     def correct_gender_for_role(self):
         """
         throw error when missing husband/wife or missing gender of husband/wife
@@ -319,8 +322,10 @@ class Family:
         if self._husband.get_gender() == "M" and self._wife.get_gender() == "F":
             return True
         else:raise Error ('ERROR', 'FAMILY', 'US21', self.get_lineNum()["FAM ID"],
-                      f"The gender of{self.get_husband} or{self.get_wife} is incorrect.")
+                      f"Family {self.get_id()} 's husband {self.get_husband().get_id()} 's gender {self.get_husband().get_gender()} is incorrect "
+                      f"or wife {self.get_wife().get_id()} 's gender {self.get_wife().get_gender()} is incorrect.")
 
+    #US16 All male members of a family should have the same last name
     def male_last_names(self):
         if not self._husband: raise AttributeError("Missing Father")
         if not self._husband.get_name(): raise AttributeError("Missing Father's name")
@@ -335,21 +340,23 @@ class Family:
                 if not child.get_name(): raise AttributeError("Child's name is missing")
                 if child.get_name().split('/')[1] != last_name:
                     #return False
-                    raise Error('ERROR', 'FAMILY', 'US16', self.get_lineNum()['CHIL'], f"Missing the first name of the {self.get_children()}.")
+                    raise Error('ERROR', 'FAMILY', 'US16', child.get_lineNum()['NAME'], f"Male Child's last name {child.get_name().split('/')[1]} doesn't match family last name {last_name}")
                 for fam in child.get_family():
                     flag = dfs(fam, check_last_name) and flag
             return flag
 
         return dfs(self, check_last_name)
 
+    #US18 Siblings should not marry one another
     def siblings_should_not_marry(self):
         if not self._husband or not self._wife: raise AttributeError("Missing husband or wife")
         if not self._husband.get_parent_family() and not self._wife.get_parent_family(): raise AttributeError(
             "Missing husband and wife parent")
         if not self._husband.get_parent_family().get_id() == self._wife.get_parent_family().get_id():
             return True
-        else:raise Error('ERROR', 'FAMILY', 'US18', self.get_lineNum()['INDI'], f"Siblings in {self.get_family} are married.")
+        else:raise Error('ERROR', 'FAMILY', 'US18', self.get_lineNum()['FAM ID'], f"Siblings in family {self.get_id()} are married.")
 
+    #US28 List siblings in families by decreasing age, i.e. oldest siblings first
     def order_siblings_by_age(self):
         """
         Need one extra step which filters out the Nones. Not sure if necessary.
@@ -358,7 +365,7 @@ class Family:
         res = sorted(self.get_children(), key=lambda x: x.get_age(days=True), reverse=True)
         if list(filter(lambda x: x.get_birthDate() != None, res)):
             return True
-        else: raise Error('ERROR', 'FAMILY', 'US28', self.get_lineNum()['BIRT'], f"Siblings' birthday is unknown.")
+        else: raise Error('ERROR', 'FAMILY', 'US28', self.get_lineNum()['FAM ID'], f"Family {self.get_id()} Siblings not ordered by age")
 
 
 if __name__ == "__main__":
