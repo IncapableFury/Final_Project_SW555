@@ -1,9 +1,6 @@
-from models.Individual import Individual
-from models.Family import Family
-<<<<<<< HEAD
-from models.report_error import report_error
-=======
->>>>>>> parent of 10aea7d... add config class for cross platform
+from Individual import Individual
+from Family import Family
+from report_error import report_error
 
 class Gedcom:
 
@@ -12,10 +9,7 @@ class Gedcom:
         self._individuals = {}
         self._families = {}
         self._data = self.readfile(path)
-<<<<<<< HEAD
         self.error_report = report_error()
-=======
->>>>>>> parent of 10aea7d... add config class for cross platform
 
     def readfile(self, path):
         """
@@ -112,8 +106,8 @@ class Gedcom:
         return self._families
 
     def parse(self):
-        from models.Individual import Individual
-        from models.Family import Family
+        #from models.Individual import Individual
+        #from models.Family import Family
         offset = 0
         for i in range(len(self._data[1]) - 1):  # enumerate individuals
             start_index = self._data[1][i]
@@ -193,9 +187,23 @@ class Gedcom:
                     except:
                         continue
 
-    '''
-    Move this function from individual.py to gedcom.py
-    '''
+    
+    def run_check(self):
+
+        for indi in self._individuals.values():
+            self.error_report.get_error(indi)
+
+        for fam in self._families.values():
+            self.error_report.get_error(fam)
+
+        print(self.error_report)
+
+
+    def test_error(self):
+        for indi in self._individuals.values():
+            self.error_report.test_error(indi)
+
+
 
     def dates_before_current_date(self):
         from datetime import date
@@ -474,10 +482,16 @@ if __name__ == "__main__":
     #     print(g1.get_data()[1][i])
     # print(g1.get_data(),sep='/n')
     g1.parse()
-    g1.peek()
+    g1.test_error()
+    print(g1.error_report)
+    '''
+    g1.run_check()
+    '''
+    
+    #g1.peek()
     # print(g1.get_individuals(),g1.get_families())
     # print(len(g1.get_individuals()),g1.get_individuals()["@I2@"].get_birthDate())
-    g1.unique_name_and_birth_date()
+    #g1.unique_name_and_birth_date()
     # print("what")
     # offset = 11
     # id = "@I123@"

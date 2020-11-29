@@ -27,15 +27,22 @@ class report_error:
         return not name[0] == "_" and not name[0:3] == "get" and not name[0:3] == "set" and not name[0:3] == "add" and not name in list_mark
 
 
+    def test_error(self, obj):
+        from Error import Error
+        try:
+            getattr(obj, "test_error")()
+
+        except Error as e:
+            self.error_list.append(e)
+
+
     def get_error(self, obj):
         from Error import Error
         func_name = [name for name in dir(obj) if self.check_func(name)]
-        print(func_name)
 
         for each_func in func_name:
 
             try:
-                print(each_func)
                 getattr(obj, each_func)()
 
             except Error as e:

@@ -1,4 +1,4 @@
-class Error :
+class Error(Exception):
     idCounter = 0
     def __init__(self,severity,className,instance,lineNum,message):
         """

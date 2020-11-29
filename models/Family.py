@@ -1,5 +1,5 @@
 #TODO: import error class 
-
+from Error import Error
 class Family:
     '''
     This is the class for Family.

@@ -1,3 +1,5 @@
+from Error import Error
+
 class Individual:
     '''
     This is the class for individual.
@@ -6,7 +8,7 @@ class Individual:
 
     all date value are passed in as str, and saved as tuple with formate (year, month, day)
     '''
-
+    
     def __init__(self, id: str):
         self.id = id
         self._name = None
@@ -244,6 +246,11 @@ class Individual:
             return result
 
         return dfs(self)
+
+
+    def test_error(self):
+        
+        raise Error("123",1,2,3,4)
 
 
 if __name__ == "__main__":
