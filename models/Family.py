@@ -7,8 +7,9 @@ class Family:
     If children does not exist, it would return an empty list
     all date value are passed in as str, and saved as tuple with formate (year, month, day)
     '''
-    from Error import Error 
+
     def __init__(self, id: str):
+        # from Individual import Individual
         self.id = id
         self._husband = None
         self._wife = None
@@ -92,9 +93,11 @@ class Family:
             births = sorted(
                 list(map(lambda i: abs((date(*i) - today).days), [x.get_birthDate() for x in self.get_children()])))
         except AttributeError:
-            err = Error("ERROR", "FAMILY", "US14", "Missing birthdate for children", self._lineNum)
+            raise AttributeError("Missing birthdate for children")
+            error = error(1,1,1,1,1,1)
 
-        if len(births) <= 5: return True
+        if len(births) <= 5:
+            return True
         multi, sameDay, pre = 0, 0, births[0]
         for i in range(len(births)):
             if pre == births[i]:
@@ -106,7 +109,7 @@ class Family:
                 multi, sameDay = 1, 1
             pre = births[i]
             if multi >= 5:
-                err = Error("ANOMALY", "FAMILY", "US14", f'{multi} births where maxium is 5', self._lineNum)
+                return False
         return True
 
     def parents_not_too_old(self):
