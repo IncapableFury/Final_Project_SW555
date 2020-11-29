@@ -1,3 +1,5 @@
+
+
 class report_error:
 
     def __init__(self):
@@ -20,9 +22,29 @@ class report_error:
         for error in self.error_list:
             yield error
 
+    def check_func(self, name):
+        list_mark = ["id", "Error", "change_date_formate"]
+        return not name[0] == "_" and not name[0:3] == "get" and not name[0:3] == "set" and not name[0:3] == "add" and not name in list_mark
+
+
+    def get_error(self, obj):
+        from Error import Error
+        func_name = [name for name in dir(obj) if self.check_func(name)]
+        print(func_name)
+
+        for each_func in func_name:
+
+            try:
+                print(each_func)
+                getattr(obj, each_func)()
+
+            except Error as e:
+                self.error_list.append(e)
+
 
 if __name__ == "__main__":
     from Error import Error
+    from Family import Family
     e1 = Error("123",1,2,3,4)
     e2 = Error("234",2,3,4,5)
     e3 = Error("345",3,4,5,6)
@@ -34,3 +56,8 @@ if __name__ == "__main__":
     all_error.add_error(e3)
     all_error.add_error(e4)
     all_error.add_error(e5)
+
+    re1 = report_error()
+    F1 = Family("01")
+    re1.get_error(F1)
+    print(re1)

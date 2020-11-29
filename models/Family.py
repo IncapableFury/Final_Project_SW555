@@ -1,6 +1,6 @@
-#TODO: import error class
-from Gedcom import Gedcom
-class Family(Gedcom):
+#TODO: import error class 
+
+class Family:
     '''
     This is the class for Family.
     id is the only variable that is required. If other variable does not exist, it would return None
@@ -9,7 +9,6 @@ class Family(Gedcom):
     '''
     from Error import Error 
     def __init__(self, id: str):
-        from report_error import report_error
         self.id = id
         self._husband = None
         self._wife = None
@@ -94,7 +93,6 @@ class Family(Gedcom):
                 list(map(lambda i: abs((date(*i) - today).days), [x.get_birthDate() for x in self.get_children()])))
         except AttributeError:
             err = Error("ERROR", "FAMILY", "US14", "Missing birthdate for children", self._lineNum)
-            Gedcom.error_report.add_error(err)
 
         if len(births) <= 5: return True
         multi, sameDay, pre = 0, 0, births[0]
@@ -109,7 +107,6 @@ class Family(Gedcom):
             pre = births[i]
             if multi >= 5:
                 err = Error("ANOMALY", "FAMILY", "US14", f'{multi} births where maxium is 5', self._lineNum)
-                Gedcom.error_report.add_error(err)
         return True
 
     def parents_not_too_old(self):
@@ -309,23 +306,8 @@ class Family(Gedcom):
         res = sorted(self.get_children(), key=lambda x: x.get_age(days=True), reverse=True)
         return list(filter(lambda x: x.get_birthDate() != None, res))
 
-    def list_all_husbands(self):
-        """US 52 lists all husbands"""
-        husbandslist=[]
-        if not self.get_husband: raise AttributeError("no husband found")
-        for family in self._families():
-            if self.get_husband==self.get_id:
-                husbandslist.append(self.get_husband)
-        return husbandslist 
 
-    def list_all_wives(self):
-        """US 53 lists all wives"""
-        wiveslist=[]
-        if not self.get_wife: raise AttributeError("no wives found")
-        for family in self._families():
-            if self.get_wife==self.get_id:
-                wiveslist.append(self.get_wife)
-        return wiveslist
+
 
 
 

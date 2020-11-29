@@ -1,7 +1,6 @@
 from models.Individual import Individual
 from models.Family import Family
 from models.report_error import report_error
-import config
 
 class Gedcom:
 
@@ -10,7 +9,7 @@ class Gedcom:
         self._individuals = {}
         self._families = {}
         self._data = self.readfile(path)
-        config.error_report = report_error()
+        self.error_report = report_error()
 
     def readfile(self, path):
         """
