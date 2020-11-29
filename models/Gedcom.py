@@ -1,6 +1,7 @@
 from models.Individual import Individual
 from models.Family import Family
 from models.Error import Error
+from models.report_error import report_error
 
 class Gedcom:
 
@@ -9,6 +10,7 @@ class Gedcom:
         self._individuals = {}
         self._families = {}
         self._data = self.readfile(path)
+        self.error_report = report_error()
 
     def readfile(self, path):
         """
@@ -105,8 +107,8 @@ class Gedcom:
         return self._families
 
     def parse(self):
-        from models.Individual import Individual
-        from models.Family import Family
+        #from Individual import Individual
+        #from Family import Family
         offset = 0
         for i in range(len(self._data[1]) - 1):  # enumerate individuals
             start_index = self._data[1][i]
@@ -186,16 +188,30 @@ class Gedcom:
                     except:
                         continue
 
-    '''
-    Move this function from individual.py to gedcom.py
-    '''
+    
+    def run_check(self):
+
+        for indi in self._individuals.values():
+            self.error_report.get_error(indi)
+
+        for fam in self._families.values():
+            self.error_report.get_error(fam)
+
+        print(self.error_report)
+
+
+    def test_error(self):
+        for indi in self._individuals.values():
+            self.error_report.test_error(indi)
+
+
 
     #US01 Dates (birth, marriage, divorce, death) should not be after the current date
     def dates_before_current_date(self):
         from datetime import date
         today = date.today()
         for _, indi in self._individuals:
-            if not indi.get_birthDate(): raise AttributeError("Error: missing birthdate for individual")
+            if not indi.get_birthDate(): raise AttributeError("missing birthdate for individual")
             if not (today - date(indi.get_birthDate())).days < 0:
                 #return False
                 raise Error('ERROR', 'GEDCOM', 'US01', indi.get_lineNum()['INDI ID'],
@@ -207,7 +223,7 @@ class Gedcom:
                                 f"Individual{indi.get_id()}'s death date {indi.get_deathDate()} is after today's date {today}")
 
         for _, fam in self._families:
-            if not fam.get_marriedDate(): raise AttributeError("Error: missing marriedDate for family")
+            if not fam.get_marriedDate(): raise AttributeError("missing marriedDate for family")
             if not (today - date(fam.get_marriedDate())).days < 0:
                 #return False
                 raise Error('ERROR', 'GEDCOM', 'US01', fam.get_lineNum()['FAM ID'],
@@ -480,7 +496,7 @@ class Gedcom:
         return multiple_birth
     
     def list_living_single(self):
-        from models.Individual import Individual
+        from Individual import Individual
         singlePeople=[]
         for ind in self.get_individuals():
             if not self.get_individuals()[ind].get_deathDate():
@@ -490,8 +506,8 @@ class Gedcom:
         return singlePeople
     
     def list_orphans(self):
-        from models.Individual import Individual
-        from models.Family import Family
+        from Individual import Individual
+        from Family import Family
         orphans=[]
         for ind in self.get_individuals():
             if self.get_individuals()[ind].get_age()<18:
@@ -503,7 +519,7 @@ class Gedcom:
                 else: raise AttributeError("Missing parent family: "+self.get_individuals()[ind].get_id())
         return orphans
     def sort_individual(self):
-        from models.Individual import Individual
+        from Individual import Individual
         sorted=[]
         for ind in self.get_individuals():
             sorted.append(self.get_individuals()[ind].get_name())
@@ -511,20 +527,20 @@ class Gedcom:
         return sorted
     "US 56 functions"
     def fix_child_to_family(self, individual, family):
-        from models.Individual import Individual
-        from models.Family import Family
+        from Individual import Individual
+        from Family import Family
         ind.set_parentFamily(individual)
     def fix_family_to_child(self, individual, family):
-        from models.Individual import Individual
-        from models.Family import Family
+        from Individual import Individual
+        from Family import Family
         family.add_child(individual)
     def fix_parent_to_family(self, individual, family):
-        from models.Individual import Individual
-        from models.Family import Family
+        from Individual import Individual
+        from Family import Family
         individual.add_to_family(family)
     def fix_family_to_parent(self, individual, family):
-        from models.Individual import Individual
-        from models.Family import Family
+        from Individual import Individual
+        from Family import Family
         if(individual.get_gender()=="F"):
             family.set_wife(individual)
         else:
@@ -533,7 +549,7 @@ class Gedcom:
 if __name__ == "__main__":
     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
-    g1 = Gedcom("../testing_files/Jiashu_Wang.ged", SUPPORT_TAGS)#testing_files/Jiashu_Wang.ged
+    g1 = Gedcom("../testing_files/mock-family.ged", SUPPORT_TAGS)#testing_files/Jiashu_Wang.ged
 
     # for i in range(len(g1.get_data()[0])):
     #     print(i,g1.get_data()[0][i])
@@ -541,11 +557,17 @@ if __name__ == "__main__":
     #     print(g1.get_data()[1][i])
     # print(g1.get_data(),sep='/n')
     g1.parse()
-    print(g1.get_individuals()["@I4@"].get_lineNum()["NAME"])
-    # g1.peek()
+    #g1.test_error()
+    g1.run_check()
+    print(g1.error_report)
+    
+    
+    
+    
+    #g1.peek()
     # print(g1.get_individuals(),g1.get_families())
     # print(len(g1.get_individuals()),g1.get_individuals()["@I2@"].get_birthDate())
-    g1.unique_name_and_birth_date()
+    #g1.unique_name_and_birth_date()
     # print("what")
     # offset = 11
     # id = "@I123@"

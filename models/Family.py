@@ -117,17 +117,17 @@ class Family:
 
     #US12 Mother should be less than 60 years older than her children and father should be less than 80 years older than his children
     def parents_not_too_old(self):
-        if not self._husband or not self._wife: raise AttributeError("Error: missing husband or wife")
+        if not self._husband or not self._wife: raise AttributeError("missing husband or wife")
 
         if not self._husband.get_age() or not self._wife.get_age(): raise AttributeError(
-            "Error: missing age for husband or wife")
+            "missing age for husband or wife")
 
-        if not self._husband.get_age() or not self._wife.get_age(): raise AttributeError("Error: missing age for husband or wife")
+        if not self._husband.get_age() or not self._wife.get_age(): raise AttributeError("missing age for husband or wife")
 
         wife_age = self._wife.get_age()
         husband_age = self._husband.get_age()
         for child in self._children:
-            if not child.get_age(): raise AttributeError("Error: missing child age")
+            if not child.get_age(): raise AttributeError("missing child age")
             wife_diff = wife_age - child.get_age()
             husband_diff = husband_age - child.get_age()
             if wife_diff >= 60 or husband_diff >= 80:
@@ -196,14 +196,16 @@ class Family:
         if not self._divorced: return True
 
         deathdays = None
-        if not self._husband.get_deathDate():
-            deathdays = (date(*self._divorced) - date(*self._husband.get_deathDate())).days
-        elif not self._wife.get_deathDate():
-            deathdays = (date(*self._divorced) - date(*self._wife.get_deathDate())).days
-        else:
+        if self._husband.get_deathDate() and self._wife.get_deathDate():
             deathdays = (date(*self._divorced) - date(*self._husband.get_deathDate())).days
             if deathdays > (date(*self._divorced) - date(*self._wife.get_deathDate())).days:
                 deathdays = (date(*self._divorced) - date(*self._wife.get_deathDate())).days
+
+        elif not self._husband.get_deathDate():
+            deathdays = (date(*self._divorced) - date(*self._wife.get_deathDate())).days
+        elif not self._wife.get_deathDate():
+            deathdays = (date(*self._divorced) - date(*self._husband.get_deathDate())).days
+            
 
         if deathdays < 0:
             return True
@@ -255,9 +257,11 @@ class Family:
             if hDeath[1] > 12:
                 hDeath[1] = hDeath[1] % 12
                 hDeath[0] = hDeath[0] + 1
+
+        hDeath = tuple(hDeath)
         if death is None or hDeath < death:
             death = hDeath
-
+        death = tuple(death)
         for c in self._children:
             if c.get_birthDate() > death:
                 # return False
@@ -296,8 +300,7 @@ class Family:
     def male_last_names(self):
         if not self._husband: raise AttributeError("Missing Father")
         if not self._husband.get_name(): raise AttributeError("Missing Father's name")
-
-        check_last_name = self._husband.get_name().split(' ')[1]
+        check_last_name = self._husband.get_name().split('/')[1]
         def dfs(family, last_name):
             flag = True
             for child in family.get_children():
@@ -305,9 +308,9 @@ class Family:
                 
                 if child.get_gender() == "F": continue
                 if not child.get_name(): raise AttributeError("Child's name is missing")
-                if child.get_name().split(' ')[1] != last_name: return False
+                if child.get_name().split('/')[1] != last_name: return False
                 for fam in child.get_family():
-                    flag = dfs(fam) and flag
+                    flag = dfs(fam, check_last_name) and flag
             return flag
 
         return dfs(self, check_last_name)
@@ -326,23 +329,8 @@ class Family:
         res = sorted(self.get_children(), key=lambda x: x.get_age(days=True), reverse=True)
         return list(filter(lambda x: x.get_birthDate() != None, res))
 
-    def list_all_husbands(self):
-        """US 52 lists all husbands"""
-        husbandslist=[]
-        if not self.get_husband: raise AttributeError("no husband found")
-        for family in self._families():
-            if self.get_husband==self.get_id:
-                husbandslist.append(self.get_husband)
-        return husbandslist 
 
-    def list_all_wives(self):
-        """US 53 lists all wives"""
-        wiveslist=[]
-        if not self.get_wife: raise AttributeError("no wives found")
-        for family in self._families():
-            if self.get_wife==self.get_id:
-                wiveslist.append(self.get_wife)
-        return wiveslist
+
 
 
 
@@ -354,7 +342,7 @@ if __name__ == "__main__":
     print(fam1.marriage_before_divorce())
 
 
-    # from models.Individual import Individual
+    # from Individual import Individual
 
-    #from models.Individual import Individual
+    #from Individual import Individual
     # ---------------------------testing cases below---------------------------

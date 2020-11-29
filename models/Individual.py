@@ -8,7 +8,7 @@ class Individual:
 
     all date value are passed in as str, and saved as tuple with formate (year, month, day)
     '''
-
+    
     def __init__(self, id: str):
         self.id = id
         self._name = None
@@ -41,7 +41,7 @@ class Individual:
 
         """
         import datetime
-        if not self._birthDate: raise AttributeError("Error: missing birthdate for age")
+        if not self._birthDate: raise AttributeError("missing birthdate for age")
         today = datetime.date.today()
         lived_days = (today - datetime.date(*self._birthDate)).days
         return lived_days // 365 if not days else lived_days
@@ -109,10 +109,10 @@ class Individual:
     # US02 Birth should occur before marriage of an individual
     def birth_before_marriage(self):
         from datetime import date
-        if not self._birthDate or not self._family: raise AttributeError("Error: Missing self birthday or family marriage date")
-        # if not self._parentFamily.get_marriedDate(): raise AttributeError("Error: Missing attribute")
+        if not self._birthDate or not self._family: raise AttributeError("Missing self birthday or family marriage date")
+        # if not self._parentFamily.get_marriedDate(): raise AttributeError("Missing attribute")
         for family in self.get_family():
-            if not family.get_marriedDate(): raise AttributeError("Error: Missing attribute")
+            if not family.get_marriedDate(): raise AttributeError("Missing attribute")
             timedelta = date(*family.get_marriedDate()) - date(*self._birthDate)
             if (timedelta.days <= 0):
                 #return False
@@ -122,7 +122,7 @@ class Individual:
     #US03 Birth should occur before death of an individual
     def birth_before_death(self):
         from datetime import date
-        if not self._birthDate or not self._deathDate: raise AttributeError("Error: Missing attribute")
+        if not self._birthDate or not self._deathDate: raise AttributeError("Missing attribute")
 
         if (date(*self._deathDate) - date(*self._birthDate)).days > 0:
             return True
@@ -131,16 +131,16 @@ class Individual:
     #US07 Death should be less than 150 years after birth for dead people, and current date should be less than 150 years after birth for all living people
     def less_then_150_years_old(self):
         if self.get_age() < 150: return True
-        else: raise Error('ANOMALY', 'INDIVIDUAL', 'US07', self.get_lineNum()['DEAT'], f" Individual's Age {self.get_age()} is greater than 150")
+        else: raise Error('ANOMALY', 'INDIVIDUAL', 'US07', self.get_lineNum()['BIRT'], f" Individual's Age {self.get_age()} is greater than 150")
 
     #US11 Marriage should not occur during marriage to another spouse //EXPLAIN CASE
     def no_bigamy(self):
         if (len(self._family) <= 1): return True
         marrageAgeList = []
         birthDate = self._birthDate
-        if not self._family: raise AttributeError("Error: Missing attribute")
+        if not self._family: raise AttributeError("Missing self family")
         for each_marrage in self._family:
-            if not each_marrage.get_marriedDate(): raise AttributeError("Error: Missing attribute")
+            if not each_marrage.get_marriedDate(): raise AttributeError("Missing marrage date")
             marrageAge = each_marrage.get_marriedDate()[0] - birthDate[0] + (
                     each_marrage.get_marriedDate()[1] - birthDate[1]) / 12 + (
                                  each_marrage.get_marriedDate()[2] - birthDate[2]) / 365
@@ -182,12 +182,12 @@ class Individual:
 
     #US20 Aunts and uncles should not marry their nieces or nephews
     def aunts_and_uncles(self):
-        if (not self._parentFamily): raise AttributeError("Error: missing value")
+        if (not self._parentFamily): raise AttributeError("missing value")
         if (not self._parentFamily.get_husband() or not self._parentFamily.get_wife()): raise AttributeError(
-            "Error: missing value")
+            "missing value")
         if (
                 not self._parentFamily.get_husband().get_parent_family() or not self._parentFamily.get_wife().get_parent_family()): raise AttributeError(
-            "Error: missing value")
+            "missing value")
 
         dad_grand_family = self._parentFamily.get_husband().get_parent_family()
         mom_grand_family = self._parentFamily.get_wife().get_parent_family()
@@ -197,7 +197,7 @@ class Individual:
             check_id = dad_side_aunt_uncle.get_id()
             for dad_side_family in dad_side_aunt_uncle.get_family():
                 if (not dad_side_family.get_husband() or not dad_side_family.get_wife()): raise AttributeError(
-                    "Error: missing value")
+                    "missing value")
                 uncle_id = dad_side_family.get_husband().get_id()
                 aunt_id = dad_side_family.get_wife().get_id()
                 if (uncle_id == aunt_id):
@@ -214,7 +214,7 @@ class Individual:
             if (mom_side_aunt_uncle == self.get_parent_family().get_wife()): continue
             for mom_side_family in mom_side_aunt_uncle.get_family():
                 if (not mom_side_family.get_husband() or not mom_side_family.get_wife()): raise AttributeError(
-                    "Error: missing value")
+                    "missing value")
                 uncle_id = mom_side_family.get_husband().get_id()
                 aunt_id = mom_side_family.get_wife().get_id()
                 if (uncle_id == aunt_id):
@@ -232,9 +232,9 @@ class Individual:
 
     #US19 First cousins should not marry one another //PROBLEM HERE
     def first_cousins_should_not_marry(self):
-        if not self.get_parent_family(): raise AttributeError("Error: missing parent family")
-        if not self.get_parent_family().get_husband() or not self.get_parent_family().get_wife(): raise AttributeError("Error: missing husband or wife")
-        if not self.get_parent_family().get_husband().get_parent_family() or not self.get_parent_family().get_wife().get_parent_family(): raise AttributeError("Error: missing husband/wife's parent family")
+        if not self.get_parent_family(): raise AttributeError("missing parent family")
+        if not self.get_parent_family().get_husband() or not self.get_parent_family().get_wife(): raise AttributeError("missing husband or wife")
+        if not self.get_parent_family().get_husband().get_parent_family() or not self.get_parent_family().get_wife().get_parent_family(): raise AttributeError("missing husband/wife's parent family")
 
         daddy = self.get_parent_family().get_husband()
         daddy_siblings = self.get_parent_family().get_husband().get_parent_family().get_children()[:]
@@ -290,6 +290,11 @@ class Individual:
             return result
 
         return dfs(self)
+
+    
+    def test_error(self):
+        
+        raise Error("123",1,2,3,4)
 
 
 if __name__ == "__main__":
