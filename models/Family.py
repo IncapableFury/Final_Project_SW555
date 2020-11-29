@@ -1,4 +1,5 @@
 #TODO: import error class
+from models.Error import Error
 
 class Family:
     '''
@@ -63,7 +64,7 @@ class Family:
 
         ##if not isinstance(divorced_date, str): raise TypeError("input has to be a str type")
         if all(isinstance(v, int) for v in divorced_date):
-            self._divorcedDate = divorced_date
+            self._divorced = divorced_date
             return
         self._divorced = self.change_date_formate(divorced_date)
 
@@ -86,6 +87,7 @@ class Family:
                      "OCT": 10, "NOV": 11, "DEC": 12}
         return int(date[2]), monthList[date[1]], int(date[0])
 
+    #US14 No more than five siblings should be born at the same time
     def multiple_births_lessOrEqual_than_5(self):  # cannot catch multi multiples; not sure if need to
         from datetime import date
         today = date.today()
@@ -94,7 +96,6 @@ class Family:
                 list(map(lambda i: abs((date(*i) - today).days), [x.get_birthDate() for x in self.get_children()])))
         except AttributeError:
             raise AttributeError("Missing birthdate for children")
-            error = error(1,1,1,1,1,1)
 
         if len(births) <= 5:
             return True
@@ -109,9 +110,12 @@ class Family:
                 multi, sameDay = 1, 1
             pre = births[i]
             if multi >= 5:
-                return False
+                raise Error('ANOMALY', 'FAMILY', 'US14', self.get_lineNum()["CHIL"],
+                            f'Family has more than five children with the same birthday')
+                #return False
         return True
 
+    #US12 Mother should be less than 60 years older than her children and father should be less than 80 years older than his children
     def parents_not_too_old(self):
         if not self._husband or not self._wife: raise AttributeError("Error: missing husband or wife")
 
@@ -126,9 +130,12 @@ class Family:
             if not child.get_age(): raise AttributeError("Error: missing child age")
             wife_diff = wife_age - child.get_age()
             husband_diff = husband_age - child.get_age()
-            if wife_diff >= 60 or husband_diff >= 80: return False
+            if wife_diff >= 60 or husband_diff >= 80:
+                raise Error('ANOMALY', 'FAMILY', 'US12', self.get_lineNum()["FAM ID"], f"Family Mother's age{wife_age} exceeds child's age{child.get_age()} by 60 or Father's age{husband_age} exceeds child's age by 80")
+                #return False
         return True
 
+    #US04 Family marriage date should come before divorce date
     def marriage_before_divorce(self):
         from datetime import date
         marriage = self.get_marriedDate()
@@ -136,8 +143,11 @@ class Family:
         if not marriage: raise AttributeError("Missing marriage date")
         if not divorce: return True
         timedelta = date(*marriage) - date(*divorce)
-        return timedelta.days < 0
+        if timedelta.days < 0:
+            return True
+        else: raise Error('ERROR', 'FAMILY', 'US04', self.get_lineNum()["MARR"], f"Family marriage date {marriage} is after divorce date {divorce}")
 
+    #US10 Marriage should be at least 14 years after birth of both spouses (parents must be at least 14 years old)
     def marriage_after_14(self) -> bool:
         from datetime import date
 
@@ -150,20 +160,15 @@ class Family:
         if not self._husband.get_birthDate() or not self._wife.get_birthDate(): raise AttributeError("Missing birthdate for husband/wife")
         husbandMarryAge = (date(*self._marriedDate) - date(*self._husband.get_birthDate())).days // 365
         wifeMarryAge = (date(*self._marriedDate) - date(*self._wife.get_birthDate())).days // 365
-        return husbandMarryAge > 14 and wifeMarryAge > 14
+        if(husbandMarryAge > 14 and wifeMarryAge > 14):
+            return True
+        else: raise Error('ERROR', 'FAMILY', 'US10', self.get_lineNum()["MARR"],
+                              f"Family marriage date {self.get_marriedDate()} is not 14 years after"
+                              f"Husband birthday {self._husband.get_birthDate()} or Wife birthday {self._wife.get_birthDate()}")
 
+    #US05 Marriage should occur before death of either spouse
     def marriage_before_death(self):
         from datetime import date
-
-        if not self._husband or not self._wife or not self.get_marriedDate(): raise AttributeError(
-            "Missing husband/wife/marriedDate")
-        if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
-
-        death = None
-        if not self._husband.get_deathDate():
-            death = self._wife.get_deathDate()
-        elif not self._wife.get_deathDate():
-            death = self._husband.get_deathDate()
 
         if not self._husband or not self._wife or not self.get_marriedDate(): raise AttributeError("Missing husband/wife/marriedDate")
         if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
@@ -179,8 +184,11 @@ class Family:
                 death = self._husband.get_deathDate()
         marriage = self._marriedDate
         timedelta = date(*marriage) - date(*death)
-        return timedelta.days <= 0
+        if timedelta.days <= 0:
+            return True
+        else:raise Error('ERROR', 'FAMILY', 'US05', self.get_lineNum()["MARR"], f"Family marriage date {marriage} is after death date of husband{self._husband.get_deathDate()} or wife{self._wife.get_deathDate()}")
 
+    #US06 Divorce can only occur before death of both spouses
     def divorce_before_death(self) -> bool:
         from datetime import date
         if not self._husband or not self._wife: raise AttributeError("Missing husband/wife")
@@ -197,55 +205,64 @@ class Family:
             if deathdays > (date(*self._divorced) - date(*self._wife.get_deathDate())).days:
                 deathdays = (date(*self._divorced) - date(*self._wife.get_deathDate())).days
 
-        return deathdays < 0
+        if deathdays < 0:
+            return True
+        else: raise Error('ERROR', 'FAMILY', 'US05', self.get_lineNum()["DIV"], f"Family divorce date {self.get_divorcedDate()} is after death date of husband{self._husband.get_deathDate()} or wife{self._wife.get_deathDate()}")
 
 
+    #US08 Children should be born after marriage of parents (and not more than 9 months after their divorce)
     def birth_before_marriage_of_parents(self):
         if not self._husband or not self._wife: raise AttributeError("Missing husband/wife")
         if not self.get_marriedDate():raise AttributeError("Missing marrageDate")
 
         for c in self._children:
             if not c.get_birthDate(): raise AttributeError("Missing child birthDate")
-            if c.get_birthDate() <= self.get_marriedDate(): return False
+            if c.get_birthDate() <= self.get_marriedDate():
+                #return False
+                raise Error('ANOMALY', 'FAMILY', 'US08', c.get_lineNum()["BIRT"], f"Child birthday {c.get_birthDate()} is after marriage date of Family {self.get_marriedDate()}")
         return True
 
+    #US09 Child should be born before death of mother and before 9 months after death of father //PROBLEM HERE
     def birth_before_death_of_parents(self):
         if not self._husband or not self._wife: raise AttributeError("Missing husband/wife")
         if not self._husband.get_deathDate() and not self._wife.get_deathDate(): return True
         if len(self._children) == 0: return True
         death = self._wife.get_deathDate()
         hDeath = self._husband.get_deathDate()
-
-
         if not hDeath:
             for c in self._children:
-                if c.get_birthDate() > death: return False
+                if c.get_birthDate() > death:
+                    #return False
+                    raise Error('ERROR', 'FAMILY', 'US09', c.get_lineNum()["BIRT"],
+                                f"Child birthday {c.get_birthDate()} is after death date of mother {death}")
             return True
-
-        hDeath = hDeath + (0, 9, 0)
-        if hDeath[1] > 12:
-            hDeath[1] = hDeath[1] % 12
-            hDeath[0] = hDeath[0] + 1
-        if not death:
-            for c in self._children:
-                if c.get_birthDate() > hDeath: return False
-            return True
-
-        if hDeath < death:
-
-            if not death and not hDeath:
-                return True
+        # hDeath = hDeath + (0, 9, 0)
+        # if hDeath[1] > 12:
+        #     hDeath[1] = hDeath[1] % 12
+        #     hDeath[0] = hDeath[0] + 1
+        # if not death:
+        #     for c in self._children:
+        #         if c.get_birthDate() > hDeath:
+        #             # return False
+        #             raise Error('ERROR', 'FAMILY', 'US09', c.get_lineNum()['BIRT'],
+        #                         f"Child birthday {c.get_birthDate()} is after 9 month of death date of father {hDeath}")
+        #     return True
+        # if hDeath < death:
+        #     if not death and not hDeath:
+        #         return True
         if hDeath:
-            hDeath = tuple(map(sum, zip(hDeath, (0,9,0))))
+            hDeath = list(map(sum, zip(hDeath, (0,9,0))))
             if hDeath[1] > 12:
                 hDeath[1] = hDeath[1] % 12
                 hDeath[0] = hDeath[0] + 1
         if death is None or hDeath < death:
-
             death = hDeath
 
         for c in self._children:
-            if c.get_birthDate() > death: return False
+            if c.get_birthDate() > death:
+                # return False
+                raise Error('ERROR', 'FAMILY', 'US09', c.get_lineNum()['BIRT'],
+                                f"Child birthday {c.get_birthDate()} is after 9 month of death date of father {hDeath}")
         return True
 
     def siblings_spacing(self):
@@ -330,7 +347,12 @@ class Family:
 
 
 if __name__ == "__main__":
-    pass
+    fam1 = Family('01')
+
+    fam1.set_marriedDate((2010,10,1))
+    fam1.set_divorcedDate((2010,9,1))
+    print(fam1.marriage_before_divorce())
+
 
     # from models.Individual import Individual
 
