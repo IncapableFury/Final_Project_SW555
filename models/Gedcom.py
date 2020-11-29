@@ -1,6 +1,9 @@
 from models.Individual import Individual
 from models.Family import Family
+<<<<<<< HEAD
 from models.report_error import report_error
+=======
+>>>>>>> parent of 10aea7d... add config class for cross platform
 
 class Gedcom:
 
@@ -9,7 +12,10 @@ class Gedcom:
         self._individuals = {}
         self._families = {}
         self._data = self.readfile(path)
+<<<<<<< HEAD
         self.error_report = report_error()
+=======
+>>>>>>> parent of 10aea7d... add config class for cross platform
 
     def readfile(self, path):
         """
