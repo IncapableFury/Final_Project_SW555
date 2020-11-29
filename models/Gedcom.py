@@ -1,6 +1,7 @@
-from Individual import Individual
-from Family import Family
-from report_error import report_error
+from models.Individual import Individual
+from models.Family import Family
+from models.Error import Error
+from models.report_error import report_error
 
 class Gedcom:
 
@@ -106,8 +107,8 @@ class Gedcom:
         return self._families
 
     def parse(self):
-        #from models.Individual import Individual
-        #from models.Family import Family
+        #from Individual import Individual
+        #from Family import Family
         offset = 0
         for i in range(len(self._data[1]) - 1):  # enumerate individuals
             start_index = self._data[1][i]
@@ -205,28 +206,41 @@ class Gedcom:
 
 
 
+    #US01 Dates (birth, marriage, divorce, death) should not be after the current date
     def dates_before_current_date(self):
         from datetime import date
         today = date.today()
         for _, indi in self._individuals:
-            if not indi.get_birthDate(): raise AttributeError("Error: missing birthdate for individual")
-            if not (today - date(indi.get_birthDate())).days < 0: return False
+            if not indi.get_birthDate(): raise AttributeError("missing birthdate for individual")
+            if not (today - date(indi.get_birthDate())).days < 0:
+                #return False
+                raise Error('ERROR', 'GEDCOM', 'US01', indi.get_lineNum()['INDI ID'],
+                            f"Individual{indi.get_id()}'s birthday {indi.get_birthDate()} is after today's date {today}")
             if not indi.get_deathDate() == None:
-                if not (today - date(indi.get_deathDate())).days < 0: return False
+                if not (today - date(indi.get_deathDate())).days < 0:
+                    # return False
+                    raise Error('ERROR', 'GEDCOM', 'US01', indi.get_lineNum()['INDI ID'],
+                                f"Individual{indi.get_id()}'s death date {indi.get_deathDate()} is after today's date {today}")
 
         for _, fam in self._families:
-            if not fam.get_marriedDate(): raise AttributeError("Error: missing marriedDate for family")
-            if not (today - date(fam.get_marriedDate())).days < 0: return False
+            if not fam.get_marriedDate(): raise AttributeError("missing marriedDate for family")
+            if not (today - date(fam.get_marriedDate())).days < 0:
+                #return False
+                raise Error('ERROR', 'GEDCOM', 'US01', fam.get_lineNum()['FAM ID'],
+                            f"Family{fam.get_id()}'s marriage date {fam.get_marriedDate()} is after today's date {today}")
             if not fam.get_divorcedDate() == None:
-                if not (today - date(fam.get_divorcedDate())).days < 0: return False
+                if not (today - date(fam.get_divorcedDate())).days < 0:
+                    #return False
+                    raise Error('ERROR', 'GEDCOM', 'US01', fam.get_lineNum()['INDI ID'],
+                                f"Individual{fam.get_id()}'s divorce date {fam.get_divorcedDate()} is after today's date {today}")
 
         return True
 
+    #US22 All individual IDs should be unique and all family IDs should be unique
     def Unique_IDs(self):
         pass
 
-    # Finshed in mainfunction.
-
+    #US23 No more than one individual with the same name and birth date should appear in a GEDCOM file
     def unique_name_and_birth_date(self):
         dic = set()
         for indi in self._individuals.values():
@@ -236,11 +250,13 @@ class Gedcom:
                 if key not in dic:
                     dic.add(indi)
                 else:
-                    return False
+                    #return False
+                    raise Error('ANOMALY', 'GEDCOM', 'US023', indi.get_lineNum()['INDI ID'],
+                                f"Individual{indi.get_id()} appears multiple times in the GEDCOM file")
         return True
 
+    #US24 No more than one family with the same spouses by name and the same marriage date should appear in a GEDCOM file //PROBLEM
     def unique_families_by_spouses(self):
-        """user story 24 No more than one family with the same spouses by name and the same marriage date should appear in a GEDCOM file """
         check_list = []
         for _, family in self._families:
             if not family.get_husband() or not family.get_wife(): raise AttributeError("no husband or wife")
@@ -248,28 +264,37 @@ class Gedcom:
                 "no husband or wife name")
             if not family.get_marriedDate(): raise AttributeError("no marriage date")
             this_fam_info = [family.get_husband().get_name(), family.get_wife.get_name(), family.get_marriedDate()]
-            if check in check_list: return False
+            if this_fam_info in check_list:
+                # return False
+                raise Error('ANOMALY', 'GEDCOM', 'US024', family.get_lineNum()['FAM ID'],
+                        f"Family{family.get_id()} has repeated marriage date{family.get_marriedDate()} or spouse name{family._wife.get_name()}")
             check_list.append(this_fam_info)
 
         return True
 
+    #US25 No more than one child with the same name and birth date should appear in a family
     def unique_first_names_in_families(self):
-        """user story 25 No more than one child with the same name and birth date should appear in a family"""
-
         for _, family in self._families:
             check_list = []
             for child in family.get_children():
                 if not child.get_name() or not child.get_birthDate(): raise AttributeError(
                     "no name or birthdate for child")
                 child_info = [child.get_name(), child.get_birthDate()]
-                if child_info in check_list: return False
+                if child_info in check_list:
+                    # return False
+                    raise Error('ERROR', 'GEDCOM', 'US025', child.get_lineNum()['INDI ID'],
+                            f"Child{child.get_id()}'s birthday{child.get_birthDate()}or name{child.get_name()} is repeated in a family")
                 check_list.append(child_info)
 
         return True
 
+    #US27 Include person's current age when listing individuals
     def include_individual_ages(self):
         pass
 
+    #US26 All family roles (spouse, child) specified in an individual record should have corresponding entries in the corresponding family records.
+    # Likewise, all individual roles (spouse, child) specified in family records should have corresponding entries in the corresponding  individual's records.
+    # I.e. the information in the individual and family records should be consistent.
     def corresponding_entries(self):
         """ user story 26 the information in the individual and family records should be consistent."""
         for key_id, indi in self._individuals:
@@ -277,60 +302,56 @@ class Gedcom:
                 flag = False
                 for child in indi.get_parentFamily().get_children():
                     if child.get_id() == key_id: flag = True
-                if not flag: return False
+                if not flag:
+                    # return False
+                    raise Error('ERROR', 'GEDCOM', 'US026', indi.get_parentFamily().get_lineNum()['FAM ID'],
+                                f"Individual{indi.get_id()} 's family{indi.get_parentFamily().get_id()} have non-corresponding IDs'")
 
             for fam in indi.get_family():
-                if not fam.get_husband() and not fam.get_wife(): return False
-                if not (fam.get_husband().get_id() == key_id or fam.get_wife().get_id() == key_id): return False
+                if not fam.get_husband() and not fam.get_wife():
+                    # return False
+                    raise Error('ANOMALY', 'GEDCOM', 'US026', fam.get_lineNum()['FAM ID'],
+                                f"Family{fam.get_id()} has no husband or no wife")
+                if not (fam.get_husband().get_id() == key_id or fam.get_wife().get_id() == key_id):
+                    # return False
+                    raise Error('ERROR', 'GEDCOM', 'US026', fam.get_lineNum()['FAM ID'],
+                                f"Family{fam.get_id()} has non-corresponding entries")
 
         for key_id, fam in self._families:
             if fam.get_husband():
                 flag = False
                 for check_fam in fam.get_husband().get_family():
                     if check_fam.get_id() == key_id: flag = True
-                if not flag: return False
-
+                if not flag:
+                    # return False
+                    raise Error('ERROR', 'GEDCOM', 'US026', fam.get_lineNum()['FAM ID'],
+                                f"Family{fam.get_id()} has non-corresponding entries")
             if fam.get_wife():
                 flag = False
                 for check_fam in fam.get_wife().get_family():
                     if check_fam.get_id == key_id: flag = True
-                if not flag: return False
+                if not flag:
+                    # return False
+                    raise Error('ERROR', 'GEDCOM', 'US026', fam.get_lineNum()['FAM ID'],
+                                f"Family{fam.get_id()} has non-corresponding entries")
 
             for child in fam.get_children():
-                if not child.get_parentFamily(): return False
-                if child.get_parentFamily().get_id() == key_id: return False
+                if not child.get_parentFamily():
+                    # return False
+                    raise Error('ERROR', 'GEDCOM', 'US026', child.get_lineNum()['INDI ID'],
+                                f"Individual{child.get_id()}'s family{fam.get_id()} has non-corresponding entries")
+                if not child.get_parentFamily().get_id() == key_id:
+                    # return False
+                    raise Error('ERROR', 'GEDCOM', 'US026', child.get_lineNum()['INDI ID'],
+                                f"Individual{child.get_id()}'s family{fam.get_id()} has non-corresponding entries")
 
         return True
 
-    # def list_deceased(self):
-    #     """us 29 list all deceased individuals in a gedcom file"""
-    #     deceasedPeople=[]
-    #     if self._individuals.get_deathDate()==None: raise AttributeError("no one deceased")
-    #     for individual in self._individuals():
-    #         if self.get_deathDate() != None:
-    #             deceasedPeople.append(self.get_id())
-    #     return deceasedPeople
-    #
-    #
-    # def list_living_married(self):
-    #     """list all living married people in a Gedcom file"""
-    #     marriedPeople=[]
-    #     if not self.get_wife or self.get_husband: raise AttributeError("no wife or husband found for spouse")
-    #     for family in self._families():
-    #         if self.get_husband==self.get_id and self.husband.get_deathDate == None:
-    #             marriedPeople.append(self.get_husband)
-    #         if self.get_wife==self.get_id and self.get_wife.get_deathDate==None:
-    #             marriedPeople.append(self.get_wife)
-    #     return marriedPeople
-
-    # compares each families's marriage dates(month and day) to today's date, returns array of members with upcoming anniversaries
-    # return empty array if no dates are found
-
+    #US39 List all living couples in a GEDCOM file whose marriage anniversaries occur in the next 30 days
     def list_upcoming_anniversaries(self):
         """
         return couples tuple of ids
         """
-
         from datetime import date, datetime
         indiUpcomingAnniversaries = []
         today = date.today()
@@ -345,6 +366,7 @@ class Gedcom:
 
         return indiUpcomingAnniversaries
 
+    #US38 List all living people in a GEDCOM file whose birthdays occur in the next 30 days
     def list_upcoming_birthdays(self):
         from datetime import date
         output_list = []
@@ -359,6 +381,7 @@ class Gedcom:
 
         return output_list
 
+    #US37 List all living spouses and descendants of people in a GEDCOM file who died in the last 30 days
     def list_resent_survivors(self):
         from datetime import date
         output = {}
@@ -386,6 +409,7 @@ class Gedcom:
 
         return output
 
+    #US29 List all deceased individuals in a GEDCOM file //PROBLEM
     def list_deceased(self):
         """us 29 list all deceased individuals in a gedcom file"""
         deceasedPeople=[]
@@ -395,7 +419,7 @@ class Gedcom:
                 deceasedPeople.append(self.get_id())
         return deceasedPeople
 
-
+    #US30 List all living married people in a GEDCOM file //PROBLEM
     def list_living_married(self):
         """list all living married people in a Gedcom file"""
         marriedPeople=[]
@@ -405,10 +429,10 @@ class Gedcom:
                 marriedPeople.append(self.get_husband)
             if self.get_wife==self.get_id and self.get_wife.get_deathDate==None:
                 marriedPeople.append(self.get_wife)
-        return marriedPeople 
-    
+        return marriedPeople
+
+    #US34 List all couples who were married when the older spouse was more than twice as old as the younger spouse
     def list_large_age_differences(self):
-        "US34, List all couples who were married when the older spouse was more than twice as old as the younger spouse"
 
         res = []
 
@@ -429,10 +453,8 @@ class Gedcom:
                 res.append((husband.get_id(), wife.get_id()))
         return res
 
-
+    #US35 List all people in a GEDCOM file who were born in the last 30 days
     def list_recent_birth(self):
-        "US35, List all people in a GEDCOM file who were born in the last 30 days"
-
         recent_birth = []
 
         for id in self._individuals:
@@ -441,6 +463,7 @@ class Gedcom:
            if 0<= indi.get_age(days = True) < 30: recent_birth.append(id)
         return recent_birth
 
+    #US36 List all people in a GEDCOM file who died in the last 30 days
     def list_recent_deaths(self):
         from datetime import date
         from datetime import timedelta
@@ -457,6 +480,7 @@ class Gedcom:
 
         return deathPeople
 
+    #US32 List all multiple births in a GEDCOM file
     def list_multiple_births(self):
         dic = {}
         multiple_birth = []
@@ -470,23 +494,75 @@ class Gedcom:
             if len(list1)>1 :
                 multiple_birth.append(list1)
         return multiple_birth
-      
+    
+    def list_living_single(self):
+        from Individual import Individual
+        singlePeople=[]
+        for ind in self.get_individuals():
+            if not self.get_individuals()[ind].get_deathDate():
+                if self.get_individuals()[ind].get_age()>30:
+                    if len(self.get_individuals()[ind].get_family())==0:
+                        singlePeople.append(self.get_individuals()[ind])
+        return singlePeople
+    
+    def list_orphans(self):
+        from Individual import Individual
+        from Family import Family
+        orphans=[]
+        for ind in self.get_individuals():
+            if self.get_individuals()[ind].get_age()<18:
+                if self.get_individuals()[ind].get_parent_family():
+                    if self.get_individuals()[ind].get_parent_family().get_husband() and self.get_individuals()[ind].get_parent_family().get_wife():
+                        if self.get_individuals()[ind].get_parent_family().get_husband().get_deathDate() and self.get_individuals()[ind].get_parent_family().get_wife().get_deathDate():
+                            orphans.append(self.get_individuals()[ind])
+                    else: raise AttributeError("Missing wife or husband: "+self.get_individuals()[ind].get_parent_family().get_id())
+                else: raise AttributeError("Missing parent family: "+self.get_individuals()[ind].get_id())
+        return orphans
+    def sort_individual(self):
+        from Individual import Individual
+        sorted=[]
+        for ind in self.get_individuals():
+            sorted.append(self.get_individuals()[ind].get_name())
+        sorted.sort()
+        return sorted
+    "US 56 functions"
+    def fix_child_to_family(self, individual, family):
+        from Individual import Individual
+        from Family import Family
+        ind.set_parentFamily(individual)
+    def fix_family_to_child(self, individual, family):
+        from Individual import Individual
+        from Family import Family
+        family.add_child(individual)
+    def fix_parent_to_family(self, individual, family):
+        from Individual import Individual
+        from Family import Family
+        individual.add_to_family(family)
+    def fix_family_to_parent(self, individual, family):
+        from Individual import Individual
+        from Family import Family
+        if(individual.get_gender()=="F"):
+            family.set_wife(individual)
+        else:
+            family.set_husband(individual)
 
 if __name__ == "__main__":
     SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
                     "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
-    g1 = Gedcom("../testing_files/Jiashu_Wang.ged", SUPPORT_TAGS)#testing_files/Jiashu_Wang.ged
+    g1 = Gedcom("../testing_files/mock-family.ged", SUPPORT_TAGS)#testing_files/Jiashu_Wang.ged
+
     # for i in range(len(g1.get_data()[0])):
     #     print(i,g1.get_data()[0][i])
     # for i in range(len(g1.get_data()[1])):
     #     print(g1.get_data()[1][i])
     # print(g1.get_data(),sep='/n')
     g1.parse()
-    g1.test_error()
-    print(g1.error_report)
-    '''
+    #g1.test_error()
     g1.run_check()
-    '''
+    print(g1.error_report)
+    
+    
+    
     
     #g1.peek()
     # print(g1.get_individuals(),g1.get_families())

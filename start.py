@@ -1,6 +1,8 @@
 from models.Gedcom import Gedcom
 import click
 
+import click
+
 SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
                 "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
 

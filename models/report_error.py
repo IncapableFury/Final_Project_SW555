@@ -4,26 +4,40 @@ class report_error:
 
     def __init__(self):
         self.error_list = []
+        self.attribute_list = []
 
     def add_error(self, error):
         self.error_list.append(error)
 
+    def add_attribute(self, func_name, error):
+        mess = func_name, error
+        self.attribute_list.append(mess)
+
     def clear(self):
         self.error_list = []
+        self.attribute_list = []
 
     def __str__(self):
         out = ""
         for error in self.error_list:
             print(error)
 
+        print()
+        '''
+        for error in self.attribute_list:
+            print(error)
+        '''
         return out
 
     def __iter__(self):
         for error in self.error_list:
             yield error
 
+        for error in self.attribute_list:
+            yield error
+
     def check_func(self, name):
-        list_mark = ["id", "Error", "change_date_formate"]
+        list_mark = ["id", "Error", "change_date_formate", "test_error"]
         return not name[0] == "_" and not name[0:3] == "get" and not name[0:3] == "set" and not name[0:3] == "add" and not name in list_mark
 
 
@@ -47,6 +61,9 @@ class report_error:
 
             except Error as e:
                 self.error_list.append(e)
+
+            except AttributeError as e:
+                self.add_attribute(each_func, e)
 
 
 if __name__ == "__main__":
