@@ -12,8 +12,8 @@ class TestSprint1(unittest.TestCase):
     def setUp(self):
         SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
                         "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
-        self.G1 = Gedcom('../testing_files/right.ged', SUPPORT_TAGS)
-        self.G2 = Gedcom('../testing_files/wrong.ged', SUPPORT_TAGS)
+        # self.G1 = Gedcom('../testing_files/right.ged', SUPPORT_TAGS)
+        # self.G2 = Gedcom('../testing_files/wrong.ged', SUPPORT_TAGS)
 
         self.ind_1 = Individual("01")
         self.ind_2 = Individual("02")

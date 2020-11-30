@@ -1,8 +1,6 @@
 from models.Gedcom import Gedcom
 import click
 
-import click
-
 SUPPORT_TAGS = {"INDI", "NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS", "FAM", "MARR", "HUSB", "WIFE", "CHIL",
                 "DIV", "DATE", "HEAD", "TRLR", "NOTE"}
 
@@ -75,7 +73,9 @@ def cli():
 @click.option('--save','-S',is_flag=True)
 def parse(path,save):
     g = Gedcom(path, SUPPORT_TAGS)
-    click.echo("parsing")
+    click.echo("parsing...")
+    g.parse()
+    g.run_check()
     if save:
         click.echo("saving to file")
     return
@@ -105,5 +105,4 @@ if __name__ == "__main__":
     # print(errors)
     # --------------------testing--------------------
     cli()
-    pass
 
